@@ -21,6 +21,8 @@ def repo(tmp_path: Path) -> ModelTrainingRepository:
     rng = np.random.default_rng(4)
     manifest = {
         "inputs": [f"feature_{i}" for i in range(80)],
+        "configuration": {"infinite_rate_columns": ["feature_1", "feature_2"], "infinite_rate_replacement": -1.0},
+        "columns_outside_inputs": {"labels": ["Label"], "metadata": [], "excluded": []},
         "classes": {"benign": 0, "attack": 1},
         "original_labels": [
             {"index": 0, "label": "BENIGN", "class": "benign"},
@@ -130,7 +132,8 @@ def test_reserved_test_requires_saved_selection_and_fixed_model(repo, tmp_path) 
         repo.load_reserved_test(tmp_path, dataset)
 
 
-def test_comparison_reuses_sample_trains_full_dataset_and_opens_test_after_choices(repo, monkeypatch) -> None:
+@pytest.mark.parametrize("algorithm", ["random_forest", "xgboost"])
+def test_comparison_reuses_sample_trains_full_dataset_and_opens_test_after_choices(repo, monkeypatch, algorithm) -> None:
     # Acrescenta um teste reservado independente ao fixture.
     manifest_path = repo.data_dir / "manifest.json"
     manifest = json.loads(manifest_path.read_text())
@@ -168,7 +171,20 @@ def test_comparison_reuses_sample_trains_full_dataset_and_opens_test_after_choic
         return load_test(run_dir, dataset)
 
     monkeypatch.setattr(repo, "load_reserved_test", guarded)
-    result = ForestComparisonService(repo, config, RandomForestAdapter).run()
+    if algorithm == "xgboost":
+        from core.xgboost_model import XGBoostAdapter
+        from domains.model_training.schemas import XGBoostComparisonConfig
+        from domains.model_training.xgboost_service import XGBoostComparisonService
+
+        config = XGBoostComparisonConfig(
+            reference_run=pilot.run_dir,
+            model={"n_estimators": 3, "max_depth": 3, "n_jobs": 1, "random_state": 42,
+                   "objective": "binary:logistic", "tree_method": "hist", "device": "cpu"},
+            alternatives=config.alternatives,
+        )
+        result = XGBoostComparisonService(repo, config, XGBoostAdapter).run()
+    else:
+        result = ForestComparisonService(repo, config, RandomForestAdapter).run()
     assert len(test_access) == 1
     assert result.summary["final"]["training_records"] == 90
     assert result.summary["final"]["test"]["records"] == 15
@@ -181,3 +197,67 @@ def test_comparison_reuses_sample_trains_full_dataset_and_opens_test_after_choic
     saved = np.load(result.run_dir / "final" / "test_attack_probability.npy")
     assert np.array_equal(bundle["estimator"].predict_proba(inputs)[:, 1], saved)
     assert result.report_path.is_file()
+    if algorithm == "xgboost":
+        from xgboost import XGBClassifier
+
+        native = XGBClassifier(n_jobs=1)
+        native.load_model(result.run_dir / "final" / "model.ubj")
+        assert np.array_equal(native.predict_proba(inputs)[:, 1], saved)
+        assert "Como o modelo produz a previsão" in result.report_path.read_text()
+        assert "mínimo de dois registros por folha" not in result.report_path.read_text()
+
+    # Um processo novo carrega apenas o pacote salvo e reproduz as previsões.
+    import os
+    import shutil
+
+    from core.process_runner import PythonProcessRunner
+    from domains.model_artifacts.repository import ModelArtifactRepository
+
+    root = repo.data_dir.parent
+    (root / "src").mkdir()
+    shutil.copyfile(Path(__file__).resolve().parents[2] / "requirements.txt", root / "src" / "requirements.txt")
+    artifacts = ModelArtifactRepository(root, repo.data_dir, repo.runs_dir)
+    target = root / "frozen"
+    artifacts.prepare_bundle(result.run_dir, target, algorithm)
+    runner = PythonProcessRunner()
+    verification = runner.run([
+        "verificar-modelo", "--artifact", str(target), "--data-dir", str(repo.data_dir),
+    ])
+    assert verification["pid"] != os.getpid()
+    assert verification["passed"] is True
+    assert verification["records"] == 15
+    assert verification["prediction_mismatches"] == 0
+    from domains.model_training.repository import artifact_info
+
+    reference_path = target / "test_predictions.npy"
+    original_reference = reference_path.read_bytes()
+    original_manifest = (target / "manifest.json").read_bytes()
+    wrong = np.load(reference_path)
+    wrong[0] = 1 - wrong[0]
+    np.save(reference_path, wrong, allow_pickle=False)
+    altered_manifest = artifacts.read_json(target / "manifest.json")
+    altered_manifest["files"]["predictions"].update(artifact_info(reference_path))
+    artifacts.write_json(target / "manifest.json", altered_manifest)
+    with pytest.raises(RuntimeError, match="Previsões divergentes: 1"):
+        runner.run(["verificar-modelo", "--artifact", str(target), "--data-dir", str(repo.data_dir)])
+    reference_path.write_bytes(original_reference)
+    (target / "manifest.json").write_bytes(original_manifest)
+    # A inferência individual dispensa os dados e a execução de treinamento originais.
+    shutil.rmtree(result.run_dir)
+    shutil.rmtree(repo.data_dir)
+    prediction = runner.run([
+        "classificar-fluxo", "--artifact", str(target), "--input", str(target / "example-flow.json"),
+    ])
+    assert prediction["prediction"] == verification["single_flow"]["prediction"]
+    assert prediction["attack_probability"] == pytest.approx(verification["single_flow"]["attack_probability"], abs=1e-12)
+    frozen_manifest = artifacts.read_json(target / "manifest.json")
+    frozen_manifest["classification"]["attack_threshold"] = 0.9
+    artifacts.write_json(target / "manifest.json", frozen_manifest)
+    with pytest.raises(ValueError, match="contrato"):
+        artifacts.load(target)
+    frozen_manifest["classification"]["attack_threshold"] = 0.5
+    artifacts.write_json(target / "manifest.json", frozen_manifest)
+    with (target / "model.joblib").open("ab") as stream:
+        stream.write(b"changed")
+    with pytest.raises(ValueError, match="Hash ou tamanho"):
+        artifacts.load(target)

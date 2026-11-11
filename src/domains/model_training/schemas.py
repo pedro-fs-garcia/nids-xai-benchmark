@@ -52,3 +52,11 @@ class ReferenceRun:
     summary: dict[str, Any]
     summary_sha256: str
     sample_indices: np.ndarray
+
+
+@dataclass(frozen=True)
+class XGBoostComparisonConfig:
+    reference_run: Path
+    model: dict[str, Any]
+    alternatives: tuple[ForestAlternative, ...]
+    selection_metric: str = "f1"

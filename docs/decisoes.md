@@ -218,3 +218,25 @@ As escolhas são registradas antes do treinamento completo e da abertura do test
 A configuração com 100 árvores e profundidade 12 obteve o maior F1. A alternativa com 50 árvores reduziu o número de nós, mas teve 279 erros na validação, contra 260 da configuração escolhida. A alternativa com profundidade 8 teve 482 erros. A diferença entre as duas primeiras configurações é pequena; a comparação não estabelece significância estatística nem mede o custo das explicações.
 
 Os parâmetros completos e as medições estão em [selection.json](../training-runs/random-forest-comparison/20261111T171132620028Z/selection.json). A configuração da comparação está em [configs/random-forest-comparison.json](../configs/random-forest-comparison.json).
+
+## 6. Configuração do XGBoost
+
+### Decisão
+
+O XGBoost usa 100 árvores, profundidade máxima de 6 e taxa de aprendizagem 0,1. A função objetivo é `binary:logistic`, que produz a probabilidade de ataque. O treinamento usa `booster="gbtree"`, método de histogramas em CPU, semente 42 e dois trabalhadores. As proporções de registros e atributos usados em cada árvore são 1,0. Não há ponderação adicional de classes, normalização das entradas nem parada antecipada.
+
+A seleção segue o mesmo critério do Random Forest: maior F1 na validação, com desempate pelo menor número de nós e, depois, de árvores. As três configurações usam os mesmos 100 mil registros da amostra do Random Forest. As métricas do Random Forest não participam da escolha do XGBoost.
+
+A configuração escolhida recebe treinamento com todos os 1.469.983 registros do treino. O modelo e seus parâmetros são salvos antes de abrir o teste. O limiar permanece fixo em probabilidade maior que 0,5 para ataque. O resultado do teste não altera a configuração.
+
+### Justificativa
+
+| Árvores | Profundidade máxima | Taxa de aprendizagem | F1 na validação, após treino na amostra |
+|---|---|---|---|
+| 100 | 6 | 0,1 | 0,999103 |
+| 50 | 6 | 0,1 | 0,998496 |
+| 100 | 4 | 0,1 | 0,998759 |
+
+A configuração com 100 árvores e profundidade 6 obteve o maior F1 e 136 erros na validação, contra 228 com 50 árvores e 188 com profundidade 4. Essa comparação curta sustenta a escolha entre as três configurações avaliadas. Ela não estabelece significância estatística nem mede o custo de gerar explicações.
+
+Os demais parâmetros e a configuração efetiva da biblioteca estão nos artefatos da execução. O [relatório de avaliação](../relatorios/xgboost-comparison-20261111T175006216484Z.md) apresenta as métricas de validação e teste, a matriz de confusão e as contagens por rótulo. A comparação é definida em [configs/xgboost-comparison.json](../configs/xgboost-comparison.json).

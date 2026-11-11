@@ -3,7 +3,7 @@ import json
 import os
 import platform
 from datetime import datetime, timezone
-from importlib.metadata import version
+from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from typing import Any
 
@@ -14,6 +14,7 @@ from domains.model_training.exceptions import InvalidPilotConfigError, InvalidTr
 from domains.model_training.reporting import render_forest_comparison_report, render_pilot_report
 from domains.model_training.schemas import (
     ForestAlternative, ForestComparisonConfig, PilotConfig, PilotDataset, ReferenceRun, TrainingSplit,
+    XGBoostComparisonConfig,
 )
 
 
@@ -113,7 +114,15 @@ class ModelTrainingRepository:
         run_dir.mkdir(parents=True, exist_ok=True)
         path = run_dir / "model.joblib"
         joblib.dump({"estimator": model, "inputs": inputs, "classes": {"benign": 0, "attack": 1}}, path)
-        return artifact_info(path)
+        artifact = artifact_info(path)
+        if hasattr(model, "get_booster"):
+            native = run_dir / "model.ubj"
+            model.save_model(native)
+            effective = run_dir / "booster-config.json"
+            effective.write_text(model.get_booster().save_config() + "\n", encoding="utf-8")
+            artifact["native"] = artifact_info(native)
+            artifact["effective_configuration"] = artifact_info(effective)
+        return artifact
 
     def save_array(self, run_dir: Path, name: str, values: np.ndarray) -> dict[str, Any]:
         path = run_dir / f"{name}.npy"
@@ -157,6 +166,35 @@ class ModelTrainingRepository:
             )
         except (OSError, KeyError, TypeError, ValueError) as error:
             raise InvalidPilotConfigError(f"Configuração da comparação inválida: {error}") from error
+
+    def read_xgboost_config(self, path: Path) -> XGBoostComparisonConfig:
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+            if set(data) != {"reference_run", "selection_metric", "model", "alternatives"}:
+                raise ValueError("campos inesperados na configuração do XGBoost")
+            if data["selection_metric"] != "f1":
+                raise ValueError("a seleção deve usar F1 na validação")
+            model = data["model"]
+            if (model["objective"] != "binary:logistic" or model["booster"] != "gbtree"
+                    or model["device"] != "cpu" or model["tree_method"] != "hist"):
+                raise ValueError("o protocolo requer árvores, classificação binária e hist em CPU")
+            alternatives = []
+            names = {"reference", "final"}
+            for entry in data["alternatives"]:
+                name, overrides = entry["name"], entry["overrides"]
+                if not name or name in names or any(c not in "abcdefghijklmnopqrstuvwxyz0123456789-" for c in name):
+                    raise ValueError("nome de alternativa inválido ou repetido")
+                if not overrides or not set(overrides) <= {"n_estimators", "max_depth"}:
+                    raise ValueError("somente número de árvores e profundidade podem variar")
+                if any(type(value) is not int or value <= 0 for value in overrides.values()):
+                    raise ValueError("os valores das alternativas devem ser inteiros positivos")
+                alternatives.append(ForestAlternative(name, overrides))
+                names.add(name)
+            if len(alternatives) != 2:
+                raise ValueError("são esperadas duas alternativas à configuração inicial")
+            return XGBoostComparisonConfig(path.parent.parent / data["reference_run"], model, tuple(alternatives))
+        except (OSError, KeyError, TypeError, ValueError) as error:
+            raise InvalidPilotConfigError(f"Configuração do XGBoost inválida: {error}") from error
 
     def load_reference(self, run_dir: Path, dataset: PilotDataset) -> ReferenceRun:
         try:
@@ -209,7 +247,8 @@ class ModelTrainingRepository:
     def write_comparison_reports(self, run_dir: Path, summary: dict[str, Any]) -> Path:
         self.write_record(run_dir, "report", summary)
         self.reports_dir.mkdir(parents=True, exist_ok=True)
-        path = self.reports_dir / f"random-forest-comparison-{run_dir.name}.md"
+        kind = "xgboost-comparison" if summary.get("algorithm") == "xgboost" else "random-forest-comparison"
+        path = self.reports_dir / f"{kind}-{run_dir.name}.md"
         path.write_text(render_forest_comparison_report(summary), encoding="utf-8")
         return path
 
@@ -221,9 +260,14 @@ class ModelTrainingRepository:
                 (line.split(":", 1)[1].strip() for line in cpuinfo.read_text().splitlines()
                  if line.startswith("model name")), cpu
             )
+        libraries = {name: version(name) for name in ("numpy", "scikit-learn", "scipy", "joblib")}
+        try:
+            libraries["xgboost-cpu"] = version("xgboost-cpu")
+        except PackageNotFoundError:
+            pass
         return {
             "python": platform.python_version(),
-            "libraries": {name: version(name) for name in ("numpy", "scikit-learn", "scipy", "joblib")},
+            "libraries": libraries,
             "platform": platform.platform(),
             "cpu": cpu,
             "logical_cpus": os.cpu_count(),

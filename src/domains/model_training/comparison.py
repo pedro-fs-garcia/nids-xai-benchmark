@@ -7,6 +7,7 @@ from typing import Any
 import numpy as np
 
 from core.classification import RandomForestAdapter, binary_metrics
+from domains.model_training.final_evaluation import by_original_label, fit_and_evaluate
 from domains.model_training.repository import ModelTrainingRepository
 from domains.model_training.schemas import ForestComparisonConfig, PilotResult, TrainingSplit
 from domains.model_training.service import peak_memory_mib
@@ -19,18 +20,6 @@ def select_candidate(candidates: list[dict[str, Any]]) -> dict[str, Any]:
     ))
 
 
-def by_original_label(
-    split: TrainingSplit, predictions: np.ndarray, original_labels: list[dict[str, Any]]
-) -> dict[str, Any]:
-    result = {}
-    for entry in original_labels:
-        mask = split.origin[:, 2] == entry["index"]
-        result[entry["label"]] = {
-            "records": int(mask.sum()),
-            "class": entry["class"],
-            "predicted_attack": int(predictions[mask].sum()),
-        }
-    return result
 
 
 class ForestComparisonService:
@@ -99,33 +88,9 @@ class ForestComparisonService:
         }
         self.repo.write_record(run_dir, "selection", selection)
         emit(f"Configuração escolhida: {selected['name']}. Treinando com todos os {len(dataset.train.labels)} registros do treino...")
-        final_model = self.model_factory(selected["parameters"])
-        final_started = time.perf_counter()
-        final_model.fit(dataset.train.inputs, dataset.train.labels)
-        final_fit_seconds = time.perf_counter() - final_started
-        final_dir = run_dir / "final"
-        final_artifact = self.repo.save_model(final_dir, final_model.estimator, manifest["inputs"])
-        validation_predictions, validation_probability = final_model.predict(dataset.validation.inputs)
-        final_validation = binary_metrics(dataset.validation.labels, validation_predictions, validation_probability)
-        self.repo.save_array(final_dir, "validation_predictions", validation_predictions)
-        self.repo.save_array(final_dir, "validation_attack_probability", validation_probability)
-        self.repo.verify_inputs_unchanged(dataset)
-        self.repo.write_record(run_dir, "fixed-before-test", {
-            "model": final_model.parameters(),
-            "inputs": manifest["inputs"],
-            "data_manifest_sha256": dataset.manifest_sha256,
-            "artifact": final_artifact,
-            "classification_rule": "attack if P(attack) > 0.5; benign otherwise",
-            "environment": self.repo.environment(),
-            "test_used": False,
-        })
-        emit("Modelo final salvo e parâmetros fixados. Avaliando no teste reservado...")
-        test = self.repo.load_reserved_test(run_dir, dataset)
-        predictions, probabilities = final_model.predict(test.inputs)
-        test_metrics = binary_metrics(test.labels, predictions, probabilities)
-        prediction_artifact = self.repo.save_array(final_dir, "test_predictions", predictions)
-        probability_artifact = self.repo.save_array(final_dir, "test_attack_probability", probabilities)
-        self.repo.verify_test_unchanged(dataset)
+        final = fit_and_evaluate(
+            self.repo, dataset, self.model_factory(selected["parameters"]), run_dir, emit
+        )
         summary = {
             "stage": "random-forest-selection-and-final-evaluation",
             "run_id": run_dir.name,
@@ -140,23 +105,7 @@ class ForestComparisonService:
             "classes": manifest["classes"],
             "selection": selection,
             "test_used_only_after_selection_and_full_training": True,
-            "final": {
-                "parameters": final_model.parameters(),
-                "training_records": len(dataset.train.labels),
-                "fit_seconds": final_fit_seconds,
-                "complexity": final_model.complexity(),
-                "model": final_artifact,
-                "validation": {
-                    "records": len(dataset.validation.labels), "metrics": final_validation,
-                    "by_original_label": by_original_label(dataset.validation, validation_predictions, manifest["original_labels"]),
-                },
-                "test": {
-                    "records": len(test.labels), "metrics": test_metrics,
-                    "benign": int((test.labels == 0).sum()), "attack": int((test.labels == 1).sum()),
-                    "by_original_label": by_original_label(test, predictions, manifest["original_labels"]),
-                    "predictions": prediction_artifact, "probabilities": probability_artifact,
-                },
-            },
+            "final": final,
             "environment": self.repo.environment(),
             "resources": {
                 "peak_process_memory_mib": peak_memory_mib(),

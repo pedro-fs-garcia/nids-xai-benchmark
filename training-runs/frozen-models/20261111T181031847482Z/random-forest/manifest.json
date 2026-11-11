@@ -1,0 +1,214 @@
+{
+  "format_version": 1,
+  "name": "random-forest",
+  "source_run": "training-runs/random-forest-comparison/20261111T171132620028Z",
+  "inputs": [
+    "Protocol",
+    "Flow Duration",
+    "Total Fwd Packet",
+    "Total Bwd packets",
+    "Total Length of Fwd Packet",
+    "Total Length of Bwd Packet",
+    "Fwd Packet Length Max",
+    "Fwd Packet Length Min",
+    "Fwd Packet Length Mean",
+    "Fwd Packet Length Std",
+    "Bwd Packet Length Max",
+    "Bwd Packet Length Min",
+    "Bwd Packet Length Mean",
+    "Bwd Packet Length Std",
+    "Flow Bytes/s",
+    "Flow Packets/s",
+    "Flow IAT Mean",
+    "Flow IAT Std",
+    "Flow IAT Max",
+    "Flow IAT Min",
+    "Fwd IAT Total",
+    "Fwd IAT Mean",
+    "Fwd IAT Std",
+    "Fwd IAT Max",
+    "Fwd IAT Min",
+    "Bwd IAT Total",
+    "Bwd IAT Mean",
+    "Bwd IAT Std",
+    "Bwd IAT Max",
+    "Bwd IAT Min",
+    "Fwd PSH Flags",
+    "Bwd PSH Flags",
+    "Fwd URG Flags",
+    "Bwd URG Flags",
+    "Fwd RST Flags",
+    "Bwd RST Flags",
+    "Fwd Packets/s",
+    "Bwd Packets/s",
+    "Packet Length Min",
+    "Packet Length Max",
+    "Packet Length Mean",
+    "Packet Length Std",
+    "Packet Length Variance",
+    "FIN Flag Count",
+    "SYN Flag Count",
+    "RST Flag Count",
+    "PSH Flag Count",
+    "ACK Flag Count",
+    "URG Flag Count",
+    "CWR Flag Count",
+    "ECE Flag Count",
+    "Down/Up Ratio",
+    "Average Packet Size",
+    "Fwd Segment Size Avg",
+    "Bwd Segment Size Avg",
+    "Fwd Bytes/Bulk Avg",
+    "Fwd Packet/Bulk Avg",
+    "Fwd Bulk Rate Avg",
+    "Bwd Bytes/Bulk Avg",
+    "Bwd Packet/Bulk Avg",
+    "Bwd Bulk Rate Avg",
+    "Subflow Fwd Packets",
+    "Subflow Fwd Bytes",
+    "Subflow Bwd Packets",
+    "Subflow Bwd Bytes",
+    "FWD Init Win Bytes",
+    "Bwd Init Win Bytes",
+    "Fwd Act Data Pkts",
+    "Fwd Seg Size Min",
+    "Active Mean",
+    "Active Std",
+    "Active Max",
+    "Active Min",
+    "Idle Mean",
+    "Idle Std",
+    "Idle Max",
+    "Idle Min",
+    "ICMP Code",
+    "ICMP Type",
+    "Total TCP Flow Time"
+  ],
+  "classes": {
+    "benign": 0,
+    "attack": 1
+  },
+  "parameters": {
+    "bootstrap": true,
+    "ccp_alpha": 0.0,
+    "class_weight": null,
+    "criterion": "gini",
+    "max_depth": 12,
+    "max_features": "sqrt",
+    "max_leaf_nodes": null,
+    "max_samples": null,
+    "min_impurity_decrease": 0.0,
+    "min_samples_leaf": 2,
+    "min_samples_split": 2,
+    "min_weight_fraction_leaf": 0.0,
+    "monotonic_cst": null,
+    "n_estimators": 100,
+    "n_jobs": 2,
+    "oob_score": false,
+    "random_state": 42,
+    "verbose": 0,
+    "warm_start": false
+  },
+  "data_manifest_sha256": "69b1ff4ad68e2465013bc0266324f615b4780092fe4d2fbe0ca53595c423f779",
+  "environment": {
+    "python": "3.12.3",
+    "libraries": {
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "scipy": "1.18.1",
+      "joblib": "1.6.0"
+    },
+    "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+    "cpu": "13th Gen Intel(R) Core(TM) i5-1334U",
+    "logical_cpus": 12
+  },
+  "preprocessing": {
+    "dtype": "float64",
+    "normalization": "none",
+    "positive_infinity_columns": [
+      "Flow Bytes/s",
+      "Flow Packets/s"
+    ],
+    "positive_infinity_replacement": -1.0,
+    "reject_other_nonfinite": true,
+    "columns_outside_inputs": {
+      "labels": [
+        "Label",
+        "Attempted Category"
+      ],
+      "metadata": [
+        "id",
+        "Flow ID",
+        "Src IP",
+        "Src Port",
+        "Dst IP",
+        "Dst Port",
+        "Timestamp"
+      ],
+      "excluded": [
+        "Fwd Header Length",
+        "Bwd Header Length"
+      ]
+    }
+  },
+  "classification": {
+    "attack_threshold": 0.5,
+    "comparison": ">",
+    "tie_class": 0
+  },
+  "verification": {
+    "split": "test",
+    "probability_atol": 1e-12,
+    "probability_rtol": 0
+  },
+  "files": {
+    "model": {
+      "file": "model.joblib",
+      "bytes": 3588769,
+      "sha256": "b18708731de1a1901969789a93479a6a4e4b228ea56aff24c65bf4bfd7c71805"
+    },
+    "predictions": {
+      "file": "test_predictions.npy",
+      "bytes": 315121,
+      "sha256": "07718f7f30ed4eb84deb368b551f4a3a1c4e186c52890694900a281839aae334",
+      "shape": [
+        314993
+      ],
+      "dtype": "int8"
+    },
+    "probabilities": {
+      "file": "test_attack_probability.npy",
+      "bytes": 2520072,
+      "sha256": "8d17ef1500d3440188346b966853e571ea95c651613e7d80fe592e655ea0ab2b",
+      "shape": [
+        314993
+      ],
+      "dtype": "float64"
+    },
+    "training_report": {
+      "file": "report.json",
+      "bytes": 32560,
+      "sha256": "7728b61e6e0ab3c24caa82a199cf3634fff634c394a5aaa2238a8a2b4041e2c5"
+    },
+    "selection": {
+      "file": "selection.json",
+      "bytes": 15698,
+      "sha256": "8ec5cb955a1c024be0c01286fdc090c174cdebe19a008e9785fcd8f5e49ecf37"
+    },
+    "fixed_before_test": {
+      "file": "fixed-before-test.json",
+      "bytes": 3023,
+      "sha256": "db60c9600b078908315604f08377ecddf9c7592eff81bbeaa0d16913ea108518"
+    },
+    "data_manifest": {
+      "file": "data-manifest.json",
+      "bytes": 13504,
+      "sha256": "69b1ff4ad68e2465013bc0266324f615b4780092fe4d2fbe0ca53595c423f779"
+    },
+    "requirements": {
+      "file": "requirements.txt",
+      "bytes": 137,
+      "sha256": "40f7f83ffb5467a4e9d80137f9190eaef21d3707f4592af42fa1fef6fe1910ac"
+    }
+  }
+}

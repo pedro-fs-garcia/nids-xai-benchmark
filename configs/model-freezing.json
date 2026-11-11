@@ -1,0 +1,6 @@
+{
+  "models": {
+    "random-forest": "training-runs/random-forest-comparison/20261111T171132620028Z",
+    "xgboost": "training-runs/xgboost-comparison/20261111T175006216484Z"
+  }
+}

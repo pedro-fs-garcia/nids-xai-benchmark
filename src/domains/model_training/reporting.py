@@ -145,26 +145,64 @@ def render_forest_comparison_report(summary: dict[str, Any]) -> str:
     selection = summary["selection"]
     final = summary["final"]
     candidates = selection["candidates"]
+    xgboost = summary.get("algorithm") == "xgboost"
+    title = "XGBoost" if xgboost else "Random Forest"
+    kind = "xgboost-comparison" if xgboost else "random-forest-comparison"
+    command = "treinar-xgboost" if xgboost else "comparar-rf"
+    sample_use = (
+        "As três configurações do XGBoost foram treinadas nesta execução. A referência do Random Forest "
+        "fornece apenas a amostra, sem usar suas métricas para escolher o XGBoost."
+        if xgboost else
+        "O resultado da configuração de referência foi reutilizado; as outras duas configurações foram treinadas nesta execução."
+    )
+    parameters_description = (
+        "taxa de aprendizagem 0,1, semente 42 e dois trabalhadores. O método hist agrupa valores dos "
+        "atributos em intervalos para construir os cortes das árvores e executa em CPU. "
+        "Não houve normalização, ponderação de classes, parada antecipada nem ajuste do limiar. "
+        "A taxa de aprendizagem limita a contribuição de cada árvore "
+        "([parâmetros do XGBoost](https://xgboost.readthedocs.io/en/stable/parameter.html))."
+        if xgboost else
+        "mínimo de dois registros por folha, semente 42 e dois trabalhadores. "
+        "Não houve normalização, ponderação de classes nem ajuste do limiar."
+    )
+    explanation = []
+    if xgboost:
+        example = summary["prediction_example"]
+        explanation = [
+            "## Como o modelo produz a previsão",
+            "",
+            "O XGBoost constrói as árvores em sequência. Cada árvore ajusta a previsão do conjunto "
+            "já construído. Na classificação binária, o modelo soma os escores das árvores ao escore inicial "
+            "e transforma o resultado em uma probabilidade pela função logística, "
+            "P(ataque) = 1 / (1 + exp(−s)), em que s é o escore total "
+            "([Introduction to Boosted Trees](https://xgboost.readthedocs.io/en/stable/tutorials/model.html)).",
+            "",
+            f"No primeiro registro da validação, o modelo final produziu o escore "
+            f"{_decimal(example['score'])}. A função logística fornece {_decimal(example['logistic_of_score'])}, "
+            f"e predict_proba retorna {_decimal(example['probability'])}. "
+            f"A previsão binária foi {example['prediction']}, sendo 0 benigno e 1 ataque. "
+            "O arquivo report.json registra a origem desse exemplo.",
+            "",
+        ]
     lines = [
-        "# Seleção e avaliação do Random Forest",
+        f"# Seleção e avaliação do {title}",
         "",
         f"Foram comparadas três configurações na mesma amostra de {_integer(summary['sample_records'])} "
         "registros de treino e no mesmo conjunto de validação. Variaram apenas o número de árvores "
         "e a profundidade máxima. A configuração escolhida foi treinada com todo o conjunto de treino "
         "antes da avaliação final no teste reservado.",
         "",
+        *explanation,
         "## Comparação na amostra",
         "",
         f"A amostra é a mesma do primeiro treinamento, com semente {summary['sample_seed']} e pelo menos "
         "um registro de cada rótulo original. Os arquivos sample_indices.npy e sample_origin.npy "
-        "identificam seus registros. O resultado da configuração de referência foi reutilizado; "
-        "as outras duas configurações foram treinadas nesta execução.",
+        "identificam seus registros. " + sample_use,
         "",
         "A alternativa com menos árvores verifica se o número de árvores pode ser reduzido mantendo "
         "a qualidade das previsões. A alternativa com menor profundidade verifica o mesmo efeito "
         "ao limitar o tamanho das árvores. Todas usam as 80 entradas do "
-        "[dicionário de atributos](../docs/dicionario-atributos.md), mínimo de dois registros por folha, "
-        "semente 42 e dois trabalhadores. Não houve normalização, ponderação de classes nem ajuste do limiar.",
+        "[dicionário de atributos](../docs/dicionario-atributos.md), " + parameters_description,
         "",
         "O critério foi definido antes da comparação: maior F1 na validação. Em caso de empate, "
         "menos nós e, depois, menos árvores. F1 é a média harmônica entre precisão e recall. "
@@ -254,8 +292,8 @@ def render_forest_comparison_report(summary: dict[str, Any]) -> str:
         f"foi {_decimal(summary['resources']['peak_process_memory_mib'], 1)} MiB "
         "(1 MiB = 1.048.576 bytes), considerando comparação, treinamento completo e avaliação.",
         "",
-        f"Os artefatos estão em [training-runs/random-forest-comparison/{summary['run_id']}/]"
-        f"(../training-runs/random-forest-comparison/{summary['run_id']}/). "
+        f"Os artefatos estão em [training-runs/{kind}/{summary['run_id']}/]"
+        f"(../training-runs/{kind}/{summary['run_id']}/). "
         "final/model.joblib contém o modelo e a ordem das entradas. report.json registra todos os parâmetros, "
         "as sementes, os hashes e as métricas. Os arquivos de previsões seguem a ordem dos conjuntos derivados.",
         "",
@@ -265,11 +303,17 @@ def render_forest_comparison_report(summary: dict[str, Any]) -> str:
         f"SHA-256 do manifesto dos dados: `{summary['data_manifest_sha256']}`.",
         "",
         "A partir de src/, o comando abaixo reproduz a comparação. Ele depende dos dados derivados "
-        "e dos artefatos do treinamento de referência indicados em configs/random-forest-comparison.json.",
+        f"e dos artefatos do treinamento de referência indicados em configs/{kind}.json.",
         "",
         "```bash",
-        "python main.py comparar-rf",
+        f"python main.py {command}",
         "```",
         "",
     ])
+    if xgboost:
+        lines.extend([
+            "O modelo também está salvo no formato nativo em final/model.ubj. "
+            "final/booster-config.json registra a configuração efetiva do XGBoost, incluindo seus padrões.",
+            "",
+        ])
     return "\n".join(lines)

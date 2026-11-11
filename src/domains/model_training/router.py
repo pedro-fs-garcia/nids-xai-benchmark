@@ -2,7 +2,9 @@ import argparse
 import sys
 from typing import Any
 
-from domains.model_training.dependencies import get_forest_comparison_service, get_model_training_service
+from domains.model_training.dependencies import (
+    get_forest_comparison_service, get_model_training_service, get_xgboost_service,
+)
 from domains.model_training.exceptions import ModelTrainingError
 
 
@@ -15,6 +17,8 @@ def register(subparsers: Any) -> None:
         "comparar-rf", help="Compara três configurações e avalia o modelo escolhido no teste."
     )
     comparison.set_defaults(handler=run_comparison)
+    xgboost = subparsers.add_parser("treinar-xgboost", help="Compara configurações do XGBoost e avalia a escolhida no teste.")
+    xgboost.set_defaults(handler=run_xgboost)
 
 
 def run(_args: argparse.Namespace) -> int:
@@ -48,6 +52,19 @@ def run_comparison(_args: argparse.Namespace) -> int:
     print(f"Configuração selecionada: {result.summary['selection']['selected']}")
     print(f"Registros do treino completo: {final['training_records']}")
     print(f"Métricas no teste: {final['test']['metrics']}")
+    print(f"Modelo: {result.run_dir / 'final' / 'model.joblib'}")
+    print(f"Relatório: {result.report_path}")
+    return 0
+
+
+def run_xgboost(_args: argparse.Namespace) -> int:
+    try:
+        result = get_xgboost_service().run(progress=lambda message: print(message, flush=True))
+    except ModelTrainingError as error:
+        print(f"Erro no treinamento do XGBoost: {error}", file=sys.stderr)
+        return 1
+    print(f"Configuração selecionada: {result.summary['selection']['selected']}")
+    print(f"Métricas no teste: {result.summary['final']['test']['metrics']}")
     print(f"Modelo: {result.run_dir / 'final' / 'model.joblib'}")
     print(f"Relatório: {result.report_path}")
     return 0

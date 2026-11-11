@@ -33,6 +33,7 @@ Geradas com `pip freeze` em 2026-11-10, Python 3.12.3. Ver [requirements.txt](re
 | threadpoolctl | 3.8.0 |
 | cloudpickle | 3.1.2 |
 | narwhals | 2.28.0 |
+| xgboost-cpu | 3.4.1 |
 
 `numpy`, `scipy`, `joblib`, `threadpoolctl`, `cloudpickle` e `narwhals` são dependências do scikit-learn, não instaladas diretamente.
 
@@ -59,6 +60,34 @@ Cada conjunto tem três arquivos:
 O `manifest.json` registra os hashes dos CSVs e dos arquivos gerados, a configuração, os nomes das entradas, o mapa dos rótulos originais, as contagens de cada conjunto e o resultado das verificações de independência. Os `.npy` ficam fora do git; o manifesto é versionado.
 
 A execução leva cerca de 2,5 minutos e usa cerca de 2,5 GB de memória. Duas execuções seguidas produzem arquivos idênticos.
+
+## Modelos congelados e inferência
+
+```bash
+python main.py congelar-modelos
+```
+
+O comando lê [configs/model-freezing.json](../configs/model-freezing.json) e reúne os dois modelos finais em um novo diretório de `training-runs/frozen-models/`. Cada modelo é carregado em um processo Python novo, que compara todas as classificações do teste com as previsões salvas durante a avaliação final. O comando só registra sucesso quando todas as classes coincidem. Também compara as probabilidades com tolerância absoluta de `1e-12` e tolerância relativa zero. Essa tolerância numérica não permite divergências nas classes.
+
+Cada pacote contém `model.joblib`, `manifest.json`, a cópia do manifesto dos dados, os registros de seleção e treinamento, as dependências fixadas em `requirements.txt` e as previsões de referência. O XGBoost também inclui `model.ubj` e `booster-config.json`. O manifesto registra os parâmetros, a ordem dos atributos, o processamento das entradas, as versões e os hashes SHA-256 dos arquivos. O carregamento verifica a integridade dos arquivos e a compatibilidade das versões antes de usar o modelo. `verification.json` registra o processo e o resultado da comparação; o `report.json` na raiz da execução reúne os dois resultados.
+
+Os pacotes verificados estão em [training-runs/frozen-models/20261111T181031847482Z/](../training-runs/frozen-models/20261111T181031847482Z/). Para repetir a verificação do Random Forest a partir de `src/`:
+
+```bash
+python main.py verificar-modelo --artifact ../training-runs/frozen-models/20261111T181031847482Z/random-forest
+```
+
+Para classificar um fluxo, forneça um objeto JSON com exatamente os 80 nomes de atributos do manifesto e seus valores numéricos. A ordem das chaves no JSON é livre; o carregador monta a entrada na ordem exigida pelo modelo. A representação é `float64`, sem normalização. O valor infinito positivo em `Flow Bytes/s` e `Flow Packets/s` é substituído por `-1`, como na preparação do treino. No JSON, esse valor pode ser representado pela string `"inf"`. Valores ausentes, atributos adicionais e outros valores não finitos são rejeitados. Rótulos, metadados e os dois atributos de comprimento de cabeçalho ficam fora dessa entrada.
+
+O arquivo `example-flow.json` contém os atributos do primeiro registro do teste, cuja origem e previsão constam em `verification.json`. Execute:
+
+```bash
+python main.py classificar-fluxo --artifact ../training-runs/frozen-models/20261111T181031847482Z/random-forest --input ../training-runs/frozen-models/20261111T181031847482Z/random-forest/example-flow.json
+```
+
+Substitua `random-forest` por `xgboost` nos caminhos para usar o segundo modelo. A resposta contém `prediction` (0 ou 1), `class` (`benign` ou `attack`) e `attack_probability`. A classe é ataque quando a probabilidade é maior que 0,5; o empate é benigno. A inferência individual depende do pacote salvo e do JSON de entrada. A verificação completa também depende de `X_test.npy` e `origin_test.npy` em `derived-data/`, ou no diretório informado por `--data-dir`.
+
+Os arquivos binários `.joblib`, `.ubj` e `.npy` ficam fora do Git e precisam acompanhar os manifestos para usar os pacotes em outro ambiente. O [relatório de verificação](../relatorios/model-freezing-20261111T181031847482Z.md) registra os resultados e os hashes dos modelos.
 
 ## Primeiro treinamento do Random Forest
 
@@ -87,6 +116,20 @@ A configuração escolhida é treinada com todos os registros do conjunto de tre
 Cada execução cria um diretório em `training-runs/random-forest-comparison/`. O modelo fica em `final/model.joblib`, acompanhado das previsões e probabilidades de validação e teste. `report.json` registra métricas, contagens por rótulo original, complexidade das árvores, versões e hashes. O relatório legível fica em `relatorios/random-forest-comparison-<execução>.md`.
 
 A reprodução exige os dados derivados e os arquivos da execução de referência indicados na configuração. Se o primeiro treinamento for refeito, atualize `reference_run` com o diretório gerado.
+
+## Treinamento e avaliação do XGBoost
+
+```bash
+python main.py treinar-xgboost
+```
+
+O comando compara três configurações na mesma amostra usada pelo Random Forest, usando apenas treino e validação para escolher o maior F1. A configuração está em [configs/xgboost-comparison.json](../configs/xgboost-comparison.json). Somente a escolhida recebe treinamento com todos os 1.469.983 registros do treino. Os parâmetros e o modelo são salvos antes da abertura do teste reservado.
+
+O XGBoost soma os escores das árvores e transforma essa soma, acrescida do escore inicial, em uma probabilidade. O relatório inclui um exemplo que compara o escore com a probabilidade de ataque. A [documentação oficial sobre árvores impulsionadas](https://xgboost.readthedocs.io/en/stable/tutorials/model.html) descreve essa forma de previsão.
+
+Os artefatos ficam em `training-runs/xgboost-comparison/`. O modelo final é salvo em `final/model.joblib` e no formato nativo `final/model.ubj`. `final/booster-config.json` registra a configuração efetiva da biblioteca; `report.json` registra os parâmetros escolhidos, os atributos, as métricas, os hashes e as versões. O relatório legível fica em `relatorios/xgboost-comparison-<execução>.md`.
+
+O ambiente usa o pacote `xgboost-cpu`, destinado ao processamento em CPU, conforme o [guia oficial de instalação](https://xgboost.readthedocs.io/en/stable/install.html#minimal-installation-cpu-only). O treinamento usa o método de histogramas e dois trabalhadores. Não há parada antecipada nem busca extensa de configurações.
 
 ## Testes
 

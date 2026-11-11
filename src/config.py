@@ -15,6 +15,8 @@ class Settings:
     reports_dir: Path = PROJECT_ROOT / "relatorios"
     forest_pilot_config: Path = PROJECT_ROOT / "configs" / "random-forest-pilot.json"
     forest_comparison_config: Path = PROJECT_ROOT / "configs" / "random-forest-comparison.json"
+    xgboost_config: Path = PROJECT_ROOT / "configs" / "xgboost-comparison.json"
+    model_freezing_config: Path = PROJECT_ROOT / "configs" / "model-freezing.json"
     source_files: tuple[str, ...] = (
         "monday.csv",
         "tuesday.csv",

@@ -1,0 +1,76 @@
+{
+  "passed": true,
+  "parent_pid": 4127105,
+  "models": {
+    "random-forest": {
+      "passed": true,
+      "pid": 4127171,
+      "manifest_sha256": "af0e5e5e67a36de1e2be1ad059715953c87de0ae05ebf3c9665cb46911aed582",
+      "records": 314993,
+      "prediction_mismatches": 0,
+      "probabilities_bitwise_equal": false,
+      "max_probability_absolute_difference": 3.3306690738754696e-16,
+      "probability_atol": 1e-12,
+      "probability_rtol": 0,
+      "model_sha256": "b18708731de1a1901969789a93479a6a4e4b228ea56aff24c65bf4bfd7c71805",
+      "single_flow": {
+        "test_index": 0,
+        "origin": [
+          0,
+          7,
+          0
+        ],
+        "prediction": 0,
+        "attack_probability": 0.0029051260302770244
+      },
+      "environment": {
+        "python": "3.12.3",
+        "libraries": {
+          "numpy": "2.5.4",
+          "scikit-learn": "1.9.1",
+          "scipy": "1.18.1",
+          "joblib": "1.6.0",
+          "xgboost-cpu": "3.4.1"
+        },
+        "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+        "cpu": "13th Gen Intel(R) Core(TM) i5-1334U",
+        "logical_cpus": 12
+      }
+    },
+    "xgboost": {
+      "passed": true,
+      "pid": 4127372,
+      "manifest_sha256": "7f98430e2d07f7109656d3b3b97082702cac87a2f818f6c2f91ca90c743f3adc",
+      "records": 314993,
+      "prediction_mismatches": 0,
+      "probabilities_bitwise_equal": true,
+      "max_probability_absolute_difference": 0.0,
+      "probability_atol": 1e-12,
+      "probability_rtol": 0,
+      "model_sha256": "ed0b315b8aee00c1988a6fb28a69ea3a0fc4c901fdc59832b7a2d451f54ea1e7",
+      "single_flow": {
+        "test_index": 0,
+        "origin": [
+          0,
+          7,
+          0
+        ],
+        "prediction": 0,
+        "attack_probability": 4.123865801375359e-05
+      },
+      "environment": {
+        "python": "3.12.3",
+        "libraries": {
+          "numpy": "2.5.4",
+          "scikit-learn": "1.9.1",
+          "scipy": "1.18.1",
+          "joblib": "1.6.0",
+          "xgboost-cpu": "3.4.1"
+        },
+        "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+        "cpu": "13th Gen Intel(R) Core(TM) i5-1334U",
+        "logical_cpus": 12
+      }
+    }
+  }
+}

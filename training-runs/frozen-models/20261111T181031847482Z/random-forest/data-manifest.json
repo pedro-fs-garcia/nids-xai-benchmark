@@ -1,0 +1,556 @@
+{
+  "dataset": "Improved CIC-IDS2017",
+  "decisions": "docs/decisoes.md",
+  "configuration": {
+    "seed": 42,
+    "fractions": {
+      "train": 0.7,
+      "validation": 0.15,
+      "test": 0.15
+    },
+    "grouping": "records with identical inputs",
+    "stratification": "most frequent original label of each group",
+    "infinite_rate_columns": [
+      "Flow Bytes/s",
+      "Flow Packets/s"
+    ],
+    "infinite_rate_replacement": -1.0
+  },
+  "sources": [
+    {
+      "file": "monday.csv",
+      "bytes": 207875155,
+      "sha256": "51fe5dc962626efb4ae70dce0303072fb780da0932822b651202ee9c2fbc1aff",
+      "records": 371624
+    },
+    {
+      "file": "tuesday.csv",
+      "bytes": 178397720,
+      "sha256": "e2a0a5b631dfc6b455cc9f9a88b944110637d70a7f74171473925f76f38b6b0c",
+      "records": 322078
+    },
+    {
+      "file": "wednesday.csv",
+      "bytes": 291290505,
+      "sha256": "bf46c5f3c792e8817381f724511229569606918eaf07ac986d7a2592b6341bc2",
+      "records": 496641
+    },
+    {
+      "file": "thursday.csv",
+      "bytes": 189519159,
+      "sha256": "78a4d11eaf473d099e30e71ddb01e0f38218e844c0a9cdd36602145d674af482",
+      "records": 362076
+    },
+    {
+      "file": "friday.csv",
+      "bytes": 285188226,
+      "sha256": "ebd499e6f23bd59f9cb81bec28178491b02b925fa5640a24215c9437d79482d0",
+      "records": 547557
+    }
+  ],
+  "inputs": [
+    "Protocol",
+    "Flow Duration",
+    "Total Fwd Packet",
+    "Total Bwd packets",
+    "Total Length of Fwd Packet",
+    "Total Length of Bwd Packet",
+    "Fwd Packet Length Max",
+    "Fwd Packet Length Min",
+    "Fwd Packet Length Mean",
+    "Fwd Packet Length Std",
+    "Bwd Packet Length Max",
+    "Bwd Packet Length Min",
+    "Bwd Packet Length Mean",
+    "Bwd Packet Length Std",
+    "Flow Bytes/s",
+    "Flow Packets/s",
+    "Flow IAT Mean",
+    "Flow IAT Std",
+    "Flow IAT Max",
+    "Flow IAT Min",
+    "Fwd IAT Total",
+    "Fwd IAT Mean",
+    "Fwd IAT Std",
+    "Fwd IAT Max",
+    "Fwd IAT Min",
+    "Bwd IAT Total",
+    "Bwd IAT Mean",
+    "Bwd IAT Std",
+    "Bwd IAT Max",
+    "Bwd IAT Min",
+    "Fwd PSH Flags",
+    "Bwd PSH Flags",
+    "Fwd URG Flags",
+    "Bwd URG Flags",
+    "Fwd RST Flags",
+    "Bwd RST Flags",
+    "Fwd Packets/s",
+    "Bwd Packets/s",
+    "Packet Length Min",
+    "Packet Length Max",
+    "Packet Length Mean",
+    "Packet Length Std",
+    "Packet Length Variance",
+    "FIN Flag Count",
+    "SYN Flag Count",
+    "RST Flag Count",
+    "PSH Flag Count",
+    "ACK Flag Count",
+    "URG Flag Count",
+    "CWR Flag Count",
+    "ECE Flag Count",
+    "Down/Up Ratio",
+    "Average Packet Size",
+    "Fwd Segment Size Avg",
+    "Bwd Segment Size Avg",
+    "Fwd Bytes/Bulk Avg",
+    "Fwd Packet/Bulk Avg",
+    "Fwd Bulk Rate Avg",
+    "Bwd Bytes/Bulk Avg",
+    "Bwd Packet/Bulk Avg",
+    "Bwd Bulk Rate Avg",
+    "Subflow Fwd Packets",
+    "Subflow Fwd Bytes",
+    "Subflow Bwd Packets",
+    "Subflow Bwd Bytes",
+    "FWD Init Win Bytes",
+    "Bwd Init Win Bytes",
+    "Fwd Act Data Pkts",
+    "Fwd Seg Size Min",
+    "Active Mean",
+    "Active Std",
+    "Active Max",
+    "Active Min",
+    "Idle Mean",
+    "Idle Std",
+    "Idle Max",
+    "Idle Min",
+    "ICMP Code",
+    "ICMP Type",
+    "Total TCP Flow Time"
+  ],
+  "columns_outside_inputs": {
+    "labels": [
+      "Label",
+      "Attempted Category"
+    ],
+    "metadata": [
+      "id",
+      "Flow ID",
+      "Src IP",
+      "Src Port",
+      "Dst IP",
+      "Dst Port",
+      "Timestamp"
+    ],
+    "excluded": [
+      "Fwd Header Length",
+      "Bwd Header Length"
+    ]
+  },
+  "classes": {
+    "benign": 0,
+    "attack": 1
+  },
+  "original_labels": [
+    {
+      "index": 0,
+      "label": "BENIGN",
+      "class": "benign",
+      "records": 1582566
+    },
+    {
+      "index": 1,
+      "label": "Botnet",
+      "class": "attack",
+      "records": 736
+    },
+    {
+      "index": 2,
+      "label": "Botnet - Attempted",
+      "class": "benign",
+      "records": 4067
+    },
+    {
+      "index": 3,
+      "label": "DDoS",
+      "class": "attack",
+      "records": 95144
+    },
+    {
+      "index": 4,
+      "label": "DoS GoldenEye",
+      "class": "attack",
+      "records": 7567
+    },
+    {
+      "index": 5,
+      "label": "DoS GoldenEye - Attempted",
+      "class": "benign",
+      "records": 80
+    },
+    {
+      "index": 6,
+      "label": "DoS Hulk",
+      "class": "attack",
+      "records": 158468
+    },
+    {
+      "index": 7,
+      "label": "DoS Hulk - Attempted",
+      "class": "benign",
+      "records": 581
+    },
+    {
+      "index": 8,
+      "label": "DoS Slowhttptest",
+      "class": "attack",
+      "records": 1740
+    },
+    {
+      "index": 9,
+      "label": "DoS Slowhttptest - Attempted",
+      "class": "benign",
+      "records": 3368
+    },
+    {
+      "index": 10,
+      "label": "DoS Slowloris",
+      "class": "attack",
+      "records": 3859
+    },
+    {
+      "index": 11,
+      "label": "DoS Slowloris - Attempted",
+      "class": "benign",
+      "records": 1847
+    },
+    {
+      "index": 12,
+      "label": "FTP-Patator",
+      "class": "attack",
+      "records": 3972
+    },
+    {
+      "index": 13,
+      "label": "FTP-Patator - Attempted",
+      "class": "benign",
+      "records": 12
+    },
+    {
+      "index": 14,
+      "label": "Heartbleed",
+      "class": "attack",
+      "records": 11
+    },
+    {
+      "index": 15,
+      "label": "Infiltration",
+      "class": "attack",
+      "records": 36
+    },
+    {
+      "index": 16,
+      "label": "Infiltration - Attempted",
+      "class": "benign",
+      "records": 45
+    },
+    {
+      "index": 17,
+      "label": "Infiltration - Portscan",
+      "class": "attack",
+      "records": 71767
+    },
+    {
+      "index": 18,
+      "label": "Portscan",
+      "class": "attack",
+      "records": 159066
+    },
+    {
+      "index": 19,
+      "label": "SSH-Patator",
+      "class": "attack",
+      "records": 2961
+    },
+    {
+      "index": 20,
+      "label": "SSH-Patator - Attempted",
+      "class": "benign",
+      "records": 27
+    },
+    {
+      "index": 21,
+      "label": "Web Attack - Brute Force",
+      "class": "attack",
+      "records": 73
+    },
+    {
+      "index": 22,
+      "label": "Web Attack - Brute Force - Attempted",
+      "class": "benign",
+      "records": 1292
+    },
+    {
+      "index": 23,
+      "label": "Web Attack - SQL Injection",
+      "class": "attack",
+      "records": 13
+    },
+    {
+      "index": 24,
+      "label": "Web Attack - SQL Injection - Attempted",
+      "class": "benign",
+      "records": 5
+    },
+    {
+      "index": 25,
+      "label": "Web Attack - XSS",
+      "class": "attack",
+      "records": 18
+    },
+    {
+      "index": 26,
+      "label": "Web Attack - XSS - Attempted",
+      "class": "benign",
+      "records": 655
+    }
+  ],
+  "origin_columns": [
+    "source_file_index",
+    "id",
+    "original_label_index"
+  ],
+  "records": {
+    "total": 2099976,
+    "benign": 1594545,
+    "attack": 505431,
+    "with_replaced_infinite_rate": 5,
+    "groups": 1715213,
+    "groups_with_several_records": 63136,
+    "records_in_groups_with_several_records": 447899,
+    "groups_with_both_classes": 14
+  },
+  "splits": {
+    "train": {
+      "records": 1469983,
+      "fraction": 0.7,
+      "benign": 1116183,
+      "attack": 353800,
+      "attack_fraction": 0.240683,
+      "original_labels": {
+        "BENIGN": 1107797,
+        "Botnet": 515,
+        "Botnet - Attempted": 2848,
+        "DDoS": 66601,
+        "DoS GoldenEye": 5297,
+        "DoS GoldenEye - Attempted": 56,
+        "DoS Hulk": 110928,
+        "DoS Hulk - Attempted": 407,
+        "DoS Slowhttptest": 1218,
+        "DoS Slowhttptest - Attempted": 2358,
+        "DoS Slowloris": 2701,
+        "DoS Slowloris - Attempted": 1293,
+        "FTP-Patator": 2780,
+        "FTP-Patator - Attempted": 8,
+        "Heartbleed": 8,
+        "Infiltration": 25,
+        "Infiltration - Attempted": 31,
+        "Infiltration - Portscan": 49700,
+        "Portscan": 111882,
+        "SSH-Patator": 2073,
+        "SSH-Patator - Attempted": 19,
+        "Web Attack - Brute Force": 51,
+        "Web Attack - Brute Force - Attempted": 904,
+        "Web Attack - SQL Injection": 9,
+        "Web Attack - SQL Injection - Attempted": 3,
+        "Web Attack - XSS": 12,
+        "Web Attack - XSS - Attempted": 459
+      },
+      "groups": 1200658,
+      "files": {
+        "X": {
+          "file": "X_train.npy",
+          "bytes": 940789248,
+          "sha256": "42bc2e6dda14a182cdf419fdc9ce9058cb76b192041d6af4685781d1d0cf5d44",
+          "dtype": "float64",
+          "shape": [
+            1469983,
+            80
+          ]
+        },
+        "y": {
+          "file": "y_train.npy",
+          "bytes": 1470111,
+          "sha256": "c5ab43dc6ea22d3d0cf66b1c57024de604430cdc1c7082bb093d89eaef15f594",
+          "dtype": "int8",
+          "shape": [
+            1469983
+          ]
+        },
+        "origin": {
+          "file": "origin_train.npy",
+          "bytes": 35279720,
+          "sha256": "30e6f7372d2bc09488e063ed8e9e88c6dc7a71db4b0882bee2cd86155462d947",
+          "dtype": "int64",
+          "shape": [
+            1469983,
+            3
+          ]
+        }
+      }
+    },
+    "validation": {
+      "records": 315000,
+      "fraction": 0.150002,
+      "benign": 239184,
+      "attack": 75816,
+      "attack_fraction": 0.240686,
+      "original_labels": {
+        "BENIGN": 237387,
+        "Botnet": 111,
+        "Botnet - Attempted": 608,
+        "DDoS": 14272,
+        "DoS GoldenEye": 1135,
+        "DoS GoldenEye - Attempted": 12,
+        "DoS Hulk": 23770,
+        "DoS Hulk - Attempted": 87,
+        "DoS Slowhttptest": 261,
+        "DoS Slowhttptest - Attempted": 505,
+        "DoS Slowloris": 579,
+        "DoS Slowloris - Attempted": 277,
+        "FTP-Patator": 596,
+        "FTP-Patator - Attempted": 2,
+        "Heartbleed": 2,
+        "Infiltration": 6,
+        "Infiltration - Attempted": 9,
+        "Infiltration - Portscan": 11949,
+        "Portscan": 22675,
+        "SSH-Patator": 444,
+        "SSH-Patator - Attempted": 4,
+        "Web Attack - Brute Force": 11,
+        "Web Attack - Brute Force - Attempted": 194,
+        "Web Attack - SQL Injection": 2,
+        "Web Attack - SQL Injection - Attempted": 1,
+        "Web Attack - XSS": 3,
+        "Web Attack - XSS - Attempted": 98
+      },
+      "groups": 257265,
+      "files": {
+        "X": {
+          "file": "X_validation.npy",
+          "bytes": 201600128,
+          "sha256": "c29d57414ba0c39a63093c906af1ea041d3c416e06c521d31d30dc8a8a0949c3",
+          "dtype": "float64",
+          "shape": [
+            315000,
+            80
+          ]
+        },
+        "y": {
+          "file": "y_validation.npy",
+          "bytes": 315128,
+          "sha256": "eb279cbbff8b33f1ac33b1d4a1ca4207587f162497c6e951f7be5216ffef3aea",
+          "dtype": "int8",
+          "shape": [
+            315000
+          ]
+        },
+        "origin": {
+          "file": "origin_validation.npy",
+          "bytes": 7560128,
+          "sha256": "fb6b68121739e52d0d08f9b4212cf5183d503027aff512a8f9b597d5d992c3c3",
+          "dtype": "int64",
+          "shape": [
+            315000,
+            3
+          ]
+        }
+      }
+    },
+    "test": {
+      "records": 314993,
+      "fraction": 0.149998,
+      "benign": 239178,
+      "attack": 75815,
+      "attack_fraction": 0.240688,
+      "original_labels": {
+        "BENIGN": 237382,
+        "Botnet": 110,
+        "Botnet - Attempted": 611,
+        "DDoS": 14271,
+        "DoS GoldenEye": 1135,
+        "DoS GoldenEye - Attempted": 12,
+        "DoS Hulk": 23770,
+        "DoS Hulk - Attempted": 87,
+        "DoS Slowhttptest": 261,
+        "DoS Slowhttptest - Attempted": 505,
+        "DoS Slowloris": 579,
+        "DoS Slowloris - Attempted": 277,
+        "FTP-Patator": 596,
+        "FTP-Patator - Attempted": 2,
+        "Heartbleed": 1,
+        "Infiltration": 5,
+        "Infiltration - Attempted": 5,
+        "Infiltration - Portscan": 10118,
+        "Portscan": 24509,
+        "SSH-Patator": 444,
+        "SSH-Patator - Attempted": 4,
+        "Web Attack - Brute Force": 11,
+        "Web Attack - Brute Force - Attempted": 194,
+        "Web Attack - SQL Injection": 2,
+        "Web Attack - SQL Injection - Attempted": 1,
+        "Web Attack - XSS": 3,
+        "Web Attack - XSS - Attempted": 98
+      },
+      "groups": 257290,
+      "files": {
+        "X": {
+          "file": "X_test.npy",
+          "bytes": 201595648,
+          "sha256": "4f65ac290439ae4691920151163f1a0f5af83b7c2c60e75845fa6d78d7846629",
+          "dtype": "float64",
+          "shape": [
+            314993,
+            80
+          ]
+        },
+        "y": {
+          "file": "y_test.npy",
+          "bytes": 315121,
+          "sha256": "ed3627e3ded1a6640cdfee5381d0335cdf83394a04472257ae20eaa852e1e6b8",
+          "dtype": "int8",
+          "shape": [
+            314993
+          ]
+        },
+        "origin": {
+          "file": "origin_test.npy",
+          "bytes": 7559960,
+          "sha256": "8a71ea4d880a8400e55fa3fcbe024b18b45f45d3c3ca3247d1d71a0ec1ac670a",
+          "dtype": "int64",
+          "shape": [
+            314993,
+            3
+          ]
+        }
+      }
+    }
+  },
+  "verifications": {
+    "every_record_in_exactly_one_split": true,
+    "no_input_vector_in_more_than_one_split": true,
+    "every_original_label_in_every_split": true,
+    "all_values_finite": true,
+    "sources_unchanged": true
+  },
+  "software": {
+    "python": "3.12.3",
+    "numpy": "2.5.4"
+  },
+  "execution": {
+    "peak_memory_mb": 2578,
+    "elapsed_seconds": 72
+  }
+}

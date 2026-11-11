@@ -1,0 +1,28 @@
+{
+  "reference_run": "training-runs/random-forest-pilot/20261111T121026065528Z",
+  "selection_metric": "f1",
+  "model": {
+    "objective": "binary:logistic",
+    "booster": "gbtree",
+    "tree_method": "hist",
+    "device": "cpu",
+    "n_estimators": 100,
+    "max_depth": 6,
+    "learning_rate": 0.1,
+    "min_child_weight": 1,
+    "subsample": 1.0,
+    "colsample_bytree": 1.0,
+    "reg_lambda": 1.0,
+    "reg_alpha": 0.0,
+    "gamma": 0.0,
+    "max_bin": 256,
+    "scale_pos_weight": 1.0,
+    "eval_metric": "logloss",
+    "random_state": 42,
+    "n_jobs": 2
+  },
+  "alternatives": [
+    {"name": "fewer-trees", "overrides": {"n_estimators": 50}},
+    {"name": "shallower-trees", "overrides": {"max_depth": 4}}
+  ]
+}

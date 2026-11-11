@@ -5,3 +5,4 @@ references/
 derived-data/*.npy
 training-runs/**/*.npy
 training-runs/**/*.joblib
+training-runs/**/*.ubj

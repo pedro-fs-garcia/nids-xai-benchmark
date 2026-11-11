@@ -33,6 +33,12 @@ These references link to their external documents or publication pages. Local tr
 | Tran Duc Le, Truong Duy Dinh, Phuc Hao Do, and Van Dai Pham (2026) | [Explanation-Surface Governance in XAI-Enabled Network Intrusion Detection under Resource Constraints](https://doi.org/10.21203/rs.3.rs-9800570/v1). Research Square preprint, v1. | XAI-Gate compares explanation-service policies under finite capacity, including threshold selection and FIFO queues. |
 | Abdurrahman Tolay (2026) | [Beyond Detection Accuracy: Measuring Explanation Cost, Stability, and Utility for Resource-Aware IoT Intrusion Detection](https://arxiv.org/abs/2608.10349). arXiv preprint, 2608.10349v1. | TreeSHAP timing for Random Forest and XGBoost, selective explanation, and cost–coverage trade-offs on CICIoT2023. |
 
+## Software documentation
+
+| Project | Documentation | Relevance to the project |
+|---|---|---|
+| XGBoost | [Introduction to Boosted Trees](https://xgboost.readthedocs.io/en/stable/tutorials/model.html), [Parameters](https://xgboost.readthedocs.io/en/stable/parameter.html), and [Installation Guide](https://xgboost.readthedocs.io/en/stable/install.html) | Additive prediction with boosted trees, binary logistic objective, histogram-based training on CPU, and the CPU-only Python package. |
+
 ## Maintaining the index
 
 Add a corresponding entry when a new article document is added. Keep local links relative to this directory and retain extracted figures with their transcription. For references hosted elsewhere, link directly to the document, DOI, or publication page.
