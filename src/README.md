@@ -74,6 +74,20 @@ Cada execução cria um diretório em `training-runs/random-forest-pilot/`. O ar
 
 O relatório legível é gravado em `relatorios/random-forest-pilot-<execução>.md`. A avaliação inicial usa apenas treino e validação; o conjunto de teste fica reservado para a avaliação final.
 
+## Comparação e avaliação final do Random Forest
+
+```bash
+python main.py comparar-rf
+```
+
+O comando reutiliza a amostra e o resultado do primeiro treinamento e treina somente duas alternativas. A configuração está em [configs/random-forest-comparison.json](../configs/random-forest-comparison.json). O critério é o maior F1 na validação; empates favorecem menos nós e, depois, menos árvores.
+
+A configuração escolhida é treinada com todos os registros do conjunto de treino. O comando grava `selection.json`, salva o modelo final e registra seus parâmetros em `fixed-before-test.json` antes de abrir o teste reservado. Os resultados do teste não alteram a seleção.
+
+Cada execução cria um diretório em `training-runs/random-forest-comparison/`. O modelo fica em `final/model.joblib`, acompanhado das previsões e probabilidades de validação e teste. `report.json` registra métricas, contagens por rótulo original, complexidade das árvores, versões e hashes. O relatório legível fica em `relatorios/random-forest-comparison-<execução>.md`.
+
+A reprodução exige os dados derivados e os arquivos da execução de referência indicados na configuração. Se o primeiro treinamento for refeito, atualize `reference_run` com o diretório gerado.
+
 ## Testes
 
 ```bash

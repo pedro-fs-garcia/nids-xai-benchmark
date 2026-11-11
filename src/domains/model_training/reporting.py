@@ -139,3 +139,137 @@ def _integer(value: int) -> str:
 
 def _decimal(value: float, digits: int = 6) -> str:
     return f"{value:.{digits}f}".replace(".", ",")
+
+
+def render_forest_comparison_report(summary: dict[str, Any]) -> str:
+    selection = summary["selection"]
+    final = summary["final"]
+    candidates = selection["candidates"]
+    lines = [
+        "# Seleção e avaliação do Random Forest",
+        "",
+        f"Foram comparadas três configurações na mesma amostra de {_integer(summary['sample_records'])} "
+        "registros de treino e no mesmo conjunto de validação. Variaram apenas o número de árvores "
+        "e a profundidade máxima. A configuração escolhida foi treinada com todo o conjunto de treino "
+        "antes da avaliação final no teste reservado.",
+        "",
+        "## Comparação na amostra",
+        "",
+        f"A amostra é a mesma do primeiro treinamento, com semente {summary['sample_seed']} e pelo menos "
+        "um registro de cada rótulo original. Os arquivos sample_indices.npy e sample_origin.npy "
+        "identificam seus registros. O resultado da configuração de referência foi reutilizado; "
+        "as outras duas configurações foram treinadas nesta execução.",
+        "",
+        "A alternativa com menos árvores verifica se o número de árvores pode ser reduzido mantendo "
+        "a qualidade das previsões. A alternativa com menor profundidade verifica o mesmo efeito "
+        "ao limitar o tamanho das árvores. Todas usam as 80 entradas do "
+        "[dicionário de atributos](../docs/dicionario-atributos.md), mínimo de dois registros por folha, "
+        "semente 42 e dois trabalhadores. Não houve normalização, ponderação de classes nem ajuste do limiar.",
+        "",
+        "O critério foi definido antes da comparação: maior F1 na validação. Em caso de empate, "
+        "menos nós e, depois, menos árvores. F1 é a média harmônica entre precisão e recall. "
+        "Precisão é a proporção de previsões de ataque corretas; recall é a proporção dos ataques detectados.",
+        "",
+        "| Configuração | Árvores | Profundidade máxima | Nós | Precisão | Recall | F1 | Ajuste (s) |",
+        "|---|---:|---:|---:|---:|---:|---:|---:|",
+    ]
+    for entry in candidates:
+        model, metrics, complexity = entry["parameters"], entry["metrics"], entry["complexity"]
+        lines.append(
+            f"| {entry['name']} | {model['n_estimators']} | {model['max_depth']} | "
+            f"{_integer(complexity['nodes_total'])} | {_decimal(metrics['precision'])} | "
+            f"{_decimal(metrics['recall'])} | {_decimal(metrics['f1'])} | {_decimal(entry['fit_seconds'], 2)} |"
+        )
+    lines.extend([
+        "",
+        f"A configuração selecionada foi **{selection['selected']}**. Os tempos correspondem a uma execução "
+        "por configuração e incluem apenas o ajuste. Servem para descrever o custo observado, sem "
+        "estabelecer uma comparação estatística de desempenho computacional. O custo do TreeSHAP ainda será medido.",
+        "",
+        "## Treinamento completo e teste reservado",
+        "",
+        f"A configuração escolhida foi treinada com os {_integer(final['training_records'])} registros "
+        f"do treino. O ajuste levou {_decimal(final['fit_seconds'], 2)} s. "
+        "As escolhas foram registradas em selection.json antes desse ajuste. O modelo e seus parâmetros "
+        "foram salvos antes de abrir os arquivos do teste, com registro em fixed-before-test.json. "
+        "Os resultados do teste não foram usados para alterar a configuração.",
+        "",
+        "A classe positiva é ataque. O modelo prevê ataque se a probabilidade for maior que 0,5; "
+        "empates recebem a classe benigno. O mapeamento de rótulos e a separação dos conjuntos seguem "
+        "as [decisões do desenho experimental](../docs/decisoes.md).",
+        "",
+        "| Métrica | Validação após treino completo | Teste reservado |",
+        "|---|---:|---:|",
+    ])
+    titles = {
+        "accuracy": "Acurácia", "precision": "Precisão", "recall": "Recall", "f1": "F1",
+        "false_positive_rate": "Taxa de falsos positivos", "roc_auc": "ROC-AUC",
+    }
+    for key, title in titles.items():
+        lines.append(f"| {title} | {_decimal(final['validation']['metrics'][key])} | {_decimal(final['test']['metrics'][key])} |")
+    test = final["test"]
+    matrix = test["metrics"]["confusion_matrix"]
+    lines.extend([
+        "",
+        "Acurácia é a proporção de previsões corretas. A taxa de falsos positivos é a proporção "
+        "dos benignos classificada como ataque. ROC-AUC é a área sob a curva que relaciona recall e "
+        "taxa de falsos positivos ao variar o limiar.",
+        "",
+        f"O teste tem {_integer(test['records'])} registros, sendo {_integer(test['benign'])} benignos "
+        f"e {_integer(test['attack'])} ataques. Sua matriz de confusão é:",
+        "",
+        "| Classe real | Previsto benigno | Previsto ataque |",
+        "|---|---:|---:|",
+        f"| Benigno | {_integer(matrix['tn'])} | {_integer(matrix['fp'])} |",
+        f"| Ataque | {_integer(matrix['fn'])} | {_integer(matrix['tp'])} |",
+        "",
+        "## Erros por rótulo original",
+        "",
+        "A classe benigno predomina nos conjuntos. Por isso, as métricas agregadas são acompanhadas "
+        "das contagens por rótulo. Para os rótulos de ataque, a última coluna conta ataques detectados; "
+        "para BENIGN e Attempted, conta falsos positivos.",
+        "",
+        "| Rótulo original | Registros na validação | Previstos ataque na validação | Registros no teste | Previstos ataque no teste |",
+        "|---|---:|---:|---:|---:|",
+    ])
+    for label, info in test["by_original_label"].items():
+        val = final["validation"]["by_original_label"][label]
+        lines.append(
+            f"| {label} | {_integer(val['records'])} | {_integer(val['predicted_attack'])} | "
+            f"{_integer(info['records'])} | {_integer(info['predicted_attack'])} |"
+        )
+    complexity = final["complexity"]
+    lines.extend([
+        "",
+        "Rótulos raros têm poucos exemplos, o que limita a interpretação das taxas por tipo de ataque. "
+        "A divisão impede entradas idênticas entre conjuntos, mas permite fluxos da mesma conexão "
+        "em conjuntos diferentes, conforme os limites registrados no desenho experimental. "
+        "A escolha de configuração foi feita na amostra; somente a escolhida recebeu treinamento completo.",
+        "",
+        "## Artefatos e reprodução",
+        "",
+        f"O modelo final tem {complexity['trees']} árvores, profundidade máxima observada "
+        f"{complexity['depth_max']}, {_integer(complexity['nodes_total'])} nós e "
+        f"{_integer(complexity['leaves_total'])} folhas. O pico de memória residente do processo "
+        f"foi {_decimal(summary['resources']['peak_process_memory_mib'], 1)} MiB "
+        "(1 MiB = 1.048.576 bytes), considerando comparação, treinamento completo e avaliação.",
+        "",
+        f"Os artefatos estão em [training-runs/random-forest-comparison/{summary['run_id']}/]"
+        f"(../training-runs/random-forest-comparison/{summary['run_id']}/). "
+        "final/model.joblib contém o modelo e a ordem das entradas. report.json registra todos os parâmetros, "
+        "as sementes, os hashes e as métricas. Os arquivos de previsões seguem a ordem dos conjuntos derivados.",
+        "",
+        "Versões: Python " + summary["environment"]["python"] + "; "
+        + ", ".join(f"{name} {value}" for name, value in summary["environment"]["libraries"].items()) + ".",
+        "",
+        f"SHA-256 do manifesto dos dados: `{summary['data_manifest_sha256']}`.",
+        "",
+        "A partir de src/, o comando abaixo reproduz a comparação. Ele depende dos dados derivados "
+        "e dos artefatos do treinamento de referência indicados em configs/random-forest-comparison.json.",
+        "",
+        "```bash",
+        "python main.py comparar-rf",
+        "```",
+        "",
+    ])
+    return "\n".join(lines)

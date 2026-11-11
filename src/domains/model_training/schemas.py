@@ -32,3 +32,23 @@ class PilotResult:
     run_dir: Path
     report_path: Path
     summary: dict[str, Any]
+
+
+@dataclass(frozen=True)
+class ForestAlternative:
+    name: str
+    overrides: dict[str, int]
+
+
+@dataclass(frozen=True)
+class ForestComparisonConfig:
+    reference_run: Path
+    alternatives: tuple[ForestAlternative, ...]
+    selection_metric: str = "f1"
+
+
+@dataclass(frozen=True)
+class ReferenceRun:
+    summary: dict[str, Any]
+    summary_sha256: str
+    sample_indices: np.ndarray

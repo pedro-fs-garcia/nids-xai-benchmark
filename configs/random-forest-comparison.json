@@ -1,0 +1,8 @@
+{
+  "reference_run": "training-runs/random-forest-pilot/20261111T121026065528Z",
+  "selection_metric": "f1",
+  "alternatives": [
+    {"name": "fewer-trees", "overrides": {"n_estimators": 50}},
+    {"name": "shallower-trees", "overrides": {"max_depth": 8}}
+  ]
+}

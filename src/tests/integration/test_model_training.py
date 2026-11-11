@@ -7,9 +7,10 @@ import numpy as np
 import pytest
 
 from core.classification import RandomForestAdapter
+from domains.model_training.comparison import ForestComparisonService
 from domains.model_training.exceptions import InvalidPilotConfigError, InvalidTrainingDataError
 from domains.model_training.repository import ModelTrainingRepository
-from domains.model_training.schemas import PilotConfig
+from domains.model_training.schemas import ForestAlternative, ForestComparisonConfig, PilotConfig
 from domains.model_training.service import ModelTrainingService
 
 
@@ -121,3 +122,62 @@ def test_invalid_sample_configuration_is_reported(repo, tmp_path) -> None:
 
 def test_new_runs_use_different_directories(repo) -> None:
     assert repo.create_run() != repo.create_run()
+
+
+def test_reserved_test_requires_saved_selection_and_fixed_model(repo, tmp_path) -> None:
+    dataset = repo.load_pilot_dataset()
+    with pytest.raises(InvalidTrainingDataError, match="não liberado"):
+        repo.load_reserved_test(tmp_path, dataset)
+
+
+def test_comparison_reuses_sample_trains_full_dataset_and_opens_test_after_choices(repo, monkeypatch) -> None:
+    # Acrescenta um teste reservado independente ao fixture.
+    manifest_path = repo.data_dir / "manifest.json"
+    manifest = json.loads(manifest_path.read_text())
+    manifest["splits"]["test"] = {"records": 15, "files": {}}
+    original = np.arange(15, dtype=np.int64) % 3
+    labels = (original == 2).astype(np.int8)
+    inputs = np.random.default_rng(19).normal(size=(15, 80))
+    inputs[:, 0] = labels
+    origin = np.column_stack((np.zeros(15, dtype=np.int64), np.arange(200, 215), original))
+    for key, array in (("X", inputs), ("y", labels), ("origin", origin)):
+        path = repo.data_dir / f"{key}_test.npy"
+        np.save(path, array)
+        manifest["splits"]["test"]["files"][key] = {
+            "file": path.name, "bytes": path.stat().st_size,
+            "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+            "shape": list(array.shape), "dtype": str(array.dtype),
+        }
+    manifest_path.write_text(json.dumps(manifest))
+    pilot_config = PilotConfig(24, 42, {"n_estimators": 3, "max_depth": 3, "n_jobs": 1, "random_state": 42})
+    pilot = ModelTrainingService(repo, pilot_config, RandomForestAdapter(pilot_config.model)).run_pilot()
+    config = ForestComparisonConfig(pilot.run_dir, (
+        ForestAlternative("fewer", {"n_estimators": 2}),
+        ForestAlternative("shallower", {"max_depth": 2}),
+    ))
+    load_test = repo.load_reserved_test
+    test_access = []
+
+    def guarded(run_dir, dataset):
+        selected = json.loads((run_dir / "selection.json").read_text())
+        fixed = json.loads((run_dir / "fixed-before-test.json").read_text())
+        assert selected["model"] == fixed["model"]
+        assert (run_dir / "final" / "model.joblib").is_file()
+        assert selected["test_used"] is False
+        test_access.append(run_dir)
+        return load_test(run_dir, dataset)
+
+    monkeypatch.setattr(repo, "load_reserved_test", guarded)
+    result = ForestComparisonService(repo, config, RandomForestAdapter).run()
+    assert len(test_access) == 1
+    assert result.summary["final"]["training_records"] == 90
+    assert result.summary["final"]["test"]["records"] == 15
+    assert len(result.summary["selection"]["candidates"]) == 3
+    assert np.array_equal(
+        np.load(result.run_dir / "sample_indices.npy"),
+        np.load(pilot.run_dir / "sample_indices.npy"),
+    )
+    bundle = joblib.load(result.run_dir / "final" / "model.joblib")
+    saved = np.load(result.run_dir / "final" / "test_attack_probability.npy")
+    assert np.array_equal(bundle["estimator"].predict_proba(inputs)[:, 1], saved)
+    assert result.report_path.is_file()

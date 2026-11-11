@@ -1,0 +1,595 @@
+{
+  "criterion": "highest validation F1; ties: fewest nodes, then fewest trees",
+  "selected": "reference",
+  "model": {
+    "bootstrap": true,
+    "ccp_alpha": 0.0,
+    "class_weight": null,
+    "criterion": "gini",
+    "max_depth": 12,
+    "max_features": "sqrt",
+    "max_leaf_nodes": null,
+    "max_samples": null,
+    "min_impurity_decrease": 0.0,
+    "min_samples_leaf": 2,
+    "min_samples_split": 2,
+    "min_weight_fraction_leaf": 0.0,
+    "monotonic_cst": null,
+    "n_estimators": 100,
+    "n_jobs": 2,
+    "oob_score": false,
+    "random_state": 42,
+    "verbose": 0,
+    "warm_start": false
+  },
+  "data_manifest_sha256": "69b1ff4ad68e2465013bc0266324f615b4780092fe4d2fbe0ca53595c423f779",
+  "sample_records": 100000,
+  "candidates": [
+    {
+      "name": "reference",
+      "parameters": {
+        "bootstrap": true,
+        "ccp_alpha": 0.0,
+        "class_weight": null,
+        "criterion": "gini",
+        "max_depth": 12,
+        "max_features": "sqrt",
+        "max_leaf_nodes": null,
+        "max_samples": null,
+        "min_impurity_decrease": 0.0,
+        "min_samples_leaf": 2,
+        "min_samples_split": 2,
+        "min_weight_fraction_leaf": 0.0,
+        "monotonic_cst": null,
+        "n_estimators": 100,
+        "n_jobs": 2,
+        "oob_score": false,
+        "random_state": 42,
+        "verbose": 0,
+        "warm_start": false
+      },
+      "metrics": {
+        "confusion_matrix": {
+          "tn": 239171,
+          "fp": 13,
+          "fn": 247,
+          "tp": 75569
+        },
+        "accuracy": 0.9991746031746032,
+        "precision": 0.999828001375989,
+        "recall": 0.9967421124828533,
+        "f1": 0.9982826721621157,
+        "false_positive_rate": 5.435146163622985e-05,
+        "roc_auc": 0.9999849203766462
+      },
+      "by_original_label": {
+        "BENIGN": {
+          "records": 237387,
+          "class": "benign",
+          "predicted_attack": 10
+        },
+        "Botnet": {
+          "records": 111,
+          "class": "attack",
+          "predicted_attack": 86
+        },
+        "Botnet - Attempted": {
+          "records": 608,
+          "class": "benign",
+          "predicted_attack": 3
+        },
+        "DDoS": {
+          "records": 14272,
+          "class": "attack",
+          "predicted_attack": 14272
+        },
+        "DoS GoldenEye": {
+          "records": 1135,
+          "class": "attack",
+          "predicted_attack": 1074
+        },
+        "DoS GoldenEye - Attempted": {
+          "records": 12,
+          "class": "benign",
+          "predicted_attack": 0
+        },
+        "DoS Hulk": {
+          "records": 23770,
+          "class": "attack",
+          "predicted_attack": 23768
+        },
+        "DoS Hulk - Attempted": {
+          "records": 87,
+          "class": "benign",
+          "predicted_attack": 0
+        },
+        "DoS Slowhttptest": {
+          "records": 261,
+          "class": "attack",
+          "predicted_attack": 254
+        },
+        "DoS Slowhttptest - Attempted": {
+          "records": 505,
+          "class": "benign",
+          "predicted_attack": 0
+        },
+        "DoS Slowloris": {
+          "records": 579,
+          "class": "attack",
+          "predicted_attack": 573
+        },
+        "DoS Slowloris - Attempted": {
+          "records": 277,
+          "class": "benign",
+          "predicted_attack": 0
+        },
+        "FTP-Patator": {
+          "records": 596,
+          "class": "attack",
+          "predicted_attack": 594
+        },
+        "FTP-Patator - Attempted": {
+          "records": 2,
+          "class": "benign",
+          "predicted_attack": 0
+        },
+        "Heartbleed": {
+          "records": 2,
+          "class": "attack",
+          "predicted_attack": 0
+        },
+        "Infiltration": {
+          "records": 6,
+          "class": "attack",
+          "predicted_attack": 1
+        },
+        "Infiltration - Attempted": {
+          "records": 9,
+          "class": "benign",
+          "predicted_attack": 0
+        },
+        "Infiltration - Portscan": {
+          "records": 11949,
+          "class": "attack",
+          "predicted_attack": 11847
+        },
+        "Portscan": {
+          "records": 22675,
+          "class": "attack",
+          "predicted_attack": 22648
+        },
+        "SSH-Patator": {
+          "records": 444,
+          "class": "attack",
+          "predicted_attack": 439
+        },
+        "SSH-Patator - Attempted": {
+          "records": 4,
+          "class": "benign",
+          "predicted_attack": 0
+        },
+        "Web Attack - Brute Force": {
+          "records": 11,
+          "class": "attack",
+          "predicted_attack": 11
+        },
+        "Web Attack - Brute Force - Attempted": {
+          "records": 194,
+          "class": "benign",
+          "predicted_attack": 0
+        },
+        "Web Attack - SQL Injection": {
+          "records": 2,
+          "class": "attack",
+          "predicted_attack": 0
+        },
+        "Web Attack - SQL Injection - Attempted": {
+          "records": 1,
+          "class": "benign",
+          "predicted_attack": 0
+        },
+        "Web Attack - XSS": {
+          "records": 3,
+          "class": "attack",
+          "predicted_attack": 2
+        },
+        "Web Attack - XSS - Attempted": {
+          "records": 98,
+          "class": "benign",
+          "predicted_attack": 0
+        }
+      },
+      "complexity": {
+        "trees": 100,
+        "depth_min": 12,
+        "depth_max": 12,
+        "depth_mean": 12.0,
+        "nodes_total": 20096,
+        "leaves_total": 10098
+      },
+      "fit_seconds": 32.79748030100018,
+      "reused": true
+    },
+    {
+      "name": "fewer-trees",
+      "parameters": {
+        "bootstrap": true,
+        "ccp_alpha": 0.0,
+        "class_weight": null,
+        "criterion": "gini",
+        "max_depth": 12,
+        "max_features": "sqrt",
+        "max_leaf_nodes": null,
+        "max_samples": null,
+        "min_impurity_decrease": 0.0,
+        "min_samples_leaf": 2,
+        "min_samples_split": 2,
+        "min_weight_fraction_leaf": 0.0,
+        "monotonic_cst": null,
+        "n_estimators": 50,
+        "n_jobs": 2,
+        "oob_score": false,
+        "random_state": 42,
+        "verbose": 0,
+        "warm_start": false
+      },
+      "metrics": {
+        "confusion_matrix": {
+          "tn": 239169,
+          "fp": 15,
+          "fn": 264,
+          "tp": 75552
+        },
+        "accuracy": 0.9991142857142857,
+        "precision": 0.9998015006550478,
+        "recall": 0.9965178854067743,
+        "f1": 0.9981569925288837,
+        "false_positive_rate": 6.27132249648806e-05,
+        "roc_auc": 0.9999839100630847
+      },
+      "by_original_label": {
+        "BENIGN": {
+          "records": 237387,
+          "class": "benign",
+          "predicted_attack": 12
+        },
+        "Botnet": {
+          "records": 111,
+          "class": "attack",
+          "predicted_attack": 83
+        },
+        "Botnet - Attempted": {
+          "records": 608,
+          "class": "benign",
+          "predicted_attack": 3
+        },
+        "DDoS": {
+          "records": 14272,
+          "class": "attack",
+          "predicted_attack": 14269
+        },
+        "DoS GoldenEye": {
+          "records": 1135,
+          "class": "attack",
+          "predicted_attack": 1070
+        },
+        "DoS GoldenEye - Attempted": {
+          "records": 12,
+          "class": "benign",
+          "predicted_attack": 0
+        },
+        "DoS Hulk": {
+          "records": 23770,
+          "class": "attack",
+          "predicted_attack": 23767
+        },
+        "DoS Hulk - Attempted": {
+          "records": 87,
+          "class": "benign",
+          "predicted_attack": 0
+        },
+        "DoS Slowhttptest": {
+          "records": 261,
+          "class": "attack",
+          "predicted_attack": 254
+        },
+        "DoS Slowhttptest - Attempted": {
+          "records": 505,
+          "class": "benign",
+          "predicted_attack": 0
+        },
+        "DoS Slowloris": {
+          "records": 579,
+          "class": "attack",
+          "predicted_attack": 573
+        },
+        "DoS Slowloris - Attempted": {
+          "records": 277,
+          "class": "benign",
+          "predicted_attack": 0
+        },
+        "FTP-Patator": {
+          "records": 596,
+          "class": "attack",
+          "predicted_attack": 594
+        },
+        "FTP-Patator - Attempted": {
+          "records": 2,
+          "class": "benign",
+          "predicted_attack": 0
+        },
+        "Heartbleed": {
+          "records": 2,
+          "class": "attack",
+          "predicted_attack": 0
+        },
+        "Infiltration": {
+          "records": 6,
+          "class": "attack",
+          "predicted_attack": 1
+        },
+        "Infiltration - Attempted": {
+          "records": 9,
+          "class": "benign",
+          "predicted_attack": 0
+        },
+        "Infiltration - Portscan": {
+          "records": 11949,
+          "class": "attack",
+          "predicted_attack": 11842
+        },
+        "Portscan": {
+          "records": 22675,
+          "class": "attack",
+          "predicted_attack": 22647
+        },
+        "SSH-Patator": {
+          "records": 444,
+          "class": "attack",
+          "predicted_attack": 439
+        },
+        "SSH-Patator - Attempted": {
+          "records": 4,
+          "class": "benign",
+          "predicted_attack": 0
+        },
+        "Web Attack - Brute Force": {
+          "records": 11,
+          "class": "attack",
+          "predicted_attack": 11
+        },
+        "Web Attack - Brute Force - Attempted": {
+          "records": 194,
+          "class": "benign",
+          "predicted_attack": 0
+        },
+        "Web Attack - SQL Injection": {
+          "records": 2,
+          "class": "attack",
+          "predicted_attack": 0
+        },
+        "Web Attack - SQL Injection - Attempted": {
+          "records": 1,
+          "class": "benign",
+          "predicted_attack": 0
+        },
+        "Web Attack - XSS": {
+          "records": 3,
+          "class": "attack",
+          "predicted_attack": 2
+        },
+        "Web Attack - XSS - Attempted": {
+          "records": 98,
+          "class": "benign",
+          "predicted_attack": 0
+        }
+      },
+      "complexity": {
+        "trees": 50,
+        "depth_min": 12,
+        "depth_max": 12,
+        "depth_mean": 12.0,
+        "nodes_total": 9840,
+        "leaves_total": 4945
+      },
+      "fit_seconds": 19.20240771002136,
+      "artifact": {
+        "file": "model.joblib",
+        "bytes": 810209,
+        "sha256": "009b645c2c4d488d424b60b9d93874ecb19bd98ae7a9cbde1407f175dee463e4"
+      },
+      "reused": false
+    },
+    {
+      "name": "shallower-trees",
+      "parameters": {
+        "bootstrap": true,
+        "ccp_alpha": 0.0,
+        "class_weight": null,
+        "criterion": "gini",
+        "max_depth": 8,
+        "max_features": "sqrt",
+        "max_leaf_nodes": null,
+        "max_samples": null,
+        "min_impurity_decrease": 0.0,
+        "min_samples_leaf": 2,
+        "min_samples_split": 2,
+        "min_weight_fraction_leaf": 0.0,
+        "monotonic_cst": null,
+        "n_estimators": 100,
+        "n_jobs": 2,
+        "oob_score": false,
+        "random_state": 42,
+        "verbose": 0,
+        "warm_start": false
+      },
+      "metrics": {
+        "confusion_matrix": {
+          "tn": 239172,
+          "fp": 12,
+          "fn": 470,
+          "tp": 75346
+        },
+        "accuracy": 0.9984698412698413,
+        "precision": 0.9998407601050984,
+        "recall": 0.9938007808378179,
+        "f1": 0.996811621045947,
+        "false_positive_rate": 5.0170579971904475e-05,
+        "roc_auc": 0.9999353801604274
+      },
+      "by_original_label": {
+        "BENIGN": {
+          "records": 237387,
+          "class": "benign",
+          "predicted_attack": 9
+        },
+        "Botnet": {
+          "records": 111,
+          "class": "attack",
+          "predicted_attack": 0
+        },
+        "Botnet - Attempted": {
+          "records": 608,
+          "class": "benign",
+          "predicted_attack": 3
+        },
+        "DDoS": {
+          "records": 14272,
+          "class": "attack",
+          "predicted_attack": 14269
+        },
+        "DoS GoldenEye": {
+          "records": 1135,
+          "class": "attack",
+          "predicted_attack": 1061
+        },
+        "DoS GoldenEye - Attempted": {
+          "records": 12,
+          "class": "benign",
+          "predicted_attack": 0
+        },
+        "DoS Hulk": {
+          "records": 23770,
+          "class": "attack",
+          "predicted_attack": 23763
+        },
+        "DoS Hulk - Attempted": {
+          "records": 87,
+          "class": "benign",
+          "predicted_attack": 0
+        },
+        "DoS Slowhttptest": {
+          "records": 261,
+          "class": "attack",
+          "predicted_attack": 231
+        },
+        "DoS Slowhttptest - Attempted": {
+          "records": 505,
+          "class": "benign",
+          "predicted_attack": 0
+        },
+        "DoS Slowloris": {
+          "records": 579,
+          "class": "attack",
+          "predicted_attack": 553
+        },
+        "DoS Slowloris - Attempted": {
+          "records": 277,
+          "class": "benign",
+          "predicted_attack": 0
+        },
+        "FTP-Patator": {
+          "records": 596,
+          "class": "attack",
+          "predicted_attack": 594
+        },
+        "FTP-Patator - Attempted": {
+          "records": 2,
+          "class": "benign",
+          "predicted_attack": 0
+        },
+        "Heartbleed": {
+          "records": 2,
+          "class": "attack",
+          "predicted_attack": 0
+        },
+        "Infiltration": {
+          "records": 6,
+          "class": "attack",
+          "predicted_attack": 0
+        },
+        "Infiltration - Attempted": {
+          "records": 9,
+          "class": "benign",
+          "predicted_attack": 0
+        },
+        "Infiltration - Portscan": {
+          "records": 11949,
+          "class": "attack",
+          "predicted_attack": 11801
+        },
+        "Portscan": {
+          "records": 22675,
+          "class": "attack",
+          "predicted_attack": 22647
+        },
+        "SSH-Patator": {
+          "records": 444,
+          "class": "attack",
+          "predicted_attack": 427
+        },
+        "SSH-Patator - Attempted": {
+          "records": 4,
+          "class": "benign",
+          "predicted_attack": 0
+        },
+        "Web Attack - Brute Force": {
+          "records": 11,
+          "class": "attack",
+          "predicted_attack": 0
+        },
+        "Web Attack - Brute Force - Attempted": {
+          "records": 194,
+          "class": "benign",
+          "predicted_attack": 0
+        },
+        "Web Attack - SQL Injection": {
+          "records": 2,
+          "class": "attack",
+          "predicted_attack": 0
+        },
+        "Web Attack - SQL Injection - Attempted": {
+          "records": 1,
+          "class": "benign",
+          "predicted_attack": 0
+        },
+        "Web Attack - XSS": {
+          "records": 3,
+          "class": "attack",
+          "predicted_attack": 0
+        },
+        "Web Attack - XSS - Attempted": {
+          "records": 98,
+          "class": "benign",
+          "predicted_attack": 0
+        }
+      },
+      "complexity": {
+        "trees": 100,
+        "depth_min": 8,
+        "depth_max": 8,
+        "depth_mean": 8.0,
+        "nodes_total": 11948,
+        "leaves_total": 6024
+      },
+      "fit_seconds": 30.251727492082864,
+      "artifact": {
+        "file": "model.joblib",
+        "bytes": 998849,
+        "sha256": "c661f5e516d8e50dda65af285bac6ff196d88f406ba76cca78fb2cbfec2387f5"
+      },
+      "reused": false
+    }
+  ],
+  "test_used": false
+}

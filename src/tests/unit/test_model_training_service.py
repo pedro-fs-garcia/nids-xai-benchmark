@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 
 from core.classification import binary_metrics
+from domains.model_training.comparison import select_candidate
 from domains.model_training.exceptions import InvalidPilotConfigError
 from domains.model_training.service import sample_training_indices
 
@@ -44,3 +45,14 @@ def test_binary_metrics_use_attack_as_positive_and_probability_for_roc_auc() -> 
     assert metrics["precision"] == metrics["recall"] == metrics["f1"] == 0.5
     assert metrics["false_positive_rate"] == 0.5
     assert metrics["roc_auc"] == 0.75
+
+
+def test_selection_uses_only_validation_f1_with_nodes_as_tie_break() -> None:
+    candidates = [
+        {"name": "a", "metrics": {"f1": 0.99}, "complexity": {"nodes_total": 100, "trees": 10}},
+        {"name": "b", "metrics": {"f1": 0.99}, "complexity": {"nodes_total": 50, "trees": 5}},
+        {"name": "c", "metrics": {"f1": 0.98}, "complexity": {"nodes_total": 10, "trees": 1}},
+    ]
+    assert select_candidate(candidates)["name"] == "b"
+    candidates[0]["metrics"]["f1"] = 0.999
+    assert select_candidate(candidates)["name"] == "a"

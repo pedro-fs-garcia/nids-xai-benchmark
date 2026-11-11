@@ -11,8 +11,10 @@ import joblib
 import numpy as np
 
 from domains.model_training.exceptions import InvalidPilotConfigError, InvalidTrainingDataError
-from domains.model_training.reporting import render_pilot_report
-from domains.model_training.schemas import PilotConfig, PilotDataset, TrainingSplit
+from domains.model_training.reporting import render_forest_comparison_report, render_pilot_report
+from domains.model_training.schemas import (
+    ForestAlternative, ForestComparisonConfig, PilotConfig, PilotDataset, ReferenceRun, TrainingSplit,
+)
 
 
 class ModelTrainingRepository:
@@ -64,6 +66,9 @@ class ModelTrainingRepository:
         # Este caminho de execução permite apenas treino e validação.
         if name not in {"train", "validation"}:
             raise InvalidTrainingDataError(f"Conjunto não permitido no piloto: {name}")
+        return self._read_verified_split(name, manifest)
+
+    def _read_verified_split(self, name: str, manifest: dict[str, Any]) -> TrainingSplit:
         arrays = {}
         info = manifest["splits"][name]
         for key in ("X", "y", "origin"):
@@ -98,13 +103,14 @@ class ModelTrainingRepository:
                 if sha256(self.data_dir / artifact["file"]) != artifact["sha256"]:
                     raise InvalidTrainingDataError(f"O arquivo {artifact['file']} mudou.")
 
-    def create_run(self) -> Path:
+    def create_run(self, kind: str = "random-forest-pilot") -> Path:
         run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
-        run_dir = self.runs_dir / "random-forest-pilot" / run_id
+        run_dir = self.runs_dir / kind / run_id
         run_dir.mkdir(parents=True, exist_ok=False)
         return run_dir
 
     def save_model(self, run_dir: Path, model: Any, inputs: list[str]) -> dict[str, Any]:
+        run_dir.mkdir(parents=True, exist_ok=True)
         path = run_dir / "model.joblib"
         joblib.dump({"estimator": model, "inputs": inputs, "classes": {"benign": 0, "attack": 1}}, path)
         return artifact_info(path)
@@ -122,6 +128,89 @@ class ModelTrainingRepository:
         self.reports_dir.mkdir(parents=True, exist_ok=True)
         path = self.reports_dir / f"random-forest-pilot-{run_dir.name}.md"
         path.write_text(render_pilot_report(summary), encoding="utf-8")
+        return path
+
+    def read_comparison_config(self, path: Path) -> ForestComparisonConfig:
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+            if set(data) != {"reference_run", "selection_metric", "alternatives"}:
+                raise ValueError("campos inesperados na configuração da comparação")
+            if data["selection_metric"] != "f1":
+                raise ValueError("o critério de seleção desta comparação é F1")
+            alternatives = []
+            names = {"reference", "final"}
+            for entry in data["alternatives"]:
+                name, overrides = entry["name"], entry["overrides"]
+                if not name or name in names or any(c not in "abcdefghijklmnopqrstuvwxyz0123456789-" for c in name):
+                    raise ValueError("nome de alternativa inválido ou repetido")
+                if not overrides or not set(overrides) <= {"n_estimators", "max_depth"}:
+                    raise ValueError("somente número de árvores e profundidade podem variar")
+                if any(type(value) is not int or value <= 0 for value in overrides.values()):
+                    raise ValueError("os valores das alternativas devem ser inteiros positivos")
+                alternatives.append(ForestAlternative(name, overrides))
+                names.add(name)
+            if len(alternatives) != 2:
+                raise ValueError("a comparação deve ter exatamente duas alternativas")
+            return ForestComparisonConfig(
+                reference_run=path.parent.parent / data["reference_run"],
+                alternatives=tuple(alternatives),
+            )
+        except (OSError, KeyError, TypeError, ValueError) as error:
+            raise InvalidPilotConfigError(f"Configuração da comparação inválida: {error}") from error
+
+    def load_reference(self, run_dir: Path, dataset: PilotDataset) -> ReferenceRun:
+        try:
+            report_path = run_dir / "report.json"
+            summary = json.loads(report_path.read_text(encoding="utf-8"))
+            if summary["data_manifest_sha256"] != dataset.manifest_sha256:
+                raise ValueError("o piloto usa outro manifesto de dados")
+            if summary["inputs"] != dataset.manifest["inputs"] or summary["test_used"]:
+                raise ValueError("atributos incompatíveis ou teste já usado no piloto")
+            for info in summary["artifacts"].values():
+                path = run_dir / info["file"]
+                if path.stat().st_size != info["bytes"] or sha256(path) != info["sha256"]:
+                    raise ValueError(f"artefato do piloto foi alterado: {path.name}")
+            indices = np.load(run_dir / "sample_indices.npy", allow_pickle=False)
+            if (indices.ndim != 1 or indices.dtype != np.int64 or len(np.unique(indices)) != len(indices)
+                    or (indices < 0).any() or (indices >= len(dataset.train.labels)).any()):
+                raise ValueError("índices da amostra inválidos")
+            origin = np.load(run_dir / "sample_origin.npy", allow_pickle=False)
+            if not np.array_equal(origin, dataset.train.origin[indices]):
+                raise ValueError("a origem da amostra diverge do treino")
+            return ReferenceRun(summary, sha256(report_path), indices)
+        except (OSError, KeyError, TypeError, ValueError) as error:
+            raise InvalidTrainingDataError(f"Execução de referência inválida: {error}") from error
+
+    def write_record(self, run_dir: Path, name: str, record: dict[str, Any]) -> Path:
+        path = run_dir / f"{name}.json"
+        path.write_text(json.dumps(record, ensure_ascii=False, indent=2, allow_nan=False) + "\n", encoding="utf-8")
+        return path
+
+    def load_reserved_test(self, run_dir: Path, dataset: PilotDataset) -> TrainingSplit:
+        """Abre o teste somente depois de gravados a seleção e o modelo final fixo."""
+        try:
+            selection = json.loads((run_dir / "selection.json").read_text(encoding="utf-8"))
+            frozen = json.loads((run_dir / "fixed-before-test.json").read_text(encoding="utf-8"))
+            if selection["model"] != frozen["model"] or frozen["data_manifest_sha256"] != dataset.manifest_sha256:
+                raise ValueError("o modelo fixo diverge da seleção ou dos dados")
+            if sha256(run_dir / "final" / "model.joblib") != frozen["artifact"]["sha256"]:
+                raise ValueError("o modelo final mudou depois de ser fixado")
+            if sha256(self.data_dir / "manifest.json") != dataset.manifest_sha256:
+                raise ValueError("o manifesto de dados mudou")
+            return self._read_verified_split("test", dataset.manifest)
+        except (OSError, KeyError, TypeError, ValueError) as error:
+            raise InvalidTrainingDataError(f"Teste reservado não liberado: {error}") from error
+
+    def verify_test_unchanged(self, dataset: PilotDataset) -> None:
+        for info in dataset.manifest["splits"]["test"]["files"].values():
+            if sha256(self.data_dir / info["file"]) != info["sha256"]:
+                raise InvalidTrainingDataError(f"O arquivo de teste {info['file']} mudou.")
+
+    def write_comparison_reports(self, run_dir: Path, summary: dict[str, Any]) -> Path:
+        self.write_record(run_dir, "report", summary)
+        self.reports_dir.mkdir(parents=True, exist_ok=True)
+        path = self.reports_dir / f"random-forest-comparison-{run_dir.name}.md"
+        path.write_text(render_forest_comparison_report(summary), encoding="utf-8")
         return path
 
     def environment(self) -> dict[str, Any]:

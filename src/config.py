@@ -14,6 +14,7 @@ class Settings:
     training_runs_dir: Path = PROJECT_ROOT / "training-runs"
     reports_dir: Path = PROJECT_ROOT / "relatorios"
     forest_pilot_config: Path = PROJECT_ROOT / "configs" / "random-forest-pilot.json"
+    forest_comparison_config: Path = PROJECT_ROOT / "configs" / "random-forest-comparison.json"
     source_files: tuple[str, ...] = (
         "monday.csv",
         "tuesday.csv",
