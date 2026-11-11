@@ -1,0 +1,484 @@
+{
+  "stage": "pilot",
+  "run_id": "20261111T121026065528Z",
+  "configuration": {
+    "sample_size": 100000,
+    "sample_seed": 42,
+    "model": {
+      "bootstrap": true,
+      "ccp_alpha": 0.0,
+      "class_weight": null,
+      "criterion": "gini",
+      "max_depth": 12,
+      "max_features": "sqrt",
+      "max_leaf_nodes": null,
+      "max_samples": null,
+      "min_impurity_decrease": 0.0,
+      "min_samples_leaf": 2,
+      "min_samples_split": 2,
+      "min_weight_fraction_leaf": 0.0,
+      "monotonic_cst": null,
+      "n_estimators": 100,
+      "n_jobs": 2,
+      "oob_score": false,
+      "random_state": 42,
+      "verbose": 0,
+      "warm_start": false
+    }
+  },
+  "data_manifest_sha256": "69b1ff4ad68e2465013bc0266324f615b4780092fe4d2fbe0ca53595c423f779",
+  "data_files": {
+    "train": {
+      "X": {
+        "file": "X_train.npy",
+        "bytes": 940789248,
+        "sha256": "42bc2e6dda14a182cdf419fdc9ce9058cb76b192041d6af4685781d1d0cf5d44",
+        "dtype": "float64",
+        "shape": [
+          1469983,
+          80
+        ]
+      },
+      "y": {
+        "file": "y_train.npy",
+        "bytes": 1470111,
+        "sha256": "c5ab43dc6ea22d3d0cf66b1c57024de604430cdc1c7082bb093d89eaef15f594",
+        "dtype": "int8",
+        "shape": [
+          1469983
+        ]
+      },
+      "origin": {
+        "file": "origin_train.npy",
+        "bytes": 35279720,
+        "sha256": "30e6f7372d2bc09488e063ed8e9e88c6dc7a71db4b0882bee2cd86155462d947",
+        "dtype": "int64",
+        "shape": [
+          1469983,
+          3
+        ]
+      }
+    },
+    "validation": {
+      "X": {
+        "file": "X_validation.npy",
+        "bytes": 201600128,
+        "sha256": "c29d57414ba0c39a63093c906af1ea041d3c416e06c521d31d30dc8a8a0949c3",
+        "dtype": "float64",
+        "shape": [
+          315000,
+          80
+        ]
+      },
+      "y": {
+        "file": "y_validation.npy",
+        "bytes": 315128,
+        "sha256": "eb279cbbff8b33f1ac33b1d4a1ca4207587f162497c6e951f7be5216ffef3aea",
+        "dtype": "int8",
+        "shape": [
+          315000
+        ]
+      },
+      "origin": {
+        "file": "origin_validation.npy",
+        "bytes": 7560128,
+        "sha256": "fb6b68121739e52d0d08f9b4212cf5183d503027aff512a8f9b597d5d992c3c3",
+        "dtype": "int64",
+        "shape": [
+          315000,
+          3
+        ]
+      }
+    }
+  },
+  "inputs": [
+    "Protocol",
+    "Flow Duration",
+    "Total Fwd Packet",
+    "Total Bwd packets",
+    "Total Length of Fwd Packet",
+    "Total Length of Bwd Packet",
+    "Fwd Packet Length Max",
+    "Fwd Packet Length Min",
+    "Fwd Packet Length Mean",
+    "Fwd Packet Length Std",
+    "Bwd Packet Length Max",
+    "Bwd Packet Length Min",
+    "Bwd Packet Length Mean",
+    "Bwd Packet Length Std",
+    "Flow Bytes/s",
+    "Flow Packets/s",
+    "Flow IAT Mean",
+    "Flow IAT Std",
+    "Flow IAT Max",
+    "Flow IAT Min",
+    "Fwd IAT Total",
+    "Fwd IAT Mean",
+    "Fwd IAT Std",
+    "Fwd IAT Max",
+    "Fwd IAT Min",
+    "Bwd IAT Total",
+    "Bwd IAT Mean",
+    "Bwd IAT Std",
+    "Bwd IAT Max",
+    "Bwd IAT Min",
+    "Fwd PSH Flags",
+    "Bwd PSH Flags",
+    "Fwd URG Flags",
+    "Bwd URG Flags",
+    "Fwd RST Flags",
+    "Bwd RST Flags",
+    "Fwd Packets/s",
+    "Bwd Packets/s",
+    "Packet Length Min",
+    "Packet Length Max",
+    "Packet Length Mean",
+    "Packet Length Std",
+    "Packet Length Variance",
+    "FIN Flag Count",
+    "SYN Flag Count",
+    "RST Flag Count",
+    "PSH Flag Count",
+    "ACK Flag Count",
+    "URG Flag Count",
+    "CWR Flag Count",
+    "ECE Flag Count",
+    "Down/Up Ratio",
+    "Average Packet Size",
+    "Fwd Segment Size Avg",
+    "Bwd Segment Size Avg",
+    "Fwd Bytes/Bulk Avg",
+    "Fwd Packet/Bulk Avg",
+    "Fwd Bulk Rate Avg",
+    "Bwd Bytes/Bulk Avg",
+    "Bwd Packet/Bulk Avg",
+    "Bwd Bulk Rate Avg",
+    "Subflow Fwd Packets",
+    "Subflow Fwd Bytes",
+    "Subflow Bwd Packets",
+    "Subflow Bwd Bytes",
+    "FWD Init Win Bytes",
+    "Bwd Init Win Bytes",
+    "Fwd Act Data Pkts",
+    "Fwd Seg Size Min",
+    "Active Mean",
+    "Active Std",
+    "Active Max",
+    "Active Min",
+    "Idle Mean",
+    "Idle Std",
+    "Idle Max",
+    "Idle Min",
+    "ICMP Code",
+    "ICMP Type",
+    "Total TCP Flow Time"
+  ],
+  "classes": {
+    "benign": 0,
+    "attack": 1
+  },
+  "origin_columns": [
+    "source_file_index",
+    "id",
+    "original_label_index"
+  ],
+  "source_files": [
+    "monday.csv",
+    "tuesday.csv",
+    "wednesday.csv",
+    "thursday.csv",
+    "friday.csv"
+  ],
+  "original_label_indices": {
+    "BENIGN": 0,
+    "Botnet": 1,
+    "Botnet - Attempted": 2,
+    "DDoS": 3,
+    "DoS GoldenEye": 4,
+    "DoS GoldenEye - Attempted": 5,
+    "DoS Hulk": 6,
+    "DoS Hulk - Attempted": 7,
+    "DoS Slowhttptest": 8,
+    "DoS Slowhttptest - Attempted": 9,
+    "DoS Slowloris": 10,
+    "DoS Slowloris - Attempted": 11,
+    "FTP-Patator": 12,
+    "FTP-Patator - Attempted": 13,
+    "Heartbleed": 14,
+    "Infiltration": 15,
+    "Infiltration - Attempted": 16,
+    "Infiltration - Portscan": 17,
+    "Portscan": 18,
+    "SSH-Patator": 19,
+    "SSH-Patator - Attempted": 20,
+    "Web Attack - Brute Force": 21,
+    "Web Attack - Brute Force - Attempted": 22,
+    "Web Attack - SQL Injection": 23,
+    "Web Attack - SQL Injection - Attempted": 24,
+    "Web Attack - XSS": 25,
+    "Web Attack - XSS - Attempted": 26
+  },
+  "sample": {
+    "source_split": "train",
+    "without_replacement": true,
+    "stratification": "original labels; at least one record per label",
+    "records": 100000,
+    "benign": 75923,
+    "attack": 24077,
+    "original_labels": {
+      "BENIGN": 75343,
+      "Botnet": 36,
+      "Botnet - Attempted": 195,
+      "DDoS": 4531,
+      "DoS GoldenEye": 361,
+      "DoS GoldenEye - Attempted": 5,
+      "DoS Hulk": 7545,
+      "DoS Hulk - Attempted": 29,
+      "DoS Slowhttptest": 84,
+      "DoS Slowhttptest - Attempted": 161,
+      "DoS Slowloris": 185,
+      "DoS Slowloris - Attempted": 89,
+      "FTP-Patator": 190,
+      "FTP-Patator - Attempted": 1,
+      "Heartbleed": 1,
+      "Infiltration": 3,
+      "Infiltration - Attempted": 3,
+      "Infiltration - Portscan": 3381,
+      "Portscan": 7610,
+      "SSH-Patator": 142,
+      "SSH-Patator - Attempted": 2,
+      "Web Attack - Brute Force": 4,
+      "Web Attack - Brute Force - Attempted": 62,
+      "Web Attack - SQL Injection": 2,
+      "Web Attack - SQL Injection - Attempted": 1,
+      "Web Attack - XSS": 2,
+      "Web Attack - XSS - Attempted": 32
+    }
+  },
+  "validation": {
+    "records": 315000,
+    "metrics": {
+      "confusion_matrix": {
+        "tn": 239171,
+        "fp": 13,
+        "fn": 247,
+        "tp": 75569
+      },
+      "accuracy": 0.9991746031746032,
+      "precision": 0.999828001375989,
+      "recall": 0.9967421124828533,
+      "f1": 0.9982826721621157,
+      "false_positive_rate": 5.435146163622985e-05,
+      "roc_auc": 0.9999849203766462
+    },
+    "by_original_label": {
+      "BENIGN": {
+        "records": 237387,
+        "class": "benign",
+        "predicted_attack": 10
+      },
+      "Botnet": {
+        "records": 111,
+        "class": "attack",
+        "predicted_attack": 86
+      },
+      "Botnet - Attempted": {
+        "records": 608,
+        "class": "benign",
+        "predicted_attack": 3
+      },
+      "DDoS": {
+        "records": 14272,
+        "class": "attack",
+        "predicted_attack": 14272
+      },
+      "DoS GoldenEye": {
+        "records": 1135,
+        "class": "attack",
+        "predicted_attack": 1074
+      },
+      "DoS GoldenEye - Attempted": {
+        "records": 12,
+        "class": "benign",
+        "predicted_attack": 0
+      },
+      "DoS Hulk": {
+        "records": 23770,
+        "class": "attack",
+        "predicted_attack": 23768
+      },
+      "DoS Hulk - Attempted": {
+        "records": 87,
+        "class": "benign",
+        "predicted_attack": 0
+      },
+      "DoS Slowhttptest": {
+        "records": 261,
+        "class": "attack",
+        "predicted_attack": 254
+      },
+      "DoS Slowhttptest - Attempted": {
+        "records": 505,
+        "class": "benign",
+        "predicted_attack": 0
+      },
+      "DoS Slowloris": {
+        "records": 579,
+        "class": "attack",
+        "predicted_attack": 573
+      },
+      "DoS Slowloris - Attempted": {
+        "records": 277,
+        "class": "benign",
+        "predicted_attack": 0
+      },
+      "FTP-Patator": {
+        "records": 596,
+        "class": "attack",
+        "predicted_attack": 594
+      },
+      "FTP-Patator - Attempted": {
+        "records": 2,
+        "class": "benign",
+        "predicted_attack": 0
+      },
+      "Heartbleed": {
+        "records": 2,
+        "class": "attack",
+        "predicted_attack": 0
+      },
+      "Infiltration": {
+        "records": 6,
+        "class": "attack",
+        "predicted_attack": 1
+      },
+      "Infiltration - Attempted": {
+        "records": 9,
+        "class": "benign",
+        "predicted_attack": 0
+      },
+      "Infiltration - Portscan": {
+        "records": 11949,
+        "class": "attack",
+        "predicted_attack": 11847
+      },
+      "Portscan": {
+        "records": 22675,
+        "class": "attack",
+        "predicted_attack": 22648
+      },
+      "SSH-Patator": {
+        "records": 444,
+        "class": "attack",
+        "predicted_attack": 439
+      },
+      "SSH-Patator - Attempted": {
+        "records": 4,
+        "class": "benign",
+        "predicted_attack": 0
+      },
+      "Web Attack - Brute Force": {
+        "records": 11,
+        "class": "attack",
+        "predicted_attack": 11
+      },
+      "Web Attack - Brute Force - Attempted": {
+        "records": 194,
+        "class": "benign",
+        "predicted_attack": 0
+      },
+      "Web Attack - SQL Injection": {
+        "records": 2,
+        "class": "attack",
+        "predicted_attack": 0
+      },
+      "Web Attack - SQL Injection - Attempted": {
+        "records": 1,
+        "class": "benign",
+        "predicted_attack": 0
+      },
+      "Web Attack - XSS": {
+        "records": 3,
+        "class": "attack",
+        "predicted_attack": 2
+      },
+      "Web Attack - XSS - Attempted": {
+        "records": 98,
+        "class": "benign",
+        "predicted_attack": 0
+      }
+    }
+  },
+  "test_used": false,
+  "classification_rule": "attack if P(attack) > 0.5; benign otherwise",
+  "complexity": {
+    "trees": 100,
+    "depth_min": 12,
+    "depth_max": 12,
+    "depth_mean": 12.0,
+    "nodes_total": 20096,
+    "leaves_total": 10098
+  },
+  "artifacts": {
+    "model": {
+      "file": "model.joblib",
+      "bytes": 1650689,
+      "sha256": "f7057c747883939bf10c9b5068ec858a1d2d8b84b1e1f3d1d257c0fd50cbfab4"
+    },
+    "sample_indices": {
+      "file": "sample_indices.npy",
+      "bytes": 800128,
+      "sha256": "7867a88df3ad8066a433bb71b4ae11b3e6ae6684e965477e1293fdd1079a08c1",
+      "shape": [
+        100000
+      ],
+      "dtype": "int64"
+    },
+    "sample_origin": {
+      "file": "sample_origin.npy",
+      "bytes": 2400128,
+      "sha256": "228b06308bad1b9abc7c7aab31aac41cabdd8e28095a8b2662e5d6255ffe060e",
+      "shape": [
+        100000,
+        3
+      ],
+      "dtype": "int64"
+    },
+    "validation_predictions": {
+      "file": "validation_predictions.npy",
+      "bytes": 315128,
+      "sha256": "38fc8d598cea7bdbe25f00962a659aadde00cad28907c8170baf8c3ca28c0605",
+      "shape": [
+        315000
+      ],
+      "dtype": "int8"
+    },
+    "validation_attack_probability": {
+      "file": "validation_attack_probability.npy",
+      "bytes": 2520128,
+      "sha256": "a6a744b6aaaf7dcb6a2441efea2c1cd07401be3797313a70480d5b38d5b0181a",
+      "shape": [
+        315000
+      ],
+      "dtype": "float64"
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "libraries": {
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "scipy": "1.18.1",
+      "joblib": "1.6.0"
+    },
+    "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+    "cpu": "13th Gen Intel(R) Core(TM) i5-1334U",
+    "logical_cpus": 12
+  },
+  "resources": {
+    "fit_seconds": 32.79748030100018,
+    "validation_seconds": 2.6577001980040222,
+    "peak_process_memory_mib": 1447.9453125,
+    "elapsed_seconds": 41.59629636304453
+  }
+}

@@ -11,6 +11,9 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 class Settings:
     raw_data_dir: Path = PROJECT_ROOT / "cicids-dataset"
     derived_data_dir: Path = PROJECT_ROOT / "derived-data"
+    training_runs_dir: Path = PROJECT_ROOT / "training-runs"
+    reports_dir: Path = PROJECT_ROOT / "relatorios"
+    forest_pilot_config: Path = PROJECT_ROOT / "configs" / "random-forest-pilot.json"
     source_files: tuple[str, ...] = (
         "monday.csv",
         "tuesday.csv",

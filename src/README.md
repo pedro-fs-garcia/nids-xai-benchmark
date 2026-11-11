@@ -1,6 +1,6 @@
 # Ambiente Python (TG-005)
 
-Ambiente virtual isolado para os exercícios de Machine Learning (TG-006, TG-007) antes de trabalhar com os CSVs do CIC-IDS2017.
+Ambiente virtual para os exercícios de aprendizado de máquina, a preparação dos dados e o treinamento dos classificadores.
 
 ## Recriar o ambiente e executar o exemplo
 
@@ -60,6 +60,20 @@ O `manifest.json` registra os hashes dos CSVs e dos arquivos gerados, a configur
 
 A execução leva cerca de 2,5 minutos e usa cerca de 2,5 GB de memória. Duas execuções seguidas produzem arquivos idênticos.
 
+## Primeiro treinamento do Random Forest
+
+```bash
+python main.py treinar-rf-piloto
+```
+
+O comando extrai uma amostra de 100 mil registros do conjunto de treino, preserva os 27 rótulos originais na amostra e avalia o modelo no conjunto completo de validação. A configuração está em [configs/random-forest-pilot.json](../configs/random-forest-pilot.json). As 100 árvores têm profundidade máxima de 12 e usam dois trabalhadores. Essa configuração serve à avaliação inicial e ainda será comparada a outras.
+
+Cada execução cria um diretório em `training-runs/random-forest-pilot/`. O arquivo `model.joblib` contém o modelo, a ordem das 80 entradas e o mapa das classes. `report.json` registra a configuração completa, as métricas de validação, o tempo de ajuste, o pico de memória do processo, as versões e os hashes dos dados e dos artefatos.
+
+`sample_indices.npy` guarda as posições usadas em `X_train.npy`; `sample_origin.npy` guarda o arquivo de origem, o `id` e o rótulo original dos registros da amostra. `validation_predictions.npy` e `validation_attack_probability.npy` guardam as previsões e as probabilidades de ataque na ordem dos registros da validação. Os arquivos `.npy` e `.joblib` ficam fora do Git.
+
+O relatório legível é gravado em `relatorios/random-forest-pilot-<execução>.md`. A avaliação inicial usa apenas treino e validação; o conjunto de teste fica reservado para a avaliação final.
+
 ## Testes
 
 ```bash
@@ -67,7 +81,7 @@ pip install -r requirements-dev.txt
 python -m pytest
 ```
 
-Os testes unitários cobrem as regras da preparação dos dados com o repositório substituído. Os testes de integração leem e gravam arquivos pequenos em um diretório temporário.
+Os testes cobrem as regras da preparação dos dados, a amostragem para o treinamento e o cálculo das métricas. Os testes de integração verificam arquivos pequenos e o salvamento e carregamento do Random Forest em um diretório temporário.
 
 ## TG-006: árvore de decisão e Random Forest no Iris
 

@@ -3,3 +3,5 @@ roadmap/
 references/
 *.pdf
 derived-data/*.npy
+training-runs/**/*.npy
+training-runs/**/*.joblib

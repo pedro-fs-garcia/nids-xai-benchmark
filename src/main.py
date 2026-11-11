@@ -5,6 +5,7 @@ import sys
 from collections.abc import Sequence
 
 from domains.data_preparation import router as data_preparation_router
+from domains.model_training import router as model_training_router
 
 
 def verify_environment(_args: argparse.Namespace) -> int:
@@ -29,6 +30,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     environment.set_defaults(handler=verify_environment)
     data_preparation_router.register(subparsers)
+    model_training_router.register(subparsers)
     return parser
 
 
