@@ -10,7 +10,7 @@ A partir de `src/`:
 python3 -m venv venv
 source venv/bin/activate          # Windows: venv\Scripts\activate
 pip install -r requirements.txt
-python main.py
+python main.py verificar-ambiente
 ```
 
 Saída esperada:
@@ -38,7 +38,36 @@ Geradas com `pip freeze` em 2026-11-10, Python 3.12.3. Ver [requirements.txt](re
 
 ## `main.py`
 
-Importa o scikit-learn e carrega o conjunto Iris (`sklearn.datasets.load_iris`), sem treinar nenhum modelo — isso é tarefa da TG-006.
+Ponto de entrada dos comandos do projeto. `python main.py verificar-ambiente` importa o scikit-learn e carrega o conjunto Iris (`sklearn.datasets.load_iris`), sem treinar nenhum modelo.
+
+## Preparação dos dados
+
+```bash
+python main.py preparar-dados
+```
+
+O comando lê os cinco CSVs de `cicids-dataset/`, aplica as decisões 1 a 4 de [docs/decisoes.md](../docs/decisoes.md) e grava em `derived-data/` os conjuntos de treino, validação e teste. Os CSVs originais não são alterados, e o comando falha se algum deles mudar durante a execução.
+
+Cada conjunto tem três arquivos:
+
+| Arquivo | Conteúdo | Tipo |
+| --- | --- | --- |
+| `X_<conjunto>.npy` | As 80 entradas do classificador, na ordem de [docs/dicionario-atributos.md](../docs/dicionario-atributos.md). | `float64` |
+| `y_<conjunto>.npy` | O rótulo binário: 0 para benigno e 1 para ataque. | `int8` |
+| `origin_<conjunto>.npy` | O índice do arquivo original, o `id` do registro e o índice do rótulo original. | `int64` |
+
+O `manifest.json` registra os hashes dos CSVs e dos arquivos gerados, a configuração, os nomes das entradas, o mapa dos rótulos originais, as contagens de cada conjunto e o resultado das verificações de independência. Os `.npy` ficam fora do git; o manifesto é versionado.
+
+A execução leva cerca de 2,5 minutos e usa cerca de 2,5 GB de memória. Duas execuções seguidas produzem arquivos idênticos.
+
+## Testes
+
+```bash
+pip install -r requirements-dev.txt
+python -m pytest
+```
+
+Os testes unitários cobrem as regras da preparação dos dados com o repositório substituído. Os testes de integração leem e gravam arquivos pequenos em um diretório temporário.
 
 ## TG-006: árvore de decisão e Random Forest no Iris
 

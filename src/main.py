@@ -1,21 +1,42 @@
-"""Verifica o ambiente Python do TG-005.
+"""Ponto de entrada do projeto. Monta os subcomandos."""
 
-Importa as bibliotecas instaladas e carrega um conjunto de dados de exemplo
-(Iris), sem treinar nenhum modelo. Isso fica para a TG-006.
-"""
+import argparse
+import sys
+from collections.abc import Sequence
 
-import sklearn
-from sklearn.datasets import load_iris
+from domains.data_preparation import router as data_preparation_router
 
 
-def main() -> None:
+def verify_environment(_args: argparse.Namespace) -> int:
+    """Importa o scikit-learn e carrega o conjunto Iris, sem treinar nenhum modelo."""
+    import sklearn
+    from sklearn.datasets import load_iris
+
     print(f"scikit-learn {sklearn.__version__}")
 
     iris = load_iris()
     classes = [str(name) for name in iris.target_names]
     print(f"Exemplo carregado: Iris, {iris.data.shape[0]} amostras, "
           f"{iris.data.shape[1]} atributos, classes {classes}")
+    return 0
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description="Comandos do projeto.")
+    subparsers = parser.add_subparsers(dest="command", required=True)
+    environment = subparsers.add_parser(
+        "verificar-ambiente", help="Confere se as bibliotecas do ambiente estão instaladas."
+    )
+    environment.set_defaults(handler=verify_environment)
+    data_preparation_router.register(subparsers)
+    return parser
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    args = build_parser().parse_args(argv)
+    handler = args.handler
+    return int(handler(args))
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

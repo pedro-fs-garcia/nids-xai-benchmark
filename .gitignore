@@ -2,3 +2,4 @@ cicids-dataset/
 roadmap/
 references/
 *.pdf
+derived-data/*.npy
