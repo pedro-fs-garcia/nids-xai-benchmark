@@ -17,6 +17,7 @@ class Settings:
     forest_comparison_config: Path = PROJECT_ROOT / "configs" / "random-forest-comparison.json"
     xgboost_config: Path = PROJECT_ROOT / "configs" / "xgboost-comparison.json"
     model_freezing_config: Path = PROJECT_ROOT / "configs" / "model-freezing.json"
+    tree_shap_config: Path = PROJECT_ROOT / "configs" / "tree-shap.json"
     source_files: tuple[str, ...] = (
         "monday.csv",
         "tuesday.csv",

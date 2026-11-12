@@ -1,0 +1,66 @@
+{
+  "config": {
+    "explainer": {
+      "feature_perturbation": "tree_path_dependent",
+      "model_output": "raw",
+      "approximate": false,
+      "check_additivity": false
+    },
+    "pilot_run": "training-runs/random-forest-pilot/20261111T121026065528Z",
+    "frozen_run": "training-runs/frozen-models/20261111T181031847482Z",
+    "example": {
+      "original_label": "Portscan",
+      "predicted_class": 1
+    },
+    "validation_sample": {
+      "size": 10000,
+      "seed": 42,
+      "minimum_per_label": 20
+    },
+    "tolerances": {
+      "random-forest": {
+        "sum_identity": 1e-09
+      },
+      "xgboost": {
+        "sum_identity": 0.0001,
+        "reference_value": 1e-05
+      }
+    },
+    "measurement": {
+      "flows": 1000,
+      "batch_sizes": [
+        1,
+        10,
+        100,
+        1000
+      ],
+      "processes": 5,
+      "passes": 10,
+      "cpu": 2,
+      "threads": 1,
+      "require_mains_power": true
+    }
+  },
+  "config_sha256": "4578aea08402859e3054a6848947c80311d65860a74aa52579e5dcb8fc45ee52",
+  "validation_run": "training-runs/tree-shap/validacao/20261112T111512985729Z",
+  "frozen_run": "training-runs/frozen-models/20261111T181031847482Z",
+  "flow_indices": {
+    "file": "flow_indices.npy",
+    "bytes": 8128,
+    "sha256": "17b93951096d09c5d6bda73d3ff508e15bf73c26b5172da095d90e4e2eb710a4",
+    "shape": [
+      1000
+    ],
+    "dtype": "int64"
+  },
+  "flows": {
+    "file": "flows.npy",
+    "bytes": 640128,
+    "sha256": "a4ad0d2ce3b1a9a29f6cc57c180e3bc0d21086b51a7048f0d935842827bbfbf4",
+    "shape": [
+      1000,
+      80
+    ],
+    "dtype": "float64"
+  }
+}

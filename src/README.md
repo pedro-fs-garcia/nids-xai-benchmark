@@ -22,7 +22,7 @@ Exemplo carregado: Iris, 150 amostras, 4 atributos, classes ['setosa', 'versicol
 
 ## Versões instaladas
 
-Geradas com `pip freeze` em 2026-11-10, Python 3.12.3. Ver [requirements.txt](requirements.txt).
+Geradas com `pip freeze` em 2026-11-12, Python 3.12.3. Ver [requirements.txt](requirements.txt).
 
 | Biblioteca | Versão |
 | --- | --- |
@@ -34,8 +34,10 @@ Geradas com `pip freeze` em 2026-11-10, Python 3.12.3. Ver [requirements.txt](re
 | cloudpickle | 3.1.2 |
 | narwhals | 2.28.0 |
 | xgboost-cpu | 3.4.1 |
+| shap | 0.54.1 |
+| matplotlib | 3.11.2 |
 
-`numpy`, `scipy`, `joblib`, `threadpoolctl`, `cloudpickle` e `narwhals` são dependências do scikit-learn, não instaladas diretamente.
+`scikit-learn`, `xgboost-cpu`, `shap` e `matplotlib` são instaladas diretamente. As demais bibliotecas do [requirements.txt](requirements.txt) são dependências delas e ficam fixadas para reproduzir o ambiente inteiro. As versões de `numpy`, `scipy`, `scikit-learn`, `joblib` e `xgboost-cpu` são as exigidas pelos modelos congelados.
 
 ## `main.py`
 
@@ -89,6 +91,28 @@ Substitua `random-forest` por `xgboost` nos caminhos para usar o segundo modelo.
 
 Os arquivos binários `.joblib`, `.ubj` e `.npy` ficam fora do Git e precisam acompanhar os manifestos para usar os pacotes em outro ambiente. O [relatório de verificação](../relatorios/model-freezing-20261111T181031847482Z.md) registra os resultados e os hashes dos modelos.
 
+## Explicações TreeSHAP
+
+Os três comandos abaixo leem [configs/tree-shap.json](../configs/tree-shap.json). O explicador segue a [decisão 7](../docs/decisoes.md): TreeSHAP path-dependent, sem conjunto de referência e sem aproximação. O adaptador em `core/tree_explainer.py` é o único módulo que importa o `shap` e recusa qualquer outra configuração. As explicações usam somente o conjunto de validação; o carregamento recusa o teste.
+
+```bash
+python main.py explicar-exemplo
+```
+
+Explica um registro da validação com o Random Forest piloto. O registro é o Portscan classificado como ataque com a probabilidade de ataque mediana. O comando grava uma nota e uma figura em `relatorios/treeshap-exemplo-<execução>.md` e `.png`, identificadas como exercício de aprendizado, e o registro da execução em `training-runs/tree-shap/exemplo/`.
+
+```bash
+python main.py validar-treeshap
+```
+
+Explica uma amostra de 10.000 registros da validação, estratificada pelos rótulos originais, com os dois modelos congelados. Confere a ordem dos atributos, a classe explicada, a identidade `valor de referência + soma das contribuições = saída explicada`, a contribuição zero dos atributos sem divisão e, no XGBoost, o valor de referência. As tolerâncias estão na configuração. O comando grava o resultado de cada verificação em `training-runs/tree-shap/validacao/` e em `relatorios/treeshap-validacao-<execução>.md`, e termina com erro quando alguma verificação é reprovada.
+
+```bash
+python main.py medir-treeshap --validacao ../training-runs/tree-shap/validacao/<execução aprovada>
+```
+
+Mede o tempo de inferência e o tempo de explicação de 1.000 fluxos da amostra validada, em lotes de 1, 10, 100 e 1.000 fluxos. Cada classificador roda em cinco processos Python novos, fixos na CPU lógica 2, com uma thread. O comando só aceita uma execução de `validar-treeshap` aprovada com a mesma configuração e as mesmas versões, e exige a máquina ligada à tomada. `medir-treeshap-processo` é o comando interno que executa cada repetição. Os tempos de cada chamada ficam em `training-runs/tree-shap/medicao/`, e o resumo, em `relatorios/treeshap-medicao-<execução>.md`. Esses tempos não são latência de classificação nem latência de explicação.
+
 ## Primeiro treinamento do Random Forest
 
 ```bash
@@ -138,7 +162,7 @@ pip install -r requirements-dev.txt
 python -m pytest
 ```
 
-Os testes cobrem as regras da preparação dos dados, a amostragem para o treinamento e o cálculo das métricas. Os testes de integração verificam arquivos pequenos e o salvamento e carregamento do Random Forest em um diretório temporário.
+Os testes cobrem as regras da preparação dos dados, a amostragem para o treinamento e o cálculo das métricas. Os testes do TreeSHAP usam um Random Forest e um XGBoost sintéticos e comparam as contribuições com o valor de Shapley calculado por força bruta, além da identidade da soma, dos atributos sem divisão e das recusas do adaptador. Os testes de integração verificam arquivos pequenos e o salvamento e carregamento do Random Forest em um diretório temporário.
 
 ## TG-006: árvore de decisão e Random Forest no Iris
 

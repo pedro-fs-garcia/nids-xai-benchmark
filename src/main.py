@@ -7,6 +7,7 @@ from collections.abc import Sequence
 from domains.data_preparation import router as data_preparation_router
 from domains.model_training import router as model_training_router
 from domains.model_artifacts import router as model_artifacts_router
+from domains.explanations import router as explanations_router
 
 
 def verify_environment(_args: argparse.Namespace) -> int:
@@ -33,6 +34,7 @@ def build_parser() -> argparse.ArgumentParser:
     data_preparation_router.register(subparsers)
     model_training_router.register(subparsers)
     model_artifacts_router.register(subparsers)
+    explanations_router.register(subparsers)
     return parser
 
 

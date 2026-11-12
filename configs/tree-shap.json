@@ -1,0 +1,37 @@
+{
+  "explainer": {
+    "feature_perturbation": "tree_path_dependent",
+    "model_output": "raw",
+    "approximate": false,
+    "check_additivity": false
+  },
+  "pilot_run": "training-runs/random-forest-pilot/20261111T121026065528Z",
+  "frozen_run": "training-runs/frozen-models/20261111T181031847482Z",
+  "example": {
+    "original_label": "Portscan",
+    "predicted_class": 1
+  },
+  "validation_sample": {
+    "size": 10000,
+    "seed": 42,
+    "minimum_per_label": 20
+  },
+  "tolerances": {
+    "random-forest": {
+      "sum_identity": 1e-09
+    },
+    "xgboost": {
+      "sum_identity": 0.0001,
+      "reference_value": 1e-05
+    }
+  },
+  "measurement": {
+    "flows": 1000,
+    "batch_sizes": [1, 10, 100, 1000],
+    "processes": 5,
+    "passes": 10,
+    "cpu": 2,
+    "threads": 1,
+    "require_mains_power": true
+  }
+}

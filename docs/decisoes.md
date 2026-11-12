@@ -240,3 +240,35 @@ A configuração escolhida recebe treinamento com todos os 1.469.983 registros d
 A configuração com 100 árvores e profundidade 6 obteve o maior F1 e 136 erros na validação, contra 228 com 50 árvores e 188 com profundidade 4. Essa comparação curta sustenta a escolha entre as três configurações avaliadas. Ela não estabelece significância estatística nem mede o custo de gerar explicações.
 
 Os demais parâmetros e a configuração efetiva da biblioteca estão nos artefatos da execução. O [relatório de avaliação](../relatorios/xgboost-comparison-20261111T175006216484Z.md) apresenta as métricas de validação e teste, a matriz de confusão e as contagens por rótulo. A comparação é definida em [configs/xgboost-comparison.json](../configs/xgboost-comparison.json).
+
+## 7. Configuração do TreeSHAP
+
+### Decisão
+
+- O TreeSHAP usa a perturbação path-dependent, sem conjunto de referência e sem aproximação. Na biblioteca `shap` 0.54.1, isso corresponde a `feature_perturbation="tree_path_dependent"` na construção do explicador e a `approximate=False` na chamada de `shap_values`.
+- Os termos path-dependent e interventional são os de Lundberg et al. (2020) ([transcrição local](bibliography/from-local-explanations-to-global-understanding-with-explainable-ai-for-trees.md)). Na biblioteca `shap`, eles correspondem aos valores `"tree_path_dependent"` e `"interventional"` de `feature_perturbation`.
+- Os valores de Shapley são calculados exatamente para a função de valor definida pela cobertura do nó. Essa função aproxima a expectativa interventional, que só o cálculo com conjunto de referência obtém exatamente (Lundberg et al., 2020, Methods, "TreeExplainer with path dependent feature perturbation"). Nos documentos, "exato" qualifica o cálculo dos valores de Shapley, e não a expectativa.
+- No Random Forest, a saída explicada é a probabilidade de ataque. O explicador usa `model_output="raw"` e a classe 1. A saída bruta da classe 1 é a média, entre as árvores, da proporção de ataques na folha alcançada, que é o valor de `predict_proba` para a classe 1.
+- No XGBoost, a saída explicada é o escore anterior à sigmoide, na escala de log-odds, também com `model_output="raw"`. A classe continua a vir da probabilidade, pelo limiar da decisão 6.
+- O valor de referência é a saída esperada desse cálculo, e não um conjunto de dados.
+
+### Justificativa
+
+- O custo do cálculo interventional cresce linearmente com o número de amostras do conjunto de referência (Lundberg et al., 2020, Methods, "TreeExplainer with interventional feature perturbation"). Esse número seria um parâmetro arbitrário a mais e mudaria a sobrecarga de latência medida. A mesma subseção do artigo dá dois limites diferentes para esse custo, O(TLDN) e O(TRL), e por isso esta decisão não reproduz a fórmula.
+- O custo do cálculo path-dependent, O(TLD²), não depende de conjunto de referência. O cálculo dispensa esse conjunto porque usa a cobertura do nó guardada no próprio modelo (Methods, "TreeExplainer with path dependent feature perturbation").
+- O cálculo path-dependent explica a saída bruta das árvores. No `shap` 0.54.1, ele só aceita `model_output="raw"`, e `model_output="probability"` exige o cálculo interventional. Segundo Lundberg et al. (2020), não há forma simples de ajustar os valores de Shapley a uma transformação não linear da saída, e o cálculo dessas transformações percorre cada amostra do conjunto de referência (Methods, "TreeExplainer with interventional feature perturbation"). Por isso, o XGBoost é explicado na escala de log-odds, e não de probabilidade.
+
+### Consequências
+
+- As contribuições do Random Forest ficam na escala de probabilidade, e as do XGBoost na escala de log-odds. As magnitudes das contribuições não são comparáveis entre os dois classificadores.
+- A implementação que calcula as contribuições difere entre os classificadores. No Random Forest, o cálculo é feito pela extensão C do `shap`. No XGBoost, o `shap` 0.54.1 delega o cálculo ao TreeSHAP do próprio XGBoost, por `Booster.predict(..., pred_contribs=True, approx_contribs=False)`. A diferença de custo do TreeSHAP entre os classificadores inclui a diferença entre as implementações.
+
+### Cobertura do nó nos dois classificadores
+
+Lundberg et al. (2020, Methods, "TreeExplainer with path dependent feature perturbation") definem a cobertura do nó como o número de registros que chegam ao nó. Cada biblioteca a calcula de um modo.
+
+- No Random Forest, o `shap` 0.54.1 usa `tree_.weighted_n_node_samples` como cobertura do nó (`shap/explainers/_tree.py`, classe `SingleTree`). No scikit-learn 1.9.1, o treino com `bootstrap=True` dá a cada registro, como peso na árvore, o número de vezes em que ele foi sorteado (`sklearn/ensemble/_forest.py`, função `_parallel_build_trees`). Na primeira árvore do Random Forest congelado, a raiz tem cobertura 1.469.983, igual ao número de sorteios, e recebe 929.107 registros distintos.
+- No XGBoost, a documentação define que "cover is the sum of second order gradient in each node" ([referência de `xgb.plot.tree`, XGBoost 3.4.0](https://xgboost.readthedocs.io/en/stable/r_docs/R-package/docs/reference/xgb.plot.tree.html)). Em `binary:logistic`, a hessiana de cada registro vale p(1 − p). Na primeira árvore do XGBoost congelado, a raiz tem cobertura 268.646,3, igual a n·p₀(1 − p₀) com n = 1.469.983 e p₀ = 0,24068305, o `base_score` do modelo.
+- No XGBoost congelado, o valor de referência devolvido por `pred_contribs` vale −1,3696141. O logit do `base_score` somado à média das folhas de cada árvore, ponderada pela soma das hessianas, vale −1,3696140.
+
+Por isso, o valor de referência não é a saída média sobre o treino em nenhum dos dois classificadores.

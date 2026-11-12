@@ -94,7 +94,6 @@ O piloto define os níveis de carga, o número de repetições e os valores dos 
 As decisões já tomadas estão em [docs/decisoes.md](../docs/decisoes.md). As decisões abaixo ainda não foram tomadas.
 
 - Política de emissão dos fluxos no NIDS. O extrator só emite um fluxo encerrado quando chega outro pacote com o mesmo identificador ou quando a captura termina, e esse atraso afeta o instante `t0`.
-- Tipo de cálculo do TreeSHAP, path-dependent (sem dados de referência) ou interventional (com conjunto de referência).
 - Critério de seleção da estratégia Síncrono condicional, que inclui a grandeza avaliada (probabilidade ou incerteza), o limiar e a forma de calibração no conjunto de validação.
 - Limites das filas e política de descarte.
 - Níveis de carga, número de repetições e valores dos critérios de viabilidade, todos definidos pelo piloto.

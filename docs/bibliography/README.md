@@ -11,8 +11,12 @@ Each article below links directly to its Markdown transcription in this director
 | Richard Zuech, Taghi M. Khoshgoftaar, and Randall Wald | [Intrusion Detection and Big Heterogeneous Data: A Survey](IntrusiondetectionandBigHeterogeneousDataaSurvey.md) | Background on intrusion detection, heterogeneous security data, and processing challenges. |
 | Gustavo de Carvalho Bertoli et al. | [An End-to-End Approach to Machine Learning in IDS: A Case Study of Stateless TCP Scan Detection](abordagem-fim-a-fim-para-uso-de-aprendizado-de-maquina.md) | End-to-end deployment and evaluation of an ML-based intrusion detector. |
 | Iman Sharafaldin, Arash Habibi Lashkari, and Ali A. Ghorbani | [Toward Generating a New Intrusion Detection Dataset and Intrusion Traffic Characterization](toward-generating-intrusion-model.md) | Construction of CIC-IDS2017, traffic scenarios, flow features, and labeling. |
+| Scott M. Lundberg et al. (2020) | [From Local Explanations to Global Understanding with Explainable AI for Trees](from-local-explanations-to-global-understanding-with-explainable-ai-for-trees.md) | Foundations of explanations for tree ensembles and TreeSHAP, the path-dependent and interventional feature perturbations, and their complexity. |
+| Scott M. Lundberg et al. (2019) | [Explainable AI for Trees: From Local Explanations to Global Understanding](from-local-to-global-understanding.md) | Preprint version of the 2020 article, with the Tree SHAP and Independent Tree SHAP algorithms and the supplementary figures. |
 
 The Bertoli et al. title is rendered in English for this index. The linked transcription retains the original Portuguese title and text.
+
+The Lundberg et al. (2020) transcription is the author manuscript NIHMS1601475 from [PubMed Central (PMC7326367)](https://pmc.ncbi.nlm.nih.gov/articles/PMC7326367/). The final edited form was published in Nature Machine Intelligence 2(1):56–67, [doi:10.1038/s42256-019-0138-9](https://doi.org/10.1038/s42256-019-0138-9). The 2019 document is the arXiv preprint 1905.04610, whose title and section structure differ from the published article.
 
 Original PDFs may be available locally but are excluded from version control by the repository's [ignore rules](../../.gitignore).
 
@@ -22,7 +26,6 @@ These references link to their external documents or publication pages. Local tr
 
 | Authors and year | Article document | Relevance to the project |
 |---|---|---|
-| Lundberg et al. (2020) | [From Local Explanations to Global Understanding with Explainable AI for Trees](https://doi.org/10.1038/s42256-019-0138-9) | Foundations of explanations for tree ensembles and TreeSHAP. |
 | Engelen, Rimmer, and Joosen (2021) | [Troubleshooting an Intrusion Detection Dataset: the CICIDS2017 Case Study](https://doi.org/10.1109/SPW53761.2021.00009) | Problems in traffic generation, flow construction, feature extraction, and labeling that inform dataset inspection and limitations. |
 | Liu, Engelen, Lynar, Essam, and Joosen (2022) | [Error Prevalence in NIDS datasets: A Case Study on CIC-IDS-2017 and CSE-CIC-IDS-2018](https://ieeexplore.ieee.org/abstract/document/9947235). IEEE CNS 2022. | Publication of the Improved CIC-IDS2017 used in this project. |
 | Authors not stated (no date) | Documentation website "Error Prevalence in NIDS datasets": [Datasets Download](https://intrusion-detection.distrinet-research.be/CNS2022/Dataset_Download.html) and [CIC-IDS 2017](https://intrusion-detection.distrinet-research.be/CNS2022/CICIDS2017.html) pages | Definition of the Attempted label, the recommendation to relabel Attempted flows as Benign, the Attempted categories, and the reason for keeping the DoS Hulk label. Accompanies Liu et al. (2022). |
