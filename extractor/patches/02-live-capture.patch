@@ -1,0 +1,73 @@
+--- a/src/main/java/cic/cs/unb/ca/jnetpcap/PacketReader.java
++++ b/src/main/java/cic/cs/unb/ca/jnetpcap/PacketReader.java
+@@ -3,6 +3,7 @@
+ import org.jnetpcap.Pcap;
+ import org.jnetpcap.PcapClosedException;
+ import org.jnetpcap.PcapHeader;
++import org.jnetpcap.PcapStat;
+ import org.jnetpcap.nio.JBuffer;
+ import org.jnetpcap.nio.JMemory;
+ import org.jnetpcap.packet.JHeader;
+@@ -39,7 +40,45 @@
+ 	private boolean readIP6;
+ 	private boolean readIP4;
+ 	private String file;
++	// NIDS: indica que a última leitura terminou sem pacote porque o tempo de espera da captura ao vivo passou.
++	private boolean lastReadTimedOut;
+ 	
++	/** NIDS: abre uma captura ao vivo, em modo promíscuo, com as mesmas regras de leitura do arquivo. */
++	public PacketReader(String device, int snaplen, int readTimeoutMillis) {
++		super();
++		this.readIP4 = true;
++		this.readIP6 = false;
++		file = device;
++		StringBuilder errbuf = new StringBuilder();
++		pcapReader = Pcap.openLive(device, snaplen, Pcap.MODE_PROMISCUOUS, readTimeoutMillis, errbuf);
++		if (pcapReader == null) {
++			throw new IllegalStateException("Falha ao abrir a interface " + device + ": " + errbuf);
++		}
++		this.firstPacket = 0L;
++		this.lastPacket = 0L;
++		this.tcp = new Tcp();
++		this.udp = new Udp();
++		this.icmp = new Icmp();
++		this.ipv4 = new Ip4();
++		this.ipv6 = new Ip6();
++		this.l2tp = new L2TP();
++		hdr = new PcapHeader(JMemory.POINTER);
++		buf = new JBuffer(JMemory.POINTER);
++	}
++
++	public boolean lastReadTimedOut() {
++		return lastReadTimedOut;
++	}
++
++	/** NIDS: estatísticas do libpcap, ou null quando a fonte não as fornece. */
++	public long[] captureStats() {
++		PcapStat stat = new PcapStat();
++		if (pcapReader.stats(stat) != Pcap.OK) {
++			return null;
++		}
++		return new long[] {stat.getRecv(), stat.getDrop(), stat.getIfDrop()};
++	}
++
+ 	public PacketReader(String filename) {
+ 		super();	
+ 		this.readIP4 = true;
+@@ -80,8 +119,15 @@
+ 	public BasicPacketInfo nextPacket(){
+ 		 PcapPacket      packet;
+ 		 BasicPacketInfo packetInfo = null;
++		 lastReadTimedOut = false;
+ 		 try{
+-			 if(pcapReader.nextEx(hdr,buf) == Pcap.NEXT_EX_OK){
++			 int status = pcapReader.nextEx(hdr,buf);
++			 if(status == Pcap.NEXT_EX_TIMEDOUT){
++				 // NIDS: só ocorre na captura ao vivo; a leitura de arquivo nunca devolve este código.
++				 lastReadTimedOut = true;
++				 return null;
++			 }
++			 if(status == Pcap.NEXT_EX_OK){
+ 				 packet = new PcapPacket(hdr, buf);
+ 				 packet.scan(Ethernet.ID);				 
+ 				 

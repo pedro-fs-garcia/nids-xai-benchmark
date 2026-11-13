@@ -1,0 +1,17 @@
+{
+  "source": {
+    "file": "cicids-dataset/pcap/Tuesday-WorkingHours.pcap",
+    "mirror": "https://huggingface.co/datasets/bencorn/CICIDS2017",
+    "mirror_commit": "811c007f08d693a8a8b4226c197c138391806ce6",
+    "path_in_mirror": "pcaps/Tuesday-WorkingHours.pcap",
+    "bytes": 11048283608,
+    "sha256": "080c2250154c5a174c03660ed0f75a3858d41a27511ba716e780d7bcb1ec4c57"
+  },
+  "flows_csv": "cicids-dataset/tuesday.csv",
+  "output_dir": "derived-data/pcap/tuesday",
+  "segments": {
+    "dev": "2017-07-04T11:58:44Z",
+    "validacao": "2017-07-04T12:30:00Z"
+  },
+  "border_seconds": 120
+}

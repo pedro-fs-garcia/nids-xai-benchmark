@@ -1,0 +1,275 @@
+{
+  "stage": "reference nids",
+  "run_id": "20261112T233620682317Z",
+  "strategy": "Sem XAI",
+  "passed": true,
+  "checks": {
+    "emitted_equals_received": true,
+    "received_equals_classified_plus_errors": true,
+    "timestamps_ordered": true,
+    "no_packets_after_emission_in_file_mode": true
+  },
+  "model": "xgboost",
+  "source": {
+    "kind": "arquivo",
+    "pcap": "/home/pedro/projects/explicabilidade-ia/derived-data/pcap/tuesday/segment-validacao.pcap"
+  },
+  "segment": {
+    "name": "validacao",
+    "stop": "2017-07-04T12:30:00Z",
+    "stop_us": 1499171400000000,
+    "pcap": {
+      "file": "derived-data/pcap/tuesday/segment-validacao.pcap",
+      "bytes": 4847864345,
+      "sha256": "a22b9c78f256cf981fa24b832c83bf4a221c0ff883a5d1898a4abf5edbfab16a"
+    },
+    "reference": {
+      "file": "derived-data/pcap/tuesday/reference-validacao.csv",
+      "bytes": 17578153,
+      "sha256": "e5ed458970165363866d226a86541fafe1085dfd718d02436230df99f16e8996"
+    },
+    "border_seconds": 120,
+    "manifest": "derived-data/pcap/tuesday/manifest.json",
+    "manifest_sha256": "caabbefeb879428f05e778b0df32c4637518901159d9705c759a2dffdecbd3b0"
+  },
+  "config": "configs/nids.json",
+  "config_sha256": "9da9b1886f3f9f8040ff0d4fd87bc82fb5e486b0164e521e4e4df006cb440973",
+  "frozen_run": "training-runs/frozen-models/20261111T181031847482Z",
+  "model_manifest_sha256": "ed0b315b8aee00c1988a6fb28a69ea3a0fc4c901fdc59832b7a2d451f54ea1e7",
+  "classifier_threads": 1,
+  "extractor_options": {
+    "snaplen": 65535,
+    "read-timeout-ms": 100,
+    "idle-margin-us": 2000000
+  },
+  "extractor_build": {
+    "extractor_commit": "13a061520b862d605eea746c79ca4033b30d98fc",
+    "java": "openjdk version \"17.0.20.1\" 2026-08-18",
+    "release": 8,
+    "libpcap": "/lib/x86_64-linux-gnu/libpcap.so.0.8",
+    "jars": {
+      "nids-extractor.jar": "2751021aa98fa24ff67b67d32e67bf6340483d9d5a94f2826e3f7eecd8deaf02",
+      "reference-extractor.jar": "2d6ae902ef5159ca357d5b472017e4163a8d987ce3ae51b2bf2b2efa9937c5ad"
+    },
+    "patches": {
+      "01-flow-emission-sweep.patch": "06a76076bed3b391ca5f3d306fc2c4aecd915240296ef73d07b4bc60a8aa9ca1",
+      "02-live-capture.patch": "62eb711e3eebb64af153b54626baa7b139dc31203e7013b3859e3f3f42fa9234"
+    },
+    "sources": {
+      "NidsExtractor.java": "7df39fe84fd06b3d2ae959d1177f47e72fbe429ce757374c1ef06c675783acdc",
+      "ReferenceExtractor.java": "624309cb3acd7d933381308d23c0f87647a598ae8867608f4ecd49b663cfccec"
+    },
+    "libraries": {
+      "commons-lang3-3.6.jar": "89c27f03fff18d0b06e7afd7ef25e209766df95b6c1269d6c3ebbdea48d5f284",
+      "commons-math3-3.5.jar": "dcf9768726b82e8d7b8a928447b08bca7cfe2773d5120a63a41ec224207c1a29",
+      "jnetpcap.jar": "7dfff1e5abd453293415074dd09e10edbeb00cf37b8db9a07d44108e1a10c163",
+      "slf4j-api-1.7.25.jar": "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
+      "slf4j-nop-1.7.25.jar": "6cb127138f41b5a869f9ecdd061ad17799a0e3fe7204600797154eb0432eeb12",
+      "tika-core-1.17.jar": "77c0a63d7693dc968553f92ef061469979b04d458bb11996d7738c45c5f66b5c"
+    },
+    "native": {
+      "libjnetpcap-pcap100.so": "b758a46ef7ff3cf39b2956de4c08e19a5585cbb6aefd6ce4416566227211aec9",
+      "libjnetpcap.so": "93d8c8c53a63e448f82e778791a0a725d1345a4c80c9d7334f7c9f8067688a49"
+    }
+  },
+  "extractor_start": {
+    "extractor_commit": "13a061520b862d605eea746c79ca4033b30d98fc",
+    "flow_timeout_us": 120000000,
+    "activity_timeout_us": 5000000,
+    "source": "file",
+    "location": "/home/pedro/projects/explicabilidade-ia/derived-data/pcap/tuesday/segment-validacao.pcap",
+    "snaplen": 65535,
+    "read_timeout_ms": 100,
+    "idle_margin_us": 2000000,
+    "java_version": "17.0.20.1",
+    "monotonic_ns": 821993460645659
+  },
+  "extractor_end": {
+    "stop_reason": "end_of_file",
+    "packets_read": 3954069,
+    "packets_valid": 3946908,
+    "packets_discarded": 7161,
+    "read_timeouts": 0,
+    "packets_after_emission": 0,
+    "first_disordered_packet_id": -1,
+    "open_flows_before_flush": 2207,
+    "flows_emitted": 32108,
+    "flows_by_cause": {
+      "timeout_sweep": 29537,
+      "tcp_new_connection": 364,
+      "end_of_capture": 2207
+    },
+    "pcap_stats": null,
+    "monotonic_ns": 822091780922500
+  },
+  "shared_clock_difference_ns": 300859,
+  "flows": {
+    "received": 32108,
+    "classified": 32086,
+    "errors": 22,
+    "by_cause": {
+      "timeout_sweep": 29537,
+      "tcp_new_connection": 364,
+      "end_of_capture": 2207
+    },
+    "predictions": {
+      "0": 31397,
+      "1": 689
+    },
+    "error_examples": [
+      {
+        "seq": 257,
+        "flow_id": "192.168.10.51-224.0.0.22-0-0-0",
+        "error": "Valor não finito em Flow Bytes/s."
+      },
+      {
+        "seq": 306,
+        "flow_id": "192.168.10.17-224.0.0.22-0-0-0",
+        "error": "Valor não finito em Flow Bytes/s."
+      },
+      {
+        "seq": 348,
+        "flow_id": "192.168.10.19-224.0.0.22-0-0-0",
+        "error": "Valor não finito em Flow Bytes/s."
+      },
+      {
+        "seq": 699,
+        "flow_id": "192.168.10.12-224.0.0.22-0-0-0",
+        "error": "Valor não finito em Flow Bytes/s."
+      },
+      {
+        "seq": 1121,
+        "flow_id": "192.168.10.16-128.100.100.128-123-123-17",
+        "error": "Valor não finito em Flow IAT Mean."
+      }
+    ]
+  },
+  "timings": {
+    "inference_ns": {
+      "count": 32086,
+      "mean": 526412.8612478963,
+      "median": 316453.0,
+      "p95": 1453831.25,
+      "p99": 1924402.9500000016,
+      "min": 110674.0,
+      "max": 145602574.0
+    },
+    "classification_latency_ns": {
+      "count": 32086,
+      "mean": 73201237.52910927,
+      "median": 45957788.0,
+      "p95": 213234542.75,
+      "p99": 254130186.85000047,
+      "min": 422762.0,
+      "max": 332821749.0
+    },
+    "wait_before_inference_ns": {
+      "count": 32086,
+      "mean": 72585823.94053482,
+      "median": 45610510.0,
+      "p95": 212046590.0,
+      "p99": 252991645.25000006,
+      "min": 245578.0,
+      "max": 332306487.0
+    },
+    "delivery_ns": {
+      "count": 32086,
+      "mean": 89000.72732655986,
+      "median": 50080.5,
+      "p95": 250954.75,
+      "p99": 375281.30000000016,
+      "min": 16448.0,
+      "max": 8991346.0
+    },
+    "classified_per_second": 327.0471807013425
+  },
+  "artifacts": {
+    "classifications.jsonl": {
+      "file": "training-runs/nids/arquivo/20261112T233620682317Z/classifications.jsonl",
+      "bytes": 9467434,
+      "sha256": "469125da5670cd8eab7e724c675e8c62ca986912751d742da3cfcdbc6a790e14"
+    },
+    "flows.csv": {
+      "file": "training-runs/nids/arquivo/20261112T233620682317Z/flows.csv",
+      "bytes": 23588132,
+      "sha256": "4c4a5b4c52c2fbeac998bf3d0d9db5cdec2895d990705526aa13a1c693096b80"
+    }
+  },
+  "resources": {
+    "classifier_process": {
+      "user_seconds": 56.989907,
+      "system_seconds": 6.078178,
+      "max_rss_kib": 447992
+    },
+    "extractor_process": {
+      "user_seconds": 237.913731,
+      "system_seconds": 6.279766,
+      "max_rss_kib": 1929636
+    }
+  },
+  "cpu_state": {
+    "affinity": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "scaling_governor": {
+      "0": "powersave",
+      "1": "powersave",
+      "2": "powersave",
+      "3": "powersave",
+      "4": "powersave",
+      "5": "powersave",
+      "6": "powersave",
+      "7": "powersave",
+      "8": "powersave",
+      "9": "powersave",
+      "10": "powersave",
+      "11": "powersave"
+    },
+    "mains_power_online": true
+  },
+  "environment": {
+    "python": "3.12.3",
+    "libraries": {
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "scipy": "1.18.1",
+      "joblib": "1.6.0",
+      "xgboost-cpu": "3.4.1"
+    },
+    "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+    "cpu": "13th Gen Intel(R) Core(TM) i5-1334U",
+    "logical_cpus": 12
+  },
+  "conference": {
+    "passed": true,
+    "reference_flows": 32086,
+    "matched_inside": 29880,
+    "matched_border": 2206,
+    "reference_only_inside": 0,
+    "nids_only_inside": 21,
+    "nids_only_inside_with_nan": 21,
+    "attribute_mismatches": {},
+    "rounding_differences": 54980,
+    "max_rounding_relative": 6.0135204107969466e-15,
+    "compared_predictions": 29880,
+    "differing_predictions": 0,
+    "max_probability_difference": 0.0,
+    "probability_atol": 1e-12,
+    "labels_of_matched": {
+      "BENIGN": 29310,
+      "FTP-Patator - Attempted": 12,
+      "FTP-Patator": 558
+    }
+  }
+}

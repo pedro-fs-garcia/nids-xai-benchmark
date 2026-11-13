@@ -113,6 +113,45 @@ python main.py medir-treeshap --validacao ../training-runs/tree-shap/validacao/<
 
 Mede o tempo de inferência e o tempo de explicação de 1.000 fluxos da amostra validada, em lotes de 1, 10, 100 e 1.000 fluxos. Cada classificador roda em cinco processos Python novos, fixos na CPU lógica 2, com uma thread. O comando só aceita uma execução de `validar-treeshap` aprovada com a mesma configuração e as mesmas versões, e exige a máquina ligada à tomada. `medir-treeshap-processo` é o comando interno que executa cada repetição. Os tempos de cada chamada ficam em `training-runs/tree-shap/medicao/`, e o resumo, em `relatorios/treeshap-medicao-<execução>.md`. Esses tempos não são latência de classificação nem latência de explicação.
 
+## Tráfego de entrada do NIDS
+
+O NIDS usa o `Tuesday-WorkingHours.pcap` do CIC-IDS2017 ([decisão 10](../docs/decisoes.md)). Baixe-o do mirror e do commit indicados em [configs/pcap-preparation.json](../configs/pcap-preparation.json) para `cicids-dataset/pcap/`. A preparação exige `pcapfix`, `reordercap` e `editcap`, e o extrator compilado por [extractor/build.sh](../extractor/README.md).
+
+```bash
+python main.py preparar-pcap
+```
+
+O comando confere o tamanho e o SHA-256 do PCAP e o hash de `tuesday.csv` no manifesto dos dados. Depois aplica `pcapfix` e `reordercap` ao arquivo inteiro e corta os trechos `dev` e `validacao` a partir do início da captura. Para cada trecho, grava a tabela de referência, com os fluxos de `tuesday.csv` cujo primeiro pacote é anterior ao fim do trecho. Tudo fica em `derived-data/pcap/tuesday/`. O `manifest.json` registra hashes, contagens, versões das ferramentas e a saída de cada passo; os PCAPs e as tabelas ficam fora do Git. A preparação ocupa cerca de 22 GB e leva alguns minutos.
+
+```bash
+python main.py conferir-extracao --trecho validacao
+```
+
+O comando extrai os fluxos do trecho com o extrator original e os compara com a tabela de referência: nomes e ordem das colunas, fluxos presentes de cada lado e os valores das 80 entradas. Os fluxos que começam nos últimos 120 s do trecho formam a borda e são contados à parte. O comando também executa o extrator do NIDS no mesmo trecho e confere que as linhas de atributos são as mesmas. O relatório vai para `relatorios/extracao-pcap-<execução>.md`, e o registro, para `training-runs/traffic/extracao/`. O comando termina com erro se alguma conferência falhar.
+
+## NIDS de referência
+
+```bash
+python main.py nids-executar --modelo random-forest --trecho validacao
+python main.py nids-executar --modelo xgboost --interface eth0
+```
+
+O NIDS implementa a estratégia Sem XAI. O extrator do NIDS, em Java, forma os fluxos e os emite pela varredura do tempo limite ([decisão 8](../docs/decisoes.md)). O processo Python recebe cada fluxo por um pipe, monta as 80 entradas na ordem do manifesto do modelo congelado, chama `predict_proba`, aplica o limiar e escreve o registro no canal de saída. As marcações `t0` a `t3` e o relógio comum seguem a [decisão 9](../docs/decisoes.md). A configuração está em [configs/nids.json](../configs/nids.json).
+
+A fonte é um trecho preparado (`--trecho`), um PCAP qualquer (`--pcap`) ou uma interface (`--interface`, com permissão de captura). Com `--trecho` e sem `--interface`, o NIDS lê o arquivo do trecho e compara os fluxos e as previsões com o modelo aplicado à tabela de referência. Essa conferência não calcula métricas de detecção. SIGTERM ou SIGINT encerram a captura ao vivo, e os fluxos ainda abertos são emitidos.
+
+Cada execução grava `training-runs/nids/<arquivo|interface>/<execução>/`:
+
+| Arquivo | Conteúdo |
+| --- | --- |
+| `classifications.jsonl` | Canal de saída: um registro por fluxo classificado, com identificação do fluxo, classe e probabilidade de ataque. |
+| `flows.csv` | Um registro por fluxo recebido: causa da emissão, instantes dos pacotes, relógio da captura, `t0` a `t3`, previsão, erro e as 89 colunas do extrator. |
+| `report.json` | Contadores, verificações, resumo dos tempos, CPU e memória dos dois processos, versões e hashes. |
+
+A execução falha se os fluxos emitidos pelo extrator diferirem dos recebidos, se os recebidos diferirem dos classificados mais os erros, se alguma marcação estiver fora de ordem ou se a conferência com a tabela de referência falhar. Um fluxo com entrada inválida, como `NaN`, é registrado como erro e contado. O resumo legível vai para `relatorios/nids-execucao-<fonte>-<execução>.md`.
+
+A reprodução em rede emulada e a validação em baixa carga estão descritas em [scripts/README.md](../scripts/README.md). O comando `nids-validar` compara a execução reproduzida com a execução do mesmo trecho lido do arquivo e termina com erro se a cadeia de contadores não fechar.
+
 ## Primeiro treinamento do Random Forest
 
 ```bash
@@ -162,7 +201,7 @@ pip install -r requirements-dev.txt
 python -m pytest
 ```
 
-Os testes cobrem as regras da preparação dos dados, a amostragem para o treinamento e o cálculo das métricas. Os testes do TreeSHAP usam um Random Forest e um XGBoost sintéticos e comparam as contribuições com o valor de Shapley calculado por força bruta, além da identidade da soma, dos atributos sem divisão e das recusas do adaptador. Os testes de integração verificam arquivos pequenos e o salvamento e carregamento do Random Forest em um diretório temporário.
+Os testes cobrem as regras da preparação dos dados, a amostragem para o treinamento e o cálculo das métricas. Os testes do extrator e do NIDS usam PCAPs sintéticos, gerados por `tests/integration/pcap_factory.py`. Eles conferem que o extrator do NIDS emite os mesmos fluxos que o extrator original, inclusive em conexões divididas pelo tempo limite, e rodam quando o extrator está compilado. Os testes do TreeSHAP usam um Random Forest e um XGBoost sintéticos e comparam as contribuições com o valor de Shapley calculado por força bruta, além da identidade da soma, dos atributos sem divisão e das recusas do adaptador. Os testes de integração verificam arquivos pequenos e o salvamento e carregamento do Random Forest em um diretório temporário.
 
 ## TG-006: árvore de decisão e Random Forest no Iris
 

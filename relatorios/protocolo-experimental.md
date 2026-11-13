@@ -38,6 +38,8 @@ Cada fluxo recebe até cinco marcações de tempo.
 
 Nas estratégias síncronas, a classificação e a explicação de um fluxo explicado ficam disponíveis juntas, então `t3` e `t4` coincidem. No modo assíncrono, `t4` é posterior a `t3` e inclui a espera na fila de explicações pendentes.
 
+No NIDS, `t0` é lido no extrator logo depois do cálculo dos atributos do fluxo emitido. `t1` e `t2` delimitam a chamada `predict_proba`. `t3` é o retorno da escrita do registro de classificação no canal de saída. Os eventos e o relógio comum estão na [decisão 9](../docs/decisoes.md).
+
 ### 5.2 Tempos calculados
 
 - O tempo de inferência é `t2 − t1`.
@@ -93,7 +95,6 @@ O piloto define os níveis de carga, o número de repetições e os valores dos 
 
 As decisões já tomadas estão em [docs/decisoes.md](../docs/decisoes.md). As decisões abaixo ainda não foram tomadas.
 
-- Política de emissão dos fluxos no NIDS. O extrator só emite um fluxo encerrado quando chega outro pacote com o mesmo identificador ou quando a captura termina, e esse atraso afeta o instante `t0`.
 - Critério de seleção da estratégia Síncrono condicional, que inclui a grandeza avaliada (probabilidade ou incerteza), o limiar e a forma de calibração no conjunto de validação.
 - Limites das filas e política de descarte.
 - Níveis de carga, número de repetições e valores dos critérios de viabilidade, todos definidos pelo piloto.

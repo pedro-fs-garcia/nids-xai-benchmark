@@ -1,0 +1,191 @@
+--- a/src/main/java/cic/cs/unb/ca/jnetpcap/FlowGenerator.java
++++ b/src/main/java/cic/cs/unb/ca/jnetpcap/FlowGenerator.java
+@@ -7,8 +7,11 @@
+ import java.io.File;
+ import java.io.FileOutputStream;
+ import java.io.IOException;
++import java.util.ArrayDeque;
+ import java.util.ArrayList;
++import java.util.Collections;
+ import java.util.HashMap;
++import java.util.IdentityHashMap;
+ import java.util.Set;
+ 
+ import static cic.cs.unb.ca.jnetpcap.Utils.LINE_SEP;
+@@ -49,6 +52,23 @@
+     private long flowActivityTimeOut;
+     private int finishedFlowCount;
+ 
++    // NIDS: fluxos emitidos pela varredura, que continuam no mapa até o pacote seguinte do mesmo identificador.
++    private final Set<BasicFlow> emittedFlows = Collections.newSetFromMap(new IdentityHashMap<BasicFlow, Boolean>());
++    // NIDS: fluxos na ordem de criação, que é a ordem do primeiro pacote.
++    private final ArrayDeque<Pending> creationOrder = new ArrayDeque<>();
++    private String lastEmissionCause;
++    private long packetsAfterEmission;
++
++    private static final class Pending {
++        private final String key;
++        private final BasicFlow flow;
++
++        private Pending(String key, BasicFlow flow) {
++            this.key = key;
++            this.flow = flow;
++        }
++    }
++
+     public FlowGenerator(boolean bidirectional, long flowTimeout, long activityTimeout) {
+         super();
+         this.bidirectional = bidirectional;
+@@ -86,6 +106,10 @@
+             }
+ 
+             flow = currentFlows.get(id);
++            // NIDS: pacote que chega a um fluxo já emitido sem iniciar um fluxo novo.
++            if (emittedFlows.contains(flow) && (currentTimestamp - flow.getFlowStartTime()) <= flowTimeOut) {
++                packetsAfterEmission++;
++            }
+             // Flow finished due flowtimeout:
+             // 1.- we move the flow to finished flow list
+             // 2.- we eliminate the flow from the current flow list
+@@ -93,6 +117,9 @@
+             if ((currentTimestamp - flow.getFlowStartTime()) > flowTimeOut ||
+                     ((flow.getTcpFlowState() == TcpFlowState.READY_FOR_TERMINATION) && packet.hasFlagSYN())) {
+ 
++                boolean timedOut = (currentTimestamp - flow.getFlowStartTime()) > flowTimeOut;
++                // NIDS: um fluxo já emitido pela varredura não é emitido de novo.
++                if (!emittedFlows.remove(flow)) {
+                 // set cumulative flow time if TCP packet
+                 if (flow.getProtocol() == ProtocolEnum.TCP) {
+                     long currDuration = flow.getCumulativeTcpConnectionDuration();
+@@ -100,12 +127,14 @@
+                     flow.setCumulativeTcpConnectionDuration(currDuration);
+                 }
+ 
++                lastEmissionCause = timedOut ? "timeout_next_packet" : "tcp_new_connection";
+                 if (mListener != null) {
+                     mListener.onFlowGenerated(flow);
+                 } else {
+                     finishedFlows.put(getFlowCount(), flow);
+                     //flow.endActiveIdleTime(currentTimestamp,this.flowActivityTimeOut, this.flowTimeOut, false);
+                 }
++                }
+                 currentFlows.remove(id);
+ 
+                 // If the original flow is set for termination, or the flow is not a tcp connection, create a new flow
+@@ -113,8 +142,10 @@
+                 if (((flow.getTcpFlowState() == TcpFlowState.READY_FOR_TERMINATION) && packet.hasFlagSYN() && !packet.hasFlagACK())
+                         || packet.getProtocol() != ProtocolEnum.TCP) {
+                     // create new flow, don't switch direction
+-                    currentFlows.put(id, new BasicFlow(bidirectional,packet,packet.getSrc(),packet.getDst(),packet.getSrcPort(),
+-                    packet.getDstPort(), this.flowActivityTimeOut));
++                    BasicFlow created = new BasicFlow(bidirectional,packet,packet.getSrc(),packet.getDst(),packet.getSrcPort(),
++                    packet.getDstPort(), this.flowActivityTimeOut);
++                    currentFlows.put(id, created);
++                    creationOrder.addLast(new Pending(id, created));
+                 } else {
+                   // Otherwise, the previous flow was likely terminated because of a timeout, and the new flow has to
+                   // maintain the same source and destination information as the previous flow (since they're part of the
+@@ -130,6 +161,7 @@
+                     // can be set correctly.
+                     newFlow.setPreviousTcpFlow(flow);
+                     currentFlows.put(id, newFlow);
++                    creationOrder.addLast(new Pending(id, newFlow));
+                 }
+ 
+                 int cfsize = currentFlows.size();
+@@ -176,16 +208,21 @@
+                 if (flow.getIcmpCode() != packet.getIcmpCode() &&
+                         flow.getIcmpType() != packet.getIcmpType()) {
+                     // finish existing flow
++                    if (!emittedFlows.remove(flow)) {
++                    lastEmissionCause = "icmp_change";
+                     if (mListener != null) {
+                         mListener.onFlowGenerated(flow);
+                     } else {
+                         finishedFlows.put(getFlowCount(), flow);
+                     }
++                    }
+                     currentFlows.remove(id);
+ 
+                     // create new flow
+-                    currentFlows.put(id, new BasicFlow(bidirectional,packet,packet.getSrc(),packet.getDst(),packet.getSrcPort(),
+-                            packet.getDstPort(), this.flowActivityTimeOut));
++                    BasicFlow created = new BasicFlow(bidirectional,packet,packet.getSrc(),packet.getDst(),packet.getSrcPort(),
++                            packet.getDstPort(), this.flowActivityTimeOut);
++                    currentFlows.put(id, created);
++                    creationOrder.addLast(new Pending(id, created));
+ 
+                 } else {
+                     // normal behavior
+@@ -199,8 +236,70 @@
+                 currentFlows.put(id, flow);
+             }
+         } else {
+-            currentFlows.put(packet.fwdFlowId(), new BasicFlow(bidirectional, packet, this.flowActivityTimeOut));
++            String key = packet.fwdFlowId();
++            BasicFlow created = new BasicFlow(bidirectional, packet, this.flowActivityTimeOut);
++            currentFlows.put(key, created);
++            creationOrder.addLast(new Pending(key, created));
++        }
++    }
++
++    /**
++     * NIDS: emite os fluxos cujo tempo limite já passou no relógio da captura. Pelas regras do extrator,
++     * nenhum pacote posterior pode mais entrar nesses fluxos. Cada fluxo emitido continua no mapa até o
++     * pacote seguinte do mesmo identificador, para que o fluxo seguinte da mesma conexão TCP herde o
++     * sentido e a duração acumulada, como na emissão original.
++     */
++    public int sweep(long captureClock) {
++        int total = 0;
++        while (!creationOrder.isEmpty()) {
++            Pending head = creationOrder.peekFirst();
++            if ((captureClock - head.flow.getFlowStartTime()) <= flowTimeOut) {
++                break;
++            }
++            creationOrder.pollFirst();
++            if (currentFlows.get(head.key) != head.flow || emittedFlows.contains(head.flow)) {
++                continue;
++            }
++            if (head.flow.getProtocol() == ProtocolEnum.TCP) {
++                long currDuration = head.flow.getCumulativeTcpConnectionDuration();
++                currDuration += head.flow.getFlowDuration();
++                head.flow.setCumulativeTcpConnectionDuration(currDuration);
++            }
++            emittedFlows.add(head.flow);
++            lastEmissionCause = "timeout_sweep";
++            mListener.onFlowGenerated(head.flow);
++            total++;
+         }
++        return total;
++    }
++
++    /** NIDS: no fim da captura, emite os fluxos ainda não emitidos, como dumpLabeledCurrentFlow. */
++    public int flush() {
++        int total = 0;
++        for (BasicFlow flow : currentFlows.values()) {
++            if (flow.packetCount() >= 1 && !emittedFlows.contains(flow)) {
++                if (flow.getProtocol() == ProtocolEnum.TCP) {
++                    flow = updateTcpCxnDuration(flow);
++                }
++                emittedFlows.add(flow);
++                lastEmissionCause = "end_of_capture";
++                mListener.onFlowGenerated(flow);
++                total++;
++            }
++        }
++        return total;
++    }
++
++    public String getLastEmissionCause() {
++        return lastEmissionCause;
++    }
++
++    public long getPacketsAfterEmission() {
++        return packetsAfterEmission;
++    }
++
++    public int getOpenFlowCount() {
++        return currentFlows.size() - emittedFlows.size();
+     }
+ 
+     /*public void dumpFlowBasedFeatures(String path, String filename,String header){

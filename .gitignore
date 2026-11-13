@@ -6,3 +6,9 @@ derived-data/*.npy
 training-runs/**/*.npy
 training-runs/**/*.joblib
 training-runs/**/*.ubj
+extractor/build/
+derived-data/pcap/**/*.pcap
+derived-data/pcap/**/*.csv
+training-runs/traffic/**/*.csv
+training-runs/nids/**/*.csv
+training-runs/nids/**/*.jsonl

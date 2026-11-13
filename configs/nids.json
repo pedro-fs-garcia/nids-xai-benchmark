@@ -1,0 +1,11 @@
+{
+  "frozen_run": "training-runs/frozen-models/20261111T181031847482Z",
+  "preparation_manifest": "derived-data/pcap/tuesday/manifest.json",
+  "extractor": {
+    "snaplen": 65535,
+    "read-timeout-ms": 100,
+    "idle-margin-us": 2000000
+  },
+  "classifier_threads": 1,
+  "shared_clock_tolerance_ns": 1000000000
+}

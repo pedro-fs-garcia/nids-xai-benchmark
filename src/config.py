@@ -18,6 +18,9 @@ class Settings:
     xgboost_config: Path = PROJECT_ROOT / "configs" / "xgboost-comparison.json"
     model_freezing_config: Path = PROJECT_ROOT / "configs" / "model-freezing.json"
     tree_shap_config: Path = PROJECT_ROOT / "configs" / "tree-shap.json"
+    pcap_preparation_config: Path = PROJECT_ROOT / "configs" / "pcap-preparation.json"
+    nids_config: Path = PROJECT_ROOT / "configs" / "nids.json"
+    extractor_build_dir: Path = PROJECT_ROOT / "extractor" / "build"
     source_files: tuple[str, ...] = (
         "monday.csv",
         "tuesday.csv",

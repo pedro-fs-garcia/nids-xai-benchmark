@@ -27,7 +27,8 @@ O NIDS forma os fluxos com as mesmas regras do extrator que gerou os CSVs.
 - **Tempo limite.** Um fluxo com mais de 120 s desde o primeiro pacote é encerrado, e o pacote seguinte inicia um novo fluxo.
 - **Tempo limite de atividade.** Um intervalo maior que 5 s entre pacotes separa um período ativo de um período ocioso. Esse limite só afeta os atributos `Active` e `Idle`.
 - **ICMP.** Um pacote ICMP com código e tipo diferentes dos do fluxo inicia um novo fluxo.
-- **Emissão.** O extrator emite um fluxo quando chega outro pacote com o mesmo identificador depois do encerramento ou do tempo limite, ou no fim da captura.
+- **Emissão.** Durante a leitura, o extrator emite um fluxo quando chega um pacote com o mesmo identificador mais de 120 s depois do primeiro pacote do fluxo, quando chega um SYN depois do encerramento TCP ou quando um pacote ICMP muda o código e o tipo do fluxo. Os demais fluxos são emitidos no fim da captura.
+- **Emissão no NIDS.** Além desses casos, o NIDS emite um fluxo quando o relógio da captura passa de 120 s desde o primeiro pacote, sem alterar nenhum atributo ([decisão 8](decisoes.md)).
 
 ## Colunas
 

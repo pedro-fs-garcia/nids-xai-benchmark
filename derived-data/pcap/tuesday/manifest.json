@@ -1,0 +1,138 @@
+{
+  "stage": "pcap preparation",
+  "config": "configs/pcap-preparation.json",
+  "config_sha256": "cf8fa580641afbf9a6e4fd832e57c5adceb96ec3fbf99d3fa136806f142a717a",
+  "source": {
+    "file": "cicids-dataset/pcap/Tuesday-WorkingHours.pcap",
+    "bytes": 11048283608,
+    "sha256": "080c2250154c5a174c03660ed0f75a3858d41a27511ba716e780d7bcb1ec4c57",
+    "mirror": "https://huggingface.co/datasets/bencorn/CICIDS2017",
+    "mirror_commit": "811c007f08d693a8a8b4226c197c138391806ce6",
+    "path_in_mirror": "pcaps/Tuesday-WorkingHours.pcap",
+    "official_md5_checked": false
+  },
+  "flows_csv": {
+    "file": "tuesday.csv",
+    "bytes": 178397720,
+    "sha256": "e2a0a5b631dfc6b455cc9f9a88b944110637d70a7f74171473925f76f38b6b0c",
+    "records": 322078
+  },
+  "steps": [
+    {
+      "tool": "pcapfix",
+      "result": {
+        "exit_code": 0,
+        "output": "pcapfix 1.1.7 (c) 2012-2021 Robert Krause\n\n[*] Reading from file: /home/pedro/projects/explicabilidade-ia/cicids-dataset/pcap/Tuesday-WorkingHours.pcap\n[*] Writing to file: /home/pedro/projects/explicabilidade-ia/derived-data/pcap/tuesday/Tuesday-WorkingHours-pcapfix.pcap\n[*] File size: 11048283608 bytes.\n[+] This is a PCAPNG file.\n[*] Progress:  20.00 %\n[*] Progress:  40.00 %\n[*] Progress:  60.00 %\n[*] Progress:  80.00 %\n[*] Your pcap file looks proper. Nothing to fix!",
+        "fixed_file_written": false
+      },
+      "output": null
+    },
+    {
+      "tool": "reordercap",
+      "output_text": "11551954 frames, 3721 out of order"
+    }
+  ],
+  "source_capinfos": {
+    "File name": "/home/pedro/projects/explicabilidade-ia/cicids-dataset/pcap/Tuesday-WorkingHours.pcap",
+    "File type": "pcapng",
+    "File encapsulation": "ether",
+    "Number of packets": "11551954",
+    "File size": "11048283608 bytes",
+    "First packet time": "2017-07-04 08:53:32,364079",
+    "Last packet time": "2017-07-04 17:00:31,076755",
+    "Strict time order": "False"
+  },
+  "reordered": {
+    "file": "derived-data/pcap/tuesday/Tuesday-WorkingHours-reordered.pcap",
+    "bytes": 11048283608,
+    "sha256": "260f293b3183c47aad49b872898f65d72173a5c2429b3cfc8095d4ee7ad44a3c",
+    "capinfos": {
+      "File name": "/home/pedro/projects/explicabilidade-ia/derived-data/pcap/tuesday/Tuesday-WorkingHours-reordered.pcap",
+      "File type": "pcapng",
+      "File encapsulation": "ether",
+      "Number of packets": "11551954",
+      "File size": "11048283608 bytes",
+      "First packet time": "2017-07-04 08:53:32,364079",
+      "Last packet time": "2017-07-04 17:00:31,076755",
+      "Strict time order": "True"
+    },
+    "identical_to_source": false
+  },
+  "segments": {
+    "dev": {
+      "stop": "2017-07-04T11:58:44Z",
+      "stop_us": 1499169524000000,
+      "pcap": {
+        "file": "derived-data/pcap/tuesday/segment-dev.pcap",
+        "bytes": 4264023,
+        "sha256": "cb611dd573fca2f07d54d188e76644bf4742173e0921403e5e16ca984857e735"
+      },
+      "summary": {
+        "packets": 18354,
+        "first_packet_us": 1499169212364079,
+        "last_packet_us": 1499169523967363,
+        "max_frame_bytes": 3737,
+        "max_captured_bytes": 3737,
+        "link_type": 1,
+        "disordered_packets": 0
+      },
+      "reference": {
+        "file": "derived-data/pcap/tuesday/reference-dev.csv",
+        "bytes": 604724,
+        "sha256": "79378935b65144d8138393fcf3121d7757d5f4c4c8897e883f1d0ede4cec70a3"
+      },
+      "reference_flows": 1170,
+      "reference_labels": {
+        "BENIGN": 1170
+      }
+    },
+    "validacao": {
+      "stop": "2017-07-04T12:30:00Z",
+      "stop_us": 1499171400000000,
+      "pcap": {
+        "file": "derived-data/pcap/tuesday/segment-validacao.pcap",
+        "bytes": 4847864345,
+        "sha256": "a22b9c78f256cf981fa24b832c83bf4a221c0ff883a5d1898a4abf5edbfab16a"
+      },
+      "summary": {
+        "packets": 3954069,
+        "first_packet_us": 1499169212364079,
+        "last_packet_us": 1499171399997029,
+        "max_frame_bytes": 24874,
+        "max_captured_bytes": 24874,
+        "link_type": 1,
+        "disordered_packets": 0
+      },
+      "reference": {
+        "file": "derived-data/pcap/tuesday/reference-validacao.csv",
+        "bytes": 17578153,
+        "sha256": "e5ed458970165363866d226a86541fafe1085dfd718d02436230df99f16e8996"
+      },
+      "reference_flows": 32086,
+      "reference_labels": {
+        "BENIGN": 31385,
+        "FTP-Patator - Attempted": 12,
+        "FTP-Patator": 689
+      }
+    }
+  },
+  "border_seconds": 120,
+  "tools": {
+    "pcapfix": "pcapfix 1.1.7 (c) 2012-2021 Robert Krause",
+    "reordercap": "Reordercap (Wireshark) 4.2.2 (Git v4.2.2 packaged as 4.2.2-1.1build3).",
+    "editcap": "Editcap (Wireshark) 4.2.2 (Git v4.2.2 packaged as 4.2.2-1.1build3)."
+  },
+  "environment": {
+    "python": "3.12.3",
+    "libraries": {
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "scipy": "1.18.1",
+      "joblib": "1.6.0",
+      "xgboost-cpu": "3.4.1"
+    },
+    "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+    "cpu": "13th Gen Intel(R) Core(TM) i5-1334U",
+    "logical_cpus": 12
+  }
+}
