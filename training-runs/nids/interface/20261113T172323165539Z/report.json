@@ -1,0 +1,258 @@
+{
+  "stage": "reference nids",
+  "run_id": "20261113T172323165539Z",
+  "strategy": "Sem XAI",
+  "passed": true,
+  "checks": {
+    "emitted_equals_received": true,
+    "received_equals_classified_plus_errors": true,
+    "timestamps_ordered": true,
+    "no_packets_after_emission_in_file_mode": true
+  },
+  "model": "random-forest",
+  "source": {
+    "kind": "interface",
+    "iface": "h2-eth0"
+  },
+  "segment": {
+    "name": "validacao",
+    "stop": "2017-07-04T12:30:00Z",
+    "stop_us": 1499171400000000,
+    "pcap": {
+      "file": "derived-data/pcap/tuesday/segment-validacao.pcap",
+      "bytes": 4847864345,
+      "sha256": "a22b9c78f256cf981fa24b832c83bf4a221c0ff883a5d1898a4abf5edbfab16a"
+    },
+    "reference": {
+      "file": "derived-data/pcap/tuesday/reference-validacao.csv",
+      "bytes": 17578153,
+      "sha256": "e5ed458970165363866d226a86541fafe1085dfd718d02436230df99f16e8996"
+    },
+    "border_seconds": 120,
+    "manifest": "derived-data/pcap/tuesday/manifest.json",
+    "manifest_sha256": "caabbefeb879428f05e778b0df32c4637518901159d9705c759a2dffdecbd3b0"
+  },
+  "config": "configs/nids.json",
+  "config_sha256": "9da9b1886f3f9f8040ff0d4fd87bc82fb5e486b0164e521e4e4df006cb440973",
+  "frozen_run": "training-runs/frozen-models/20261111T181031847482Z",
+  "model_manifest_sha256": "b18708731de1a1901969789a93479a6a4e4b228ea56aff24c65bf4bfd7c71805",
+  "classifier_threads": 1,
+  "extractor_options": {
+    "snaplen": 65535,
+    "read-timeout-ms": 100,
+    "idle-margin-us": 2000000
+  },
+  "extractor_build": {
+    "extractor_commit": "13a061520b862d605eea746c79ca4033b30d98fc",
+    "java": "openjdk version \"17.0.21.0.3\" 2026-10-24",
+    "release": 8,
+    "libpcap": "/usr/lib/x86_64-linux-gnu/libpcap.so.0.8",
+    "jars": {
+      "nids-extractor.jar": "2cc043df43bd185efacb867bf733fd1a1f8d071a8829d7c34de9b58d75de82a4",
+      "reference-extractor.jar": "b5980d57b4bc071ffe4dea8a964c77e598176b2ad4b2e32d16d92ad672454737"
+    },
+    "patches": {
+      "01-flow-emission-sweep.patch": "06a76076bed3b391ca5f3d306fc2c4aecd915240296ef73d07b4bc60a8aa9ca1",
+      "02-live-capture.patch": "cee0e30b58156d594b1e4fdd84af8f6d452fc650ba560cbea58c89946ef70f0b"
+    },
+    "sources": {
+      "NidsExtractor.java": "d94344c2161ae7c8a3e63e25122a01241c2bbff312673e8638160137a19c3c0f",
+      "ReferenceExtractor.java": "624309cb3acd7d933381308d23c0f87647a598ae8867608f4ecd49b663cfccec"
+    },
+    "libraries": {
+      "commons-lang3-3.6.jar": "89c27f03fff18d0b06e7afd7ef25e209766df95b6c1269d6c3ebbdea48d5f284",
+      "commons-math3-3.5.jar": "dcf9768726b82e8d7b8a928447b08bca7cfe2773d5120a63a41ec224207c1a29",
+      "jnetpcap.jar": "7dfff1e5abd453293415074dd09e10edbeb00cf37b8db9a07d44108e1a10c163",
+      "slf4j-api-1.7.25.jar": "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
+      "slf4j-nop-1.7.25.jar": "6cb127138f41b5a869f9ecdd061ad17799a0e3fe7204600797154eb0432eeb12",
+      "tika-core-1.17.jar": "77c0a63d7693dc968553f92ef061469979b04d458bb11996d7738c45c5f66b5c"
+    },
+    "native": {
+      "libjnetpcap-pcap100.so": "b758a46ef7ff3cf39b2956de4c08e19a5585cbb6aefd6ce4416566227211aec9",
+      "libjnetpcap.so": "93d8c8c53a63e448f82e778791a0a725d1345a4c80c9d7334f7c9f8067688a49"
+    }
+  },
+  "extractor_start": {
+    "extractor_commit": "13a061520b862d605eea746c79ca4033b30d98fc",
+    "flow_timeout_us": 120000000,
+    "activity_timeout_us": 5000000,
+    "source": "interface",
+    "location": "h2-eth0",
+    "snaplen": 65535,
+    "read_timeout_ms": 100,
+    "idle_sleep_ms": 1,
+    "capture_mode": "non_blocking",
+    "idle_margin_us": 2000000,
+    "java_version": "17.0.21.0.3",
+    "monotonic_ns": 19269040723146
+  },
+  "extractor_end": {
+    "stop_reason": "stop_requested",
+    "packets_read": 3540441,
+    "packets_valid": 3533385,
+    "packets_discarded": 7056,
+    "idle_reads": 1928473,
+    "packets_after_emission": 0,
+    "first_disordered_packet_id": -1,
+    "open_flows_before_flush": 0,
+    "flows_emitted": 30970,
+    "flows_by_cause": {
+      "timeout_sweep": 30606,
+      "tcp_new_connection": 364
+    },
+    "pcap_stats": {
+      "received": 3954069,
+      "dropped": 413628,
+      "interface_dropped": 0
+    },
+    "monotonic_ns": 21593841225903
+  },
+  "shared_clock_difference_ns": 936575,
+  "flows": {
+    "received": 30970,
+    "classified": 30860,
+    "errors": 110,
+    "by_cause": {
+      "timeout_sweep": 30606,
+      "tcp_new_connection": 364
+    },
+    "predictions": {
+      "0": 30309,
+      "1": 551
+    },
+    "error_examples": [
+      {
+        "seq": 257,
+        "flow_id": "192.168.10.51-224.0.0.22-0-0-0",
+        "error": "Valor não finito em Flow Bytes/s."
+      },
+      {
+        "seq": 306,
+        "flow_id": "192.168.10.17-224.0.0.22-0-0-0",
+        "error": "Valor não finito em Flow Bytes/s."
+      },
+      {
+        "seq": 348,
+        "flow_id": "192.168.10.19-224.0.0.22-0-0-0",
+        "error": "Valor não finito em Flow Bytes/s."
+      },
+      {
+        "seq": 699,
+        "flow_id": "192.168.10.12-224.0.0.22-0-0-0",
+        "error": "Valor não finito em Flow Bytes/s."
+      },
+      {
+        "seq": 1121,
+        "flow_id": "192.168.10.16-128.100.100.128-123-123-17",
+        "error": "Valor não finito em Flow IAT Mean."
+      }
+    ]
+  },
+  "timings": {
+    "inference_ns": {
+      "count": 30860,
+      "mean": 14061554.659721322,
+      "median": 15277727.5,
+      "p95": 22819276.45,
+      "p99": 26420776.509999998,
+      "min": 4687042.0,
+      "max": 108152569.0
+    },
+    "classification_latency_ns": {
+      "count": 30860,
+      "mean": 520807157.59899545,
+      "median": 275474407.0,
+      "p95": 1698044906.25,
+      "p99": 1961720379.1,
+      "min": 6148830.0,
+      "max": 2258306755.0
+    },
+    "wait_before_inference_ns": {
+      "count": 30860,
+      "mean": 506543276.22248864,
+      "median": 261409961.5,
+      "p95": 1679862764.05,
+      "p99": 1939425048.22,
+      "min": 558164.0,
+      "max": 2235791445.0
+    },
+    "delivery_ns": {
+      "count": 30860,
+      "mean": 202326.71678548283,
+      "median": 179021.0,
+      "p95": 268857.05,
+      "p99": 379378.50999999995,
+      "min": 47317.0,
+      "max": 556360505.0
+    },
+    "classified_per_second": 14.17334011864166
+  },
+  "artifacts": {
+    "classifications.jsonl": {
+      "file": "training-runs/nids/interface/20261113T172323165539Z/classifications.jsonl",
+      "bytes": 9097114,
+      "sha256": "c749f118d3daf91b9e5c455f36bc8feb4eb33c9c09018d7bffa7a6a8fb05b27e"
+    },
+    "flows.csv": {
+      "file": "training-runs/nids/interface/20261113T172323165539Z/flows.csv",
+      "bytes": 22560389,
+      "sha256": "0ffdc22f731f760d160055cd01d9b64dd40cab5d5e894c13d88ce41150888fd7"
+    }
+  },
+  "resources": {
+    "classifier_process": {
+      "user_seconds": 484.12248,
+      "system_seconds": 6.7077919999999995,
+      "max_rss_kib": 427836
+    },
+    "extractor_process": {
+      "user_seconds": 246.960647,
+      "system_seconds": 22.691455,
+      "max_rss_kib": 1728112
+    }
+  },
+  "cpu_state": {
+    "affinity": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "scaling_governor": {
+      "0": "powersave",
+      "1": "powersave",
+      "2": "powersave",
+      "3": "powersave",
+      "4": "powersave",
+      "5": "powersave",
+      "6": "powersave",
+      "7": "powersave",
+      "8": "powersave",
+      "9": "powersave",
+      "10": "powersave",
+      "11": "powersave"
+    },
+    "mains_power_online": true
+  },
+  "environment": {
+    "python": "3.12.3",
+    "libraries": {
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "scipy": "1.18.1",
+      "joblib": "1.6.0",
+      "xgboost-cpu": "3.4.1"
+    },
+    "platform": "Linux-7.0.0-43-generic-x86_64-desconhecido-with-glibc2.43",
+    "cpu": "13th Gen Intel(R) Core(TM) i5-1334U",
+    "logical_cpus": 12
+  }
+}

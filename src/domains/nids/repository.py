@@ -31,8 +31,8 @@ class NidsRepository:
             if set(content) != {"frozen_run", "preparation_manifest", "extractor", "classifier_threads",
                                 "shared_clock_tolerance_ns"}:
                 raise ValueError("campos inesperados ou ausentes")
-            if set(content["extractor"]) != {"snaplen", "read-timeout-ms", "idle-margin-us"}:
-                raise ValueError("extractor deve ter snaplen, read-timeout-ms e idle-margin-us")
+            if set(content["extractor"]) != {"snaplen", "read-timeout-ms", "idle-margin-us", "buffer-bytes"}:
+                raise ValueError("extractor deve ter snaplen, read-timeout-ms, idle-margin-us e buffer-bytes")
             if type(content["classifier_threads"]) is not int or content["classifier_threads"] < 1:
                 raise ValueError("classifier_threads deve ser um inteiro positivo")
             return NidsConfig(path, sha256(path), content, self.root / content["frozen_run"],

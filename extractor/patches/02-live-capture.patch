@@ -8,23 +8,44 @@
  import org.jnetpcap.nio.JBuffer;
  import org.jnetpcap.nio.JMemory;
  import org.jnetpcap.packet.JHeader;
-@@ -39,7 +40,45 @@
+@@ -39,7 +40,66 @@
  	private boolean readIP6;
  	private boolean readIP4;
  	private String file;
-+	// NIDS: indica que a última leitura terminou sem pacote porque o tempo de espera da captura ao vivo passou.
++	// NIDS: indica que a última leitura da captura ao vivo terminou sem pacote disponível.
 +	private boolean lastReadTimedOut;
  	
 +	/** NIDS: abre uma captura ao vivo, em modo promíscuo, com as mesmas regras de leitura do arquivo. */
-+	public PacketReader(String device, int snaplen, int readTimeoutMillis) {
++	public PacketReader(String device, int snaplen, int readTimeoutMillis, int bufferBytes) {
 +		super();
 +		this.readIP4 = true;
 +		this.readIP6 = false;
 +		file = device;
 +		StringBuilder errbuf = new StringBuilder();
-+		pcapReader = Pcap.openLive(device, snaplen, Pcap.MODE_PROMISCUOUS, readTimeoutMillis, errbuf);
++		// Pcap.openLive não aceita o tamanho do buffer de captura. A captura é criada, configurada e ativada
++		// em etapas, com as mesmas opções que openLive aplica, mais o tamanho do buffer.
++		pcapReader = Pcap.create(device, errbuf);
 +		if (pcapReader == null) {
 +			throw new IllegalStateException("Falha ao abrir a interface " + device + ": " + errbuf);
++		}
++		if (pcapReader.setSnaplen(snaplen) != Pcap.OK || pcapReader.setPromisc(Pcap.MODE_PROMISCUOUS) != Pcap.OK
++				|| pcapReader.setTimeout(readTimeoutMillis) != Pcap.OK
++				|| pcapReader.setBufferSize(bufferBytes) != Pcap.OK) {
++			throw new IllegalStateException("Falha ao configurar a captura em " + device + ": " + pcapReader.getErr());
++		}
++		// Um aviso da ativação também interrompe a abertura: a captura não deve começar com uma opção recusada.
++		int activation = pcapReader.activate();
++		if (activation != Pcap.OK) {
++			throw new IllegalStateException("Falha ao ativar a captura em " + device + " (código " + activation
++					+ "): " + pcapReader.getErr());
++		}
++		// Com TPACKET_V3, a libpcap bloqueia no poll() até haver pacotes e deixa o kernel acordar a leitura.
++		// Numa interface sem pacotes, nextEx nunca retornaria, e nem a varredura do tempo limite nem o pedido
++		// de parada seriam atendidos. No modo não bloqueante, nextEx retorna 0 quando não há pacotes. O tempo
++		// limite continua definindo quanto o kernel espera para entregar um bloco parcial de pacotes.
++		StringBuilder nonBlockError = new StringBuilder();
++		if (pcapReader.setNonBlock(1, nonBlockError) != Pcap.OK) {
++			throw new IllegalStateException("Falha ao ativar o modo não bloqueante em " + device + ": " + nonBlockError);
 +		}
 +		this.firstPacket = 0L;
 +		this.lastPacket = 0L;
@@ -54,7 +75,7 @@
  	public PacketReader(String filename) {
  		super();	
  		this.readIP4 = true;
-@@ -80,8 +119,15 @@
+@@ -80,8 +140,15 @@
  	public BasicPacketInfo nextPacket(){
  		 PcapPacket      packet;
  		 BasicPacketInfo packetInfo = null;

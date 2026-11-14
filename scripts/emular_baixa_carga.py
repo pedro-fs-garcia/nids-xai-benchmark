@@ -29,9 +29,14 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "src"
 VENV_PYTHON = SOURCE / "venv" / "bin" / "python"
+TCPREPLAY_BUILD = ROOT / "tcpreplay" / "build"
+# Antes da 4.6.0, o tcpreplay não envia pelo anel de transmissão os quadros acima de 4.064 bytes.
+TCPREPLAY_MINIMUM = (4, 6, 0)
 FLOW_TIMEOUT_S = 120
 SETTLE_S = 15
 STATS_INTERVAL_S = 60
+# O extrator tem 30 s para parar. O restante cobre o fechamento dos arquivos e a gravação do relatório.
+NIDS_STOP_TIMEOUT_S = 180
 COUNTERS = ("rx_packets", "rx_bytes", "rx_dropped", "tx_packets", "tx_bytes", "tx_dropped")
 OFFLOADS = ("rx", "tx", "sg", "tso", "gso", "gro", "lro")
 
@@ -42,6 +47,11 @@ def main() -> int:
         print("Execute com sudo, a partir do usuário que vai ficar dono dos arquivos.", file=sys.stderr)
         return 2
     owner = (int(os.environ["SUDO_UID"]), int(os.environ["SUDO_GID"]))
+    try:
+        replay_tool = check_tcpreplay()
+    except (OSError, ValueError, KeyError) as error:
+        print(f"tcpreplay indisponível: {error}", file=sys.stderr)
+        return 1
     nids_config = json.loads((ROOT / "configs" / "nids.json").read_text(encoding="utf-8"))
     manifest = json.loads((ROOT / nids_config["preparation_manifest"]).read_text(encoding="utf-8"))
     segment = manifest["segments"][arguments.trecho]
@@ -54,7 +64,8 @@ def main() -> int:
     wait_s = FLOW_TIMEOUT_S + idle_margin_s + SETTLE_S
     replay_s = (segment["summary"]["last_packet_us"] - segment["summary"]["first_packet_us"]) / 1e6
     log(f"Trecho {arguments.trecho} conferido: {segment['summary']['packets']} pacotes, cerca de {replay_s / 60:.1f} min "
-        f"de tráfego. Duração prevista do ensaio: {(replay_s + wait_s) / 60:.0f} min. MTU: {mtu} bytes.")
+        f"de tráfego. Duração prevista do ensaio: {(replay_s + wait_s) / 60:.0f} min. MTU: {mtu} bytes. "
+        f"tcpreplay {replay_tool['version']}.")
 
     from mininet.log import setLogLevel
     from mininet.net import Mininet
@@ -70,7 +81,7 @@ def main() -> int:
                     "pcap": segment["pcap"], "segment_packets": segment["summary"]["packets"],
                     "topology": {"hosts": ["h1", "h2"], "link": "h1-eth0 <-> h2-eth0, enlace direto (veth)",
                                  "switch": None, "mtu": mtu, "ipv6": "desativado"},
-                    "wait_after_replay_s": wait_s}
+                    "wait_after_replay_s": wait_s, "tcpreplay_build": replay_tool}
     nids = None
     run_dir = None
     nids_log: dict[str, Path] = {}
@@ -103,7 +114,7 @@ def main() -> int:
         ready.unlink()
         log(f"NIDS pronto, capturando h2-eth0. Execução: {run_dir}")
         before = {"h1-eth0": counters(sender, "h1-eth0"), "h2-eth0": counters(receiver, "h2-eth0")}
-        replay_command = ["tcpreplay", "--intf1=h1-eth0", "--multiplier=1", f"--stats={STATS_INTERVAL_S}", str(pcap)]
+        replay_command = [str(TCPREPLAY_BUILD / "tcpreplay"), "--intf1=h1-eth0", "--multiplier=1", f"--stats={STATS_INTERVAL_S}", str(pcap)]
         record["replay_command"] = replay_command
         record["replay_started_utc"] = datetime.now(timezone.utc).isoformat()
         log(f"Reprodução iniciada em h1. O tcpreplay informa o progresso a cada {STATS_INTERVAL_S} s.")
@@ -131,11 +142,22 @@ def main() -> int:
                                         for name in after}
         log("Encerrando o NIDS.")
         nids.send_signal(signal.SIGTERM)
-        nids.wait(timeout=600)
+        try:
+            nids.wait(timeout=NIDS_STOP_TIMEOUT_S)
+        except subprocess.TimeoutExpired:
+            log(f"O NIDS não encerrou em {NIDS_STOP_TIMEOUT_S} s e será encerrado à força.")
+            nids.kill()
+            nids.wait()
+            record["nids_stop_timeout"] = True
         log(f"NIDS encerrado (código {nids.returncode}).")
         record["nids"] = {"exit_code": nids.returncode,
                           "output": nids_log["stdout"].read_text().strip().splitlines(),
                           "errors": nids_log["stderr"].read_text().strip().splitlines()[-20:]}
+        nids_report = run_dir / "report.json"
+        if nids_report.is_file():
+            capture = json.loads(nids_report.read_text(encoding="utf-8"))["extractor_end"]
+            record["delivered"] = {"libpcap": capture.get("pcap_stats"), "flows_emitted": capture["flows_emitted"],
+                                   "flows_per_second": capture["flows_emitted"] / record["replay_seconds"]}
     finally:
         if nids is not None and nids.poll() is None:
             nids.kill()
@@ -155,7 +177,7 @@ def main() -> int:
     print(json.dumps({"run_dir": str(run_dir), "nids_exit_code": record.get("nids", {}).get("exit_code"),
                       "tcpreplay": {key: record.get("tcpreplay", {}).get(key) for key in ("successful", "failed")}},
                      ensure_ascii=False))
-    return 0 if record.get("nids", {}).get("exit_code") == 0 else 1
+    return 0 if record.get("nids", {}).get("exit_code") == 0 and not record.get("nids_stop_timeout") else 1
 
 
 def parse_arguments() -> argparse.Namespace:
@@ -163,6 +185,26 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument("--modelo", choices=("random-forest", "xgboost"), required=True)
     parser.add_argument("--trecho", required=True)
     return parser.parse_args()
+
+
+def check_tcpreplay() -> dict[str, str]:
+    """Confere o binário compilado por tcpreplay/build.sh com o registro da compilação e exige a versão mínima."""
+    binary, build_record = TCPREPLAY_BUILD / "tcpreplay", TCPREPLAY_BUILD / "tcpreplay-build.json"
+    if not binary.is_file() or not build_record.is_file():
+        raise ValueError("compile-o com tcpreplay/build.sh.")
+    build = json.loads(build_record.read_text(encoding="utf-8"))
+    if sha256(binary) != build["binary"]["sha256"]:
+        raise ValueError(f"{binary} difere do registro da compilação.")
+    reported = subprocess.run([str(binary), "--version"], capture_output=True, text=True)
+    match = re.search(r"tcpreplay version: (\d+)\.(\d+)\.(\d+)", reported.stdout + reported.stderr)
+    if match is None:
+        raise ValueError(f"{binary} não informou a versão.")
+    version = tuple(int(part) for part in match.groups())
+    if version < TCPREPLAY_MINIMUM:
+        raise ValueError(f"a versão {'.'.join(map(str, version))} é anterior à "
+                         f"{'.'.join(map(str, TCPREPLAY_MINIMUM))}.")
+    return {"version": ".".join(map(str, version)), "binary": str(binary.relative_to(ROOT)),
+            "binary_sha256": build["binary"]["sha256"], "archive": build["archive"]}
 
 
 def counters(host, interface: str) -> dict[str, int]:

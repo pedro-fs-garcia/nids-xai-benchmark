@@ -1,3 +1,4 @@
+import time
 from collections import Counter
 from pathlib import Path
 
@@ -62,6 +63,25 @@ def test_tcp_connection_split_by_the_timeout_accumulates_its_duration(scenario):
     totals = sorted(int(payload.values["Total TCP Flow Time"]) for event, payload in process.events()
                     if event == "flow" and payload.values["Src Port"] == "50000")
     assert totals == [120_000_000, 240_000_500, 290_000_500]
+
+
+def test_output_queue_holds_the_flows_a_slow_reader_has_not_taken(tmp_path):
+    packets = []
+    for index in range(400):
+        packets += [udp(START + index * 1000, A, B, 20000 + index, 53, payload=30),
+                    udp(START + index * 1000 + 300, B, A, 53, 20000 + index, payload=60)]
+    packets.sort(key=lambda packet: packet.timestamp_us)
+    pcap = write_pcap(tmp_path / "burst.pcap", packets)
+    build = ExtractorBuild(BUILD)
+    direct = NidsExtractorProcess(build, {"pcap": str(pcap)}, {})
+    expected = [(flow.seq, flow.cause, flow.values) for event, flow in direct.events() if event == "flow"]
+    queued = NidsExtractorProcess(build, {"pcap": str(pcap)}, {"flow-output": "queue"})
+    # Sem leitor, o pipe enche. Os fluxos que não cabem nele esperam na fila, e o extrator termina a leitura.
+    time.sleep(3)
+    received = [(flow.seq, flow.cause, flow.values) for event, flow in queued.events() if event == "flow"]
+    assert received == expected and len(expected) == 400
+    assert direct.end["output_queue_max"] is None and direct.start["flow_output"] == "direct"
+    assert queued.end["output_queue_max"] >= 200 and queued.start["flow_output"] == "queue"
 
 
 def test_pcap_summary_keeps_the_microseconds_of_each_timestamp(tmp_path):

@@ -1,9 +1,15 @@
+import subprocess
+import sys
+
 import numpy as np
 import pytest
 
+from core import flow_extractor
+from core.flow_extractor import NidsExtractorProcess
 from core.frozen_prediction import FrozenPredictor
 from core.instrumentation import monotonic_ns, verify_shared_clock
-from domains.nids.service import _endpoints_key, _ordinal_key, _temporal, _with_ordinal, input_vector
+from domains.nids.service import (_endpoints_key, _ordinal_key, _packet_shifts, _temporal, _with_ordinal, input_vector,
+                                  replay_checks, run_checks)
 from domains.traffic_preparation.service import match_rows
 
 MANIFEST = {
@@ -59,6 +65,87 @@ def test_a_flow_seen_in_the_opposite_direction_has_the_same_endpoints():
 
 def test_temporal_attributes_are_those_that_depend_on_capture_instants():
     assert all(_temporal(name) for name in ("Flow Duration", "Fwd IAT Mean", "Flow Bytes/s", "Idle Max",
-                                            "Fwd Bulk Rate Avg", "Total TCP Flow Time"))
+                                            "Fwd Bulk Rate Avg", "Fwd Bytes/Bulk Avg", "Bwd Packet/Bulk Avg",
+                                            "Total TCP Flow Time"))
     assert not any(_temporal(name) for name in ("Total Fwd Packet", "Fwd Packet Length Max", "SYN Flag Count",
                                                 "FWD Init Win Bytes", "Subflow Fwd Bytes"))
+
+
+def _classified(seq, t0, t1, t2, t3, error=None):
+    return {"seq": seq, "t0_ns": t0, "t1_ns": t1, "t2_ns": t2, "t3_ns": t3, "error": error}
+
+
+def test_run_checks_pass_when_every_emitted_flow_arrives_with_ordered_marks():
+    flows = [_classified(1, 10, 20, 30, 40), _classified(2, 15, 40, 50, 60),
+             _classified(3, 18, None, None, None, error="Valor não finito em Flow Bytes/s.")]
+    checks = run_checks("interface", {"flows_emitted": 3, "packets_after_emission": 7}, flows)
+    assert all(checks.values())
+
+
+def test_run_checks_fail_on_a_lost_flow_on_unordered_marks_and_on_a_late_packet_in_file_mode():
+    flows = [_classified(1, 10, 20, 30, 40), _classified(2, 15, 14, 50, 60)]
+    checks = run_checks("arquivo", {"flows_emitted": 3, "packets_after_emission": 1}, flows)
+    assert not checks["emitted_equals_received"] and not checks["timestamps_ordered"]
+    assert not checks["no_packets_after_emission_in_file_mode"] and checks["received_equals_classified_plus_errors"]
+
+
+COUNTERS = {"segment_packets": 100, "tcpreplay_successful": 100, "tcpreplay_failed": 0, "h1_sent": 100,
+            "h2_received": 100, "h2_dropped": 0, "pcap_dropped": 0, "pcap_interface_dropped": 0, "extractor_read": 100}
+
+
+def test_replay_checks_pass_when_every_packet_goes_from_tcpreplay_to_the_extractor():
+    assert all(replay_checks(COUNTERS, {"emitted_equals_received": True}).values())
+
+
+@pytest.mark.parametrize("change, failed", [
+    ({"tcpreplay_successful": 90}, {"tcpreplay_sent_whole_segment", "h1_sent_equals_tcpreplay_successful"}),
+    ({"h2_received": 99}, {"h2_received_equals_h1_sent", "extractor_read_equals_h2_received"}),
+    ({"pcap_dropped": 4, "extractor_read": 96}, {"no_capture_drops", "extractor_read_equals_h2_received"}),
+])
+def test_replay_checks_point_to_the_stage_that_lost_packets(change, failed):
+    checks = replay_checks({**COUNTERS, **change}, {"emitted_equals_received": True})
+    assert {name for name, passed in checks.items() if not passed} == failed
+
+
+def test_replay_checks_fail_when_the_replay_run_lost_a_flow():
+    assert not replay_checks(COUNTERS, {"emitted_equals_received": False})["replay_run_flow_chain"]
+
+
+def _counted(seq, first, forward, backward, sport="1000"):
+    return {**_flow(seq, first, sport=sport), "Total Fwd Packet": str(forward), "Total Bwd packets": str(backward),
+            "Timestamp": "2017-07-04 12:00:00"}
+
+
+def test_packets_that_move_to_the_next_flow_of_a_connection_are_told_apart_from_lost_packets():
+    file_run = [_counted(1, 100, 50, 60), _counted(2, 200, 30, 40), _counted(3, 150, 5, 5, sport="2000")]
+    replay = [_counted(1, 100, 51, 61), _counted(2, 200, 29, 39), _counted(3, 150, 5, 3, sport="2000")]
+    pairs = list(zip(file_run, replay))
+    shifts = _packet_shifts(pairs, pairs)
+    assert (shifts["flows"], shifts["conserved_in_connection"], shifts["connections"]) == (3, 2, 1)
+
+
+def test_extractor_that_ignores_the_stop_request_is_killed_and_the_run_fails(monkeypatch):
+    monkeypatch.setattr(flow_extractor, "STOP_TIMEOUT_S", 0.3)
+    extractor = NidsExtractorProcess.__new__(NidsExtractorProcess)
+    extractor.process = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(60)"], stdin=subprocess.PIPE,
+                                         stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    extractor.start = extractor.end = extractor._watchdog = None
+    extractor.header, extractor.killed_after_stop_timeout = [], False
+    extractor.request_stop()
+    with pytest.raises(RuntimeError, match="não parou"):
+        list(extractor.events())
+    assert extractor.process.poll() is not None
+
+
+def test_extractor_that_stops_when_asked_is_not_killed(monkeypatch):
+    monkeypatch.setattr(flow_extractor, "STOP_TIMEOUT_S", 5.0)
+    extractor = NidsExtractorProcess.__new__(NidsExtractorProcess)
+    script = ("import json, sys\nprint(json.dumps({'type': 'start', 'header': ['a']}), flush=True)\n"
+              "sys.stdin.read()\nprint(json.dumps({'type': 'end', 'flows_emitted': 0}), flush=True)")
+    extractor.process = subprocess.Popen([sys.executable, "-c", script], stdin=subprocess.PIPE,
+                                         stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    extractor.start = extractor.end = extractor._watchdog = None
+    extractor.header, extractor.killed_after_stop_timeout = [], False
+    extractor.request_stop()
+    assert [event for event, _ in extractor.events()] == ["start", "end"]
+    assert not extractor.killed_after_stop_timeout

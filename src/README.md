@@ -136,7 +136,7 @@ python main.py nids-executar --modelo random-forest --trecho validacao
 python main.py nids-executar --modelo xgboost --interface eth0
 ```
 
-O NIDS implementa a estratégia Sem XAI. O extrator do NIDS, em Java, forma os fluxos e os emite pela varredura do tempo limite ([decisão 8](../docs/decisoes.md)). O processo Python recebe cada fluxo por um pipe, monta as 80 entradas na ordem do manifesto do modelo congelado, chama `predict_proba`, aplica o limiar e escreve o registro no canal de saída. As marcações `t0` a `t3` e o relógio comum seguem a [decisão 9](../docs/decisoes.md). A configuração está em [configs/nids.json](../configs/nids.json).
+O NIDS implementa a estratégia Sem XAI. O extrator do NIDS, em Java, forma os fluxos e os emite pela varredura do tempo limite ([decisão 8](../docs/decisoes.md)). Na captura ao vivo, o extrator guarda os fluxos emitidos na fila de saída, para que a leitura dos pacotes não espere o classificador ([decisão 9](../docs/decisoes.md)). O processo Python recebe cada fluxo por um pipe, monta as 80 entradas na ordem do manifesto do modelo congelado, chama `predict_proba`, aplica o limiar e escreve o registro no canal de saída. As marcações `t0` a `t3` e o relógio comum seguem a [decisão 9](../docs/decisoes.md). A configuração está em [configs/nids.json](../configs/nids.json).
 
 A fonte é um trecho preparado (`--trecho`), um PCAP qualquer (`--pcap`) ou uma interface (`--interface`, com permissão de captura). Com `--trecho` e sem `--interface`, o NIDS lê o arquivo do trecho e compara os fluxos e as previsões com o modelo aplicado à tabela de referência. Essa conferência não calcula métricas de detecção. SIGTERM ou SIGINT encerram a captura ao vivo, e os fluxos ainda abertos são emitidos.
 
@@ -145,10 +145,10 @@ Cada execução grava `training-runs/nids/<arquivo|interface>/<execução>/`:
 | Arquivo | Conteúdo |
 | --- | --- |
 | `classifications.jsonl` | Canal de saída: um registro por fluxo classificado, com identificação do fluxo, classe e probabilidade de ataque. |
-| `flows.csv` | Um registro por fluxo recebido: causa da emissão, instantes dos pacotes, relógio da captura, `t0` a `t3`, previsão, erro e as 89 colunas do extrator. |
+| `flows.csv` | Um registro por fluxo recebido: causa da emissão, instantes dos pacotes, relógio da captura, `t0` a `t3`, previsão, motivo quando o fluxo não é classificável e as 89 colunas do extrator. |
 | `report.json` | Contadores, verificações, resumo dos tempos, CPU e memória dos dois processos, versões e hashes. |
 
-A execução falha se os fluxos emitidos pelo extrator diferirem dos recebidos, se os recebidos diferirem dos classificados mais os erros, se alguma marcação estiver fora de ordem ou se a conferência com a tabela de referência falhar. Um fluxo com entrada inválida, como `NaN`, é registrado como erro e contado. O resumo legível vai para `relatorios/nids-execucao-<fonte>-<execução>.md`.
+A execução falha se os fluxos emitidos pelo extrator diferirem dos recebidos, se os recebidos diferirem dos classificados mais os não classificáveis, se alguma marcação estiver fora de ordem ou se a conferência com a tabela de referência falhar. Um fluxo com algum valor que os dados de treino não têm, como `NaN`, é um fluxo não classificável: o NIDS não o entrega ao classificador, registra o motivo e o conta ([decisão 10](../docs/decisoes.md)). O resumo legível vai para `relatorios/nids-execucao-<fonte>-<execução>.md`.
 
 A reprodução em rede emulada e a validação em baixa carga estão descritas em [scripts/README.md](../scripts/README.md). O comando `nids-validar` compara a execução reproduzida com a execução do mesmo trecho lido do arquivo e termina com erro se a cadeia de contadores não fechar.
 

@@ -281,25 +281,33 @@ Por isso, o valor de referência não é a saída média sobre o treino em nenhu
 - O relógio da captura é o instante do último pacote lido. Quando a leitura fica sem pacotes, ele avança com o relógio do sistema menos uma margem de 2 s, para que os fluxos sejam emitidos mesmo sem tráfego novo. Ele nunca volta atrás.
 - O NIDS mantém as emissões que o extrator já faz durante a leitura: a chegada de um SYN depois do encerramento TCP e a mudança de código e tipo ICMP. No fim da captura, emite os fluxos restantes.
 - As regras de formação dos fluxos não mudam. O fluxo emitido pela varredura continua guardado até o pacote seguinte do mesmo identificador, para que o fluxo seguinte da mesma conexão TCP herde o sentido e a duração acumulada (`Total TCP Flow Time`), como no extrator original.
-- A implementação é o patch [extractor/patches/01-flow-emission-sweep.patch](../extractor/patches/01-flow-emission-sweep.patch), aplicado sobre o commit `13a061520b` da decisão 3.
+- Na captura ao vivo, a leitura de pacotes usa o modo não bloqueante da libpcap. Quando não há pacotes, o extrator avança o relógio da captura, executa a varredura e espera 1 ms antes de ler de novo.
+- O buffer de captura da libpcap, que guarda os pacotes ainda não lidos pelo extrator, tem 256 MiB.
+- A implementação é o patch [extractor/patches/01-flow-emission-sweep.patch](../extractor/patches/01-flow-emission-sweep.patch), aplicado sobre o commit `13a061520b` da decisão 3. O modo não bloqueante e o tamanho do buffer de captura estão em [extractor/patches/02-live-capture.patch](../extractor/patches/02-live-capture.patch).
 
 ### Justificativa
 
 - O extrator só emite um fluxo durante a leitura quando chega outro pacote com o mesmo identificador, nos casos acima. Os demais fluxos saem no fim da captura (`FlowGenerator.addPacket` e `Cmd.readPcapFile`). Numa captura contínua, a maioria dos fluxos não seria classificada até o fim.
 - Depois de 120 s desde o primeiro pacote, as regras do extrator já não aceitam pacotes no fluxo: o pacote seguinte inicia um fluxo novo. Emitir nesse instante não altera nenhum atributo, e os fluxos do NIDS ficam iguais aos fluxos que geraram os dados de treino.
 - Emitir logo depois do encerramento TCP alteraria os fluxos. O extrator original acrescenta ao fluxo encerrado os pacotes que chegam depois do encerramento, até um SYN.
+- Com TPACKET_V3, a libpcap bloqueia no `poll()` sem limite de tempo quando o tempo limite de leitura é positivo e deixa o kernel acordar a leitura, o que só acontece quando há pacotes (`pcap-linux.c`, `set_poll_timeout`, libpcap 1.10.6). Numa interface sem pacotes, a leitura bloqueante não retorna. A varredura do tempo limite e o pedido de parada nunca seriam atendidos depois do último pacote. No modo não bloqueante, a leitura retorna 0 na hora, e o tempo limite de 100 ms passa a definir só quanto o kernel espera para entregar um bloco parcial de pacotes. Um ensaio com a leitura bloqueante travou depois do fim da reprodução por esse motivo.
+- O buffer de captura padrão da libpcap tem 2 MiB. Ele comporta cerca de 170 ms do maior volume do trecho `validacao`, de 12,2 MB num segundo, e uma pausa do extrator dessa ordem faz o kernel descartar pacotes. Com 256 MiB, o buffer comporta cerca de 20 s desse volume. Num ensaio com o buffer padrão, o libpcap descartou 11.448 dos 3.954.069 pacotes do trecho com o XGBoost, que classifica um fluxo em menos de 1 ms.
 
 ### Consequências
 
 - A classificação de um fluxo fica disponível até cerca de 120 s depois do seu primeiro pacote. Essa espera ocorre antes de `t0` e não entra na latência de classificação, que começa em `t0`.
 - Na captura ao vivo, um pacote atrasado pode chegar a um fluxo que a varredura já emitiu. O extrator conta esses pacotes, e cada execução os registra.
+- O extrator recebe os pacotes até 100 ms depois de eles chegarem à interface, pelo bloco parcial do kernel. Esse atraso ocorre antes de `t0` e não entra na latência de classificação.
+- Um pacote espera no buffer de captura enquanto o extrator não o lê. Essa espera também ocorre antes de `t0`. Cada execução registra os pacotes que o libpcap descartou por falta de espaço no buffer.
+- A libpcap reduz o buffer, sem acusar erro, quando o kernel não consegue reservar o tamanho pedido (`pcap-linux.c`, `create_ring`, libpcap 1.10.6). Cada execução registra o tamanho pedido e o tamanho que o kernel mapeou no processo do extrator.
 
 ## 9. Marcações de tempo e relógio do NIDS
 
 ### Decisão
 
 - O extrator e o classificador rodam em dois processos ligados por um pipe, uma linha por fluxo emitido.
-- `t0` é lido no extrator Java, logo depois do cálculo dos atributos do fluxo emitido (`dumpFlowBasedFeaturesEx`) e antes do envio da linha ao classificador.
+- Na captura ao vivo, o extrator guarda a linha de cada fluxo emitido na fila de saída, uma fila em memória e sem limite, e uma thread própria escreve as linhas no pipe. A thread que lê os pacotes não espera o classificador. Na leitura de arquivo, a mesma thread lê os pacotes e escreve as linhas.
+- `t0` é lido no extrator Java, logo depois do cálculo dos atributos do fluxo emitido (`dumpFlowBasedFeaturesEx`) e antes de a linha entrar na fila de saída ou ser escrita no pipe.
 - `t1` e `t2` são lidos imediatamente antes e depois da chamada `predict_proba` de um fluxo. O intervalo inclui só a chamada ao classificador.
 - `t3` é o retorno da escrita do registro de classificação no canal de saída do NIDS, depois da passagem do registro ao sistema operacional, sem `fsync`. O canal de saída é o arquivo `classifications.jsonl` da execução, com uma linha por fluxo.
 - Os quatro instantes vêm do relógio monotônico do Linux (`CLOCK_MONOTONIC`): `System.nanoTime()` no Java e `time.monotonic_ns()` no Python. Cada execução confere essa base comum. A diferença entre a leitura do extrator na abertura e a leitura do classificador ao recebê-la deve ficar entre 0 e 1 s, ou a execução falha.
@@ -309,19 +317,29 @@ Por isso, o valor de referência não é a saída média sobre o treino em nenhu
 
 - O protocolo define `t3` como o momento em que a classificação fica disponível a quem a consome. A escrita no canal de saída torna o registro visível a outro processo e custa o mesmo nas quatro estratégias.
 - O relógio monotônico não sofre os ajustes do relógio de parede. Os dois processos rodam na mesma máquina e leem o mesmo relógio, então as diferenças entre marcações de processos distintos têm significado.
-- Entre `t0` e `t1` ficam a passagem pelo pipe e a montagem do vetor de entradas. Essa espera faz parte da latência de classificação.
+- Entre `t0` e `t1` ficam a espera na fila de saída, a passagem pelo pipe e a montagem do vetor de entradas. Essa espera faz parte da latência de classificação.
+- Quando a thread que lê os pacotes também escreve os fluxos, um pipe cheio interrompe a leitura, e o buffer de captura transborda. O pipe comporta cerca de 90 fluxos. No trecho `validacao`, a varredura emite mais de 200 fluxos em alguns segundos, e o Random Forest leva de 8 a 14 ms por fluxo, na média de cada ensaio. Num ensaio desse trecho com a escrita direta e o Random Forest, o libpcap descartou 413.628 dos 3.954.069 pacotes.
+- Na leitura de arquivo não há captura a perder. A escrita direta limita a memória do extrator, que lê o arquivo mais rápido do que o classificador consome os fluxos.
+- A fila de saída não tem limite porque os limites das filas e a política de descarte seguem entre as decisões em aberto do [protocolo](../relatorios/protocolo-experimental.md). Cada execução registra o maior tamanho que a fila atingiu.
 
 ## 10. Tráfego de entrada e emulação da rede
 
 ### Decisão
 
-- **PCAP.** O tráfego de entrada é o `Tuesday-WorkingHours.pcap` do CIC-IDS2017, com 11.048.283.608 bytes e SHA-256 `080c2250154c5a174c03660ed0f75a3858d41a27511ba716e780d7bcb1ec4c57`. O arquivo vem do mirror não oficial [bencorn/CICIDS2017](https://huggingface.co/datasets/bencorn/CICIDS2017), no commit `811c007f08d693a8a8b4226c197c138391806ce6`, porque o servidor do CIC estava em manutenção. O MD5 oficial ainda não foi conferido. A validade do arquivo é conferida pela equivalência entre os fluxos extraídos e os de `tuesday.csv`.
+- **PCAP.** O tráfego de entrada é o `Tuesday-WorkingHours.pcap` do CIC-IDS2017, com 11.048.283.608 bytes e SHA-256 `080c2250154c5a174c03660ed0f75a3858d41a27511ba716e780d7bcb1ec4c57`. O arquivo vem do mirror não oficial [bencorn/CICIDS2017](https://huggingface.co/datasets/bencorn/CICIDS2017), no commit `811c007f08d693a8a8b4226c197c138391806ce6`, porque o servidor do CIC estava em manutenção. O MD5 oficial não foi conferido. A validade do arquivo se apoia na equivalência entre os fluxos extraídos e os de `tuesday.csv`.
+- **Equivalência com `tuesday.csv`.** Os fluxos extraídos de um trecho equivalem aos do CSV quando as entradas inteiras coincidem exatamente e as entradas com fração diferem no máximo 10⁻¹² em valor relativo. Ficam fora da comparação os fluxos que começam nos últimos 120 s do trecho, que o corte interrompe, e os fluxos extraídos com algum `NaN`, que o CSV não tem.
+- **Fluxos não classificáveis.** O NIDS não entrega ao classificador um fluxo com algum valor de entrada que os dados de treino não têm, como `NaN`. Ele registra o motivo e conta esses fluxos em cada execução. O tráfego não é alterado para retirá-los.
 - **Preparação.** O arquivo inteiro passa pelo `pcapfix` e depois pelo `reordercap`, como os autores do Improved CIC-IDS2017 descrevem no [CNS2022_Code](https://github.com/GintsEngelen/CNS2022_Code). O arquivo do mirror está no formato pcapng, apesar da extensão `.pcap`, e o `reordercap` mantém esse formato. Os trechos são cortados com o `editcap` a partir do início da captura e gravados como PCAP clássico, sem alterar os bytes nem os instantes dos pacotes: `dev` até 11:58:44 UTC e `validacao` até 12:30:00 UTC. A configuração está em [configs/pcap-preparation.json](../configs/pcap-preparation.json).
 - **Extrator.** O NIDS compila o pacote `cic.cs.unb.ca.jnetpcap` do commit da decisão 3 com o JDK 17, para Java 8, e usa o `jnetpcap` 1.4.r1425 incluído no repositório do extrator. A captura ao vivo usa o mesmo caminho de leitura de pacotes da leitura de arquivo, com o patch [extractor/patches/02-live-capture.patch](../extractor/patches/02-live-capture.patch).
-- **Emulação.** O Mininet cria dois hosts em enlace direto, sem switch. O host h1 envia o trecho com o `tcpreplay` na velocidade original. O host h2 executa o NIDS, que captura a interface em modo promíscuo. As descargas de processamento das placas virtuais (`ethtool -K`) ficam desligadas, a MTU acompanha o maior quadro do trecho e o IPv6 fica desativado nos dois hosts.
+- **Emulação.** O Mininet cria dois hosts em enlace direto, sem switch. O host h1 envia o trecho na velocidade original com o `tcpreplay` 4.6.2, compilado por [tcpreplay/build.sh](../tcpreplay/README.md) a partir do pacote da versão publicado pelo projeto. O host h2 executa o NIDS, que captura a interface em modo promíscuo. As descargas de processamento das placas virtuais (`ethtool -K`) ficam desligadas, a MTU acompanha o maior quadro do trecho e o IPv6 fica desativado nos dois hosts.
 
 ### Justificativa
 
+- O MD5 publicado pelo CIC confirmaria que o arquivo do mirror é o original, mas o servidor do CIC estava fora do ar, e o trabalho não pode depender da sua volta. A equivalência com `tuesday.csv` mostra a propriedade de que o experimento depende: nos trechos conferidos, o arquivo produz os mesmos fluxos dos dados de treino.
 - Os CSVs do Improved CIC-IDS2017 foram gerados a partir dos PCAPs depois do `pcapfix` e do `reordercap`. Repetir a preparação é a condição para que os fluxos do NIDS correspondam aos do treino.
+- As entradas com fração do CSV diferem das extraídas nos últimos algarismos, com diferença relativa de no máximo 6 × 10⁻¹⁵ nos trechos conferidos. O notebook de rotulagem dos autores lê e regrava os CSVs com o pandas. A origem exata dessas diferenças não foi confirmada.
+- Um fluxo de um único pacote não tem intervalo entre pacotes, e seus atributos de intervalo ficam `NaN`. O notebook de rotulagem dos autores descarta as linhas com `NaN` (`dropna`), então os modelos não foram treinados com esses fluxos. No trecho `validacao`, eles são 22 de 32.108 fluxos.
+- Retirar os fluxos não classificáveis exigiria alterar o PCAP. Contá-los em cada execução mostra quanto do tráfego o NIDS deixa sem classificação.
 - O caminho de leitura da captura ao vivo do extrator original (`TrafficFlowWorker`) difere do que gerou os CSVs e não trata ICMP.
 - As descargas de processamento juntariam segmentos TCP em quadros maiores antes da captura, e os atributos de tamanho deixariam de corresponder aos do PCAP. O IPv6 desativado impede que os hosts emitam pacotes próprios durante a captura.
+- O PCAP tem quadros maiores que 1.500 bytes, de até 24.874 bytes no trecho `validacao`, e a MTU precisa comportá-los para que o enlace os entregue inteiros. As versões 4.5.2 e 4.5.3 do `tcpreplay` não enviam os quadros acima de 4.064 bytes quando a MTU passa de uma página de memória. A versão 4.6.0 corrige esse defeito, e o Ubuntu 26.04 distribui a 4.5.2.

@@ -128,13 +128,7 @@ class NidsService:
                  end: dict[str, Any], clock_difference: int | None, start: dict[str, Any]) -> dict[str, Any]:
         classified = [flow for flow in flows if flow["error"] is None]
         errors = [flow for flow in flows if flow["error"] is not None]
-        ordered = all(flow["t0_ns"] <= flow["t1_ns"] <= flow["t2_ns"] <= flow["t3_ns"] for flow in classified)
-        checks = {
-            "emitted_equals_received": end.get("flows_emitted") == len(flows),
-            "received_equals_classified_plus_errors": len(flows) == len(classified) + len(errors),
-            "timestamps_ordered": ordered,
-            "no_packets_after_emission_in_file_mode": kind != "arquivo" or end.get("packets_after_emission") == 0,
-        }
+        checks = run_checks(kind, end, flows)
         timings: dict[str, Any] = {}
         if classified:
             t0, t1, t2, t3 = (np.array([flow[key] for flow in classified], dtype=np.int64)
@@ -260,23 +254,19 @@ class NidsService:
             "flows_emitted": emitted["flows_emitted"], "flows_received": received["received"],
             "flows_classified": received["classified"], "flows_with_error": received["errors"],
         }
-        checks = {
-            "tcpreplay_sent_whole_segment": (tcpreplay.get("successful") or 0) + (tcpreplay.get("failed") or 0)
-            == counters["segment_packets"],
-            "h1_sent_equals_tcpreplay_successful": counters["h1_sent"] == tcpreplay.get("successful"),
-            "h2_received_equals_h1_sent": counters["h2_received"] == counters["h1_sent"],
-            "no_capture_drops": counters["h2_dropped"] == 0 and counters["pcap_dropped"] == 0
-            and counters["pcap_interface_dropped"] == 0,
-            "extractor_read_equals_h2_received": counters["extractor_read"] == counters["h2_received"],
-            "replay_run_flow_chain": all(replay["checks"].values()),
-        }
+        checks = replay_checks(counters, replay["checks"])
+        seconds = Counter(int(row["t0_ns"]) // 1_000_000_000 for row in replay_rows)
+        emission = {"flows": emitted["flows_emitted"],
+                    "per_second": emitted["flows_emitted"] / emulation["replay_seconds"],
+                    "peak_per_second": max(seconds.values(), default=0)}
         run_dir = self.repo.create_run("validacao")
         summary = {
             "stage": "low-load validation", "run_id": run_dir.name, "passed": all(checks.values()),
             "checks": checks, "counters": counters, "model": replay["model"], "segment": original["segment"]["name"],
             "replay_run": self.repo.relative(replay_dir), "file_run": self.repo.relative(file_dir),
             "replay": {key: emulation.get(key) for key in ("topology", "replay_command", "replay_seconds",
-                                                           "wait_after_replay_s", "replay_started_utc")},
+                                                           "wait_after_replay_s", "replay_started_utc",
+                                                           "tcpreplay_build")},
             "tcpreplay": {key: value for key, value in tcpreplay.items() if key not in ("output", "errors")},
             "flows": {
                 "file": len(file_rows), "replay": len(replay_rows), "matched_inside": len(inside),
@@ -286,6 +276,7 @@ class NidsService:
                 "file_only_examples": [_brief(row) for row in only_file if inside_file(row)][:5],
                 "replay_only_examples": [_brief(row) for row in only_replay if inside_replay(row)][:5],
             },
+            "emission": emission, "packet_shifts": _packet_shifts(pairs, inside),
             "exact_attributes": {name: item for name, item in exact.items() if item["mismatches"]},
             "temporal_attributes": temporal, "flows_with_equal_exact_attributes": len(exact_equal),
             "predictions": {
@@ -306,7 +297,59 @@ class NidsService:
         return CommandResult(run_dir, report, summary)
 
 
-TEMPORAL_MARKERS = ("Duration", "IAT", "/s", "Active", "Idle", "Bulk Rate", "TCP Flow Time")
+def run_checks(kind: str, end: dict[str, Any], flows: list[dict[str, Any]]) -> dict[str, bool]:
+    """Verificações de uma execução: os fluxos emitidos chegam todos ao classificador, e as marcações estão em ordem."""
+    classified = [flow for flow in flows if flow["error"] is None]
+    errors = [flow for flow in flows if flow["error"] is not None]
+    return {
+        "emitted_equals_received": end.get("flows_emitted") == len(flows),
+        "received_equals_classified_plus_errors": len(flows) == len(classified) + len(errors),
+        "timestamps_ordered": all(flow["t0_ns"] <= flow["t1_ns"] <= flow["t2_ns"] <= flow["t3_ns"]
+                                  for flow in classified),
+        "no_packets_after_emission_in_file_mode": kind != "arquivo" or end.get("packets_after_emission") == 0,
+    }
+
+
+def replay_checks(counters: dict[str, Any], replay_run_checks: dict[str, bool]) -> dict[str, bool]:
+    """Cadeia de contadores da reprodução: do tcpreplay à interface de h1, à de h2, ao libpcap e ao extrator."""
+    return {
+        "tcpreplay_sent_whole_segment": (counters["tcpreplay_successful"] or 0) + (counters["tcpreplay_failed"] or 0)
+        == counters["segment_packets"],
+        "h1_sent_equals_tcpreplay_successful": counters["h1_sent"] == counters["tcpreplay_successful"],
+        "h2_received_equals_h1_sent": counters["h2_received"] == counters["h1_sent"],
+        "no_capture_drops": counters["h2_dropped"] == 0 and counters["pcap_dropped"] == 0
+        and counters["pcap_interface_dropped"] == 0,
+        "extractor_read_equals_h2_received": counters["extractor_read"] == counters["h2_received"],
+        "replay_run_flow_chain": all(replay_run_checks.values()),
+    }
+
+
+def _packets(row: dict[str, str]) -> int:
+    return int(row["Total Fwd Packet"]) + int(row["Total Bwd packets"])
+
+
+def _packet_shifts(pairs: list[tuple[dict[str, str], dict[str, str]]],
+                   inside: list[tuple[dict[str, str], dict[str, str]]]) -> dict[str, Any]:
+    """Conta os fluxos casados com número de pacotes diferente e, entre eles, os de conexões cujo total se conserva.
+
+    Quando o total de pacotes da conexão é igual nas duas execuções, os pacotes só mudaram de fluxo: a reprodução
+    desloca os instantes dos pacotes, e um pacote próximo do tempo limite fica no fluxo anterior ou no seguinte."""
+    totals: dict[tuple[Any, ...], list[int]] = {}
+    for file_row, replay_row in pairs:
+        total = totals.setdefault(_endpoints_key(file_row), [0, 0])
+        total[0] += _packets(file_row)
+        total[1] += _packets(replay_row)
+    differing = [(f, r) for f, r in inside if _packets(f) != _packets(r)]
+    conserved = [(f, r) for f, r in differing if totals[_endpoints_key(f)][0] == totals[_endpoints_key(f)][1]]
+    return {"flows": len(differing), "conserved_in_connection": len(conserved),
+            "connections": len({_endpoints_key(f) for f, _ in conserved}),
+            "examples": [{"flow_id": f["Flow ID"], "timestamp": f["Timestamp"], "file_packets": _packets(f),
+                          "replay_packets": _packets(r)} for f, r in differing[:10]]}
+
+
+# O extrator reinicia a rajada (bulk) quando dois pacotes com carga ficam mais de 1 s afastados. Por isso os
+# atributos de rajada também dependem dos instantes de captura.
+TEMPORAL_MARKERS = ("Duration", "IAT", "/s", "Active", "Idle", "Bulk", "TCP Flow Time")
 FIVE_TUPLE = ("Flow ID", "Src IP", "Src Port", "Dst IP", "Dst Port", "Protocol")
 
 
@@ -338,7 +381,7 @@ def _temporal_differences(pairs: list[tuple[dict[str, str], dict[str, str]]], na
     for name in names:
         left = np.array([float(f[name]) for f, _ in pairs])
         right = np.array([float(r[name]) for _, r in pairs])
-        finite = np.isfinite(left) & np.isfinite(right)
+        finite = np.isfinite(left) & np.isfinite(right) & (left != right)
         difference = np.abs(left[finite] - right[finite])
         scale = np.maximum(np.abs(left[finite]), 1.0)
         result[name] = {"differing": int(np.count_nonzero(left != right)),

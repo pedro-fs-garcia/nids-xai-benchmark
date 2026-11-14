@@ -1,5 +1,6 @@
 """Relatórios legíveis das execuções e da validação do NIDS de referência."""
 
+from pathlib import Path
 from typing import Any
 
 MODEL_NAMES = {"random-forest": "Random Forest", "xgboost": "XGBoost"}
@@ -12,7 +13,7 @@ CAUSES = {
 }
 CHECKS = {
     "emitted_equals_received": "Fluxos emitidos pelo extrator = fluxos recebidos pelo classificador",
-    "received_equals_classified_plus_errors": "Fluxos recebidos = classificados + erros",
+    "received_equals_classified_plus_errors": "Fluxos recebidos = classificados + não classificáveis",
     "timestamps_ordered": "t0 ≤ t1 ≤ t2 ≤ t3 em todos os fluxos classificados",
     "no_packets_after_emission_in_file_mode": "Nenhum pacote chegou a um fluxo já emitido (modo arquivo)",
 }
@@ -48,7 +49,7 @@ def render_run(summary: dict[str, Any]) -> str:
         f"| Fluxos emitidos pelo extrator | {_integer(end.get('flows_emitted', 0))} |",
         f"| Fluxos recebidos pelo classificador | {_integer(flows['received'])} |",
         f"| Fluxos classificados | {_integer(flows['classified'])} |",
-        f"| Fluxos com erro nas entradas | {_integer(flows['errors'])} |",
+        f"| Fluxos não classificáveis | {_integer(flows['errors'])} |",
         "",
     ]
     if end.get("pcap_stats"):
@@ -56,10 +57,18 @@ def render_run(summary: dict[str, Any]) -> str:
         lines += [f"Estatísticas do libpcap: {_integer(stats['received'])} pacotes recebidos, "
                   f"{_integer(stats['dropped'])} descartados por falta de espaço no buffer e "
                   f"{_integer(stats['interface_dropped'])} descartados pela interface.", ""]
+    start = summary["extractor_start"]
+    if start.get("buffer_bytes"):
+        ring = start.get("ring_bytes")
+        lines += [f"O buffer de captura foi pedido com {_integer(round(start['buffer_bytes'] / 2**20))} MiB"
+                  + (f", e o kernel mapeou {_integer(round(ring / 2**20))} MiB" if ring else "") + ".", ""]
+    if end.get("output_queue_max") is not None:
+        lines += [f"A fila de saída do extrator chegou a {_integer(end['output_queue_max'])} fluxos à espera da "
+                  "escrita.", ""]
     lines += ["Causas de emissão: " + ", ".join(
         f"{CAUSES.get(cause, cause)} ({_integer(count)})" for cause, count in flows["by_cause"].items()) + ".", ""]
     if flows["error_examples"]:
-        lines += ["Exemplos de erro: " + "; ".join(f"fluxo {item['seq']} (`{item['flow_id']}`): {item['error']}"
+        lines += ["Exemplos de fluxos não classificáveis: " + "; ".join(f"fluxo {item['seq']} (`{item['flow_id']}`): {item['error']}"
                                                    for item in flows["error_examples"]) + ".", ""]
     lines += ["## Verificações", "", "| Verificação | Resultado |", "|---|---|",
               *[f"| {CHECKS[name]} | {'aprovada' if value else 'reprovada'} |"
@@ -74,7 +83,7 @@ def render_run(summary: dict[str, Any]) -> str:
             f"Ficaram {_integer(conference['reference_only_inside'])} fluxos só no CSV e "
             f"{_integer(conference['nids_only_inside'])} só no NIDS. Destes, "
             f"{_integer(conference['nids_only_inside_with_nan'])} têm algum valor `NaN`: são fluxos de um único "
-            "pacote, que a rotulagem dos autores descartou com `dropna` e que o NIDS registra como erro de entrada.",
+            "pacote, que a rotulagem dos autores descartou com `dropna` e que o NIDS registra como não classificáveis.",
             "",
             ("As entradas inteiras coincidem exatamente com as do CSV. "
              f"{_integer(conference['rounding_differences'])} valores com fração diferem nos últimos algarismos, com "
@@ -122,6 +131,20 @@ def render_run(summary: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+def _packet_shift_lines(shifts: dict[str, Any] | None) -> list[str]:
+    if not shifts or not shifts["flows"]:
+        return []
+    text = (f"O número de pacotes difere em {_integer(shifts['flows'])} fluxos casados. Em "
+            f"{_integer(shifts['conserved_in_connection'])} deles, de {_integer(shifts['connections'])} conexões, o "
+            "total de pacotes da conexão é igual nas duas execuções. Nesses fluxos, pacotes próximos do tempo limite "
+            "de 120 s ficaram no fluxo anterior ou no seguinte da mesma conexão, porque a reprodução desloca os "
+            "instantes de captura.")
+    rest = shifts["flows"] - shifts["conserved_in_connection"]
+    if rest:
+        text += f" Nos outros {_integer(rest)}, o total de pacotes da conexão também difere."
+    return [text, ""]
+
+
 def _integer(value: int) -> str:
     return f"{value:,}".replace(",", ".")
 
@@ -140,13 +163,16 @@ VALIDATION_CHECKS = {
     "h2_received_equals_h1_sent": "Pacotes recebidos por h2 = pacotes transmitidos por h1",
     "no_capture_drops": "Nenhum descarte na interface de h2 nem no libpcap",
     "extractor_read_equals_h2_received": "Pacotes lidos pelo extrator = pacotes recebidos por h2",
-    "replay_run_flow_chain": "Fluxos emitidos = recebidos = classificados + erros, na execução reproduzida",
+    "replay_run_flow_chain": "Fluxos emitidos = recebidos = classificados + não classificáveis, na execução reproduzida",
 }
 
 
 def render_validation(summary: dict[str, Any]) -> str:
     flows, counters, predictions = summary["flows"], summary["counters"], summary["predictions"]
     tcpreplay, replay = summary["tcpreplay"], summary["replay"]
+    build = replay.get("tcpreplay_build") or {}
+    tool = f"tcpreplay {build['version']}" if build else "tcpreplay"
+    command = " ".join([Path(replay["replay_command"][0]).name, *replay["replay_command"][1:-1]])
     lines = [
         f"# Validação do NIDS em baixa carga: {MODEL_NAMES[summary['model']]}, trecho `{summary['segment']}`",
         "",
@@ -158,12 +184,16 @@ def render_validation(summary: dict[str, Any]) -> str:
         "",
         f"O Mininet criou dois hosts ligados por um enlace direto, sem switch, com MTU de "
         f"{_integer(replay['topology']['mtu'])} bytes, IPv6 desativado e as descargas de processamento das placas "
-        "desligadas. O host h1 enviou o trecho com o tcpreplay na velocidade original "
-        f"(`{' '.join(replay['replay_command'][:-1])}`), e o NIDS capturou a interface de h2. A reprodução levou "
+        f"desligadas. O host h1 enviou o trecho com o {tool} na velocidade original "
+        f"(`{command}`), e o NIDS capturou a interface de h2. A reprodução levou "
         f"{_decimal(replay['replay_seconds'], 1)} s, a {_decimal(tcpreplay.get('rated_mbps') or 0, 3)} Mbps e "
         f"{_decimal(tcpreplay.get('rated_packets_per_second') or 0, 1)} pacotes/s. Depois do último pacote, a execução "
         f"esperou {_decimal(replay['wait_after_replay_s'], 0)} s para a varredura emitir os últimos fluxos.",
         "",
+        *([f"O extrator emitiu {_integer(summary['emission']['flows'])} fluxos, "
+           f"{_decimal(summary['emission']['per_second'], 2)} por segundo de reprodução, com até "
+           f"{_integer(summary['emission']['peak_per_second'])} emissões num mesmo segundo.", ""]
+          if summary.get("emission") else []),
         "## Cadeia de contadores",
         "",
         "| Contador | Valor |",
@@ -177,7 +207,7 @@ def render_validation(summary: dict[str, Any]) -> str:
             ("extractor_valid", "IPv4 usados pelo extrator"), ("file_extractor_read", "Lidos do arquivo, na execução por arquivo"),
             ("packets_after_emission", "Chegaram a um fluxo já emitido"), ("flows_emitted", "Fluxos emitidos"),
             ("flows_received", "Fluxos recebidos pelo classificador"), ("flows_classified", "Fluxos classificados"),
-            ("flows_with_error", "Fluxos com erro"))],
+            ("flows_with_error", "Fluxos não classificáveis"))],
         "",
         "| Verificação | Resultado |",
         "|---|---|",
@@ -210,9 +240,12 @@ def render_validation(summary: dict[str, Any]) -> str:
         + ("Nenhum desses atributos diverge." if not summary["exact_attributes"] else "Divergem: " + ", ".join(
             f"{name} ({_integer(item['mismatches'])})" for name, item in summary["exact_attributes"].items()) + "."),
         "",
-        "Os atributos temporais dependem dos instantes de captura, que a reprodução altera:",
+        *_packet_shift_lines(summary.get("packet_shifts")),
+        "Os atributos temporais dependem dos instantes de captura, que a reprodução altera. Os atributos de rajada "
+        "(`Bulk`) estão entre eles, porque o extrator reinicia a rajada quando dois pacotes com carga ficam mais de "
+        "1 s afastados.",
         "",
-        "| Atributo | Fluxos com diferença | Maior diferença absoluta | Diferença relativa mediana |",
+        "| Atributo | Fluxos com diferença | Maior diferença absoluta | Diferença relativa mediana, entre os que diferem |",
         "|---|---:|---:|---:|",
         *[f"| {name} | {_integer(item['differing'])} | {item['max_abs_difference']:g} | "
           f"{item['median_relative_difference']:.2e} |" for name, item in summary["temporal_attributes"].items()],

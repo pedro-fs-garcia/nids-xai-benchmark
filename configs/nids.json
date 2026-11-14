@@ -4,7 +4,8 @@
   "extractor": {
     "snaplen": 65535,
     "read-timeout-ms": 100,
-    "idle-margin-us": 2000000
+    "idle-margin-us": 2000000,
+    "buffer-bytes": 268435456
   },
   "classifier_threads": 1,
   "shared_clock_tolerance_ns": 1000000000

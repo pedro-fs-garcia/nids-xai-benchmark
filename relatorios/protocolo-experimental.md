@@ -38,7 +38,7 @@ Cada fluxo recebe até cinco marcações de tempo.
 
 Nas estratégias síncronas, a classificação e a explicação de um fluxo explicado ficam disponíveis juntas, então `t3` e `t4` coincidem. No modo assíncrono, `t4` é posterior a `t3` e inclui a espera na fila de explicações pendentes.
 
-No NIDS, `t0` é lido no extrator logo depois do cálculo dos atributos do fluxo emitido. `t1` e `t2` delimitam a chamada `predict_proba`. `t3` é o retorno da escrita do registro de classificação no canal de saída. Os eventos e o relógio comum estão na [decisão 9](../docs/decisoes.md).
+No NIDS, `t0` é lido no extrator logo depois do cálculo dos atributos do fluxo emitido. A espera do fluxo na fila de saída do extrator fica entre `t0` e `t1`. `t1` e `t2` delimitam a chamada `predict_proba`. `t3` é o retorno da escrita do registro de classificação no canal de saída. Os eventos e o relógio comum estão na [decisão 9](../docs/decisoes.md).
 
 ### 5.2 Tempos calculados
 

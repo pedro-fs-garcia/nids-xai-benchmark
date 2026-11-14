@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 import subprocess
+import threading
 from collections.abc import Iterator
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
@@ -11,6 +12,8 @@ from pathlib import Path
 from typing import Any
 
 EXTRACTOR_COMMIT = "13a061520b862d605eea746c79ca4033b30d98fc"
+# Tempo que o extrator tem para parar depois do pedido de parada. Passado esse tempo, o processo é encerrado.
+STOP_TIMEOUT_S = 30.0
 _EPOCH = datetime(1970, 1, 1, tzinfo=timezone.utc)
 METADATA = ("Flow ID", "Src IP", "Src Port", "Dst IP", "Dst Port", "Protocol", "Timestamp")
 
@@ -59,7 +62,7 @@ class ExtractorBuild:
 class NidsExtractorProcess:
     """Processo do extrator do NIDS, lido linha a linha. A captura ao vivo para quando a entrada é fechada."""
 
-    def __init__(self, build: ExtractorBuild, source: dict[str, str], options: dict[str, int]) -> None:
+    def __init__(self, build: ExtractorBuild, source: dict[str, str], options: dict[str, int | str]) -> None:
         if len(source) != 1 or next(iter(source)) not in ("pcap", "iface"):
             raise ValueError("A fonte do extrator deve ser um arquivo (pcap) ou uma interface (iface).")
         (kind, location), = source.items()
@@ -72,6 +75,8 @@ class NidsExtractorProcess:
         self.start: dict[str, Any] | None = None
         self.end: dict[str, Any] | None = None
         self.header: list[str] = []
+        self.killed_after_stop_timeout = False
+        self._watchdog: threading.Timer | None = None
 
     def events(self) -> Iterator[tuple[str, Any]]:
         """Devolve ("start", dict), ("flow", ExtractedFlow) e ("end", dict), na ordem do extrator."""
@@ -90,13 +95,27 @@ class NidsExtractorProcess:
                 self.end = event
                 yield "end", event
         code = self.process.wait()
+        if self._watchdog is not None:
+            self._watchdog.cancel()
+        if self.killed_after_stop_timeout:
+            raise RuntimeError(f"O extrator não parou em {STOP_TIMEOUT_S:.0f} s depois do pedido de parada e foi encerrado.")
         if code != 0 or self.end is None:
             stderr = self.process.stderr.read() if self.process.stderr else ""
             raise RuntimeError(f"O extrator terminou com código {code}: {stderr.strip()}")
 
     def request_stop(self) -> None:
+        """Pede a parada fechando a entrada do extrator e encerra o processo se ele não parar a tempo."""
         if self.process.stdin and not self.process.stdin.closed:
             self.process.stdin.close()
+        if self._watchdog is None:
+            self._watchdog = threading.Timer(STOP_TIMEOUT_S, self._kill_after_stop_timeout)
+            self._watchdog.daemon = True
+            self._watchdog.start()
+
+    def _kill_after_stop_timeout(self) -> None:
+        if self.process.poll() is None:
+            self.killed_after_stop_timeout = True
+            self.process.kill()
 
     def kill(self) -> None:
         if self.process.poll() is None:

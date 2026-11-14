@@ -12,3 +12,4 @@ derived-data/pcap/**/*.csv
 training-runs/traffic/**/*.csv
 training-runs/nids/**/*.csv
 training-runs/nids/**/*.jsonl
+tcpreplay/build/
