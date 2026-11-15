@@ -11,6 +11,8 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
+from core.process_resources import pin_before_exec
+
 EXTRACTOR_COMMIT = "13a061520b862d605eea746c79ca4033b30d98fc"
 # Tempo que o extrator tem para parar depois do pedido de parada. Passado esse tempo, o processo é encerrado.
 STOP_TIMEOUT_S = 30.0
@@ -44,11 +46,13 @@ class ExtractorBuild:
             if _sha256(build_dir / name) != expected:
                 raise ValueError(f"O jar {name} mudou depois do build.")
 
-    def command(self, jar: str, main_class: str, arguments: list[str]) -> tuple[list[str], dict[str, str]]:
+    def command(self, jar: str, main_class: str, arguments: list[str],
+                max_heap_mib: int | None = None) -> tuple[list[str], dict[str, str]]:
         native = self.build_dir / "native"
         environment = {**os.environ, "LD_LIBRARY_PATH": str(native)}
         classpath = f"{self.build_dir / jar}:{self.build_dir / 'lib'}/*"
-        return ["java", f"-Djava.library.path={native}", "-cp", classpath, main_class, *arguments], environment
+        heap = [] if max_heap_mib is None else [f"-Xmx{max_heap_mib}m"]
+        return ["java", *heap, f"-Djava.library.path={native}", "-cp", classpath, main_class, *arguments], environment
 
     def run_reference(self, pcap: Path, output_csv: Path) -> dict[str, Any]:
         command, environment = self.command("reference-extractor.jar", "nids.extractor.ReferenceExtractor",
@@ -62,16 +66,20 @@ class ExtractorBuild:
 class NidsExtractorProcess:
     """Processo do extrator do NIDS, lido linha a linha. A captura ao vivo para quando a entrada é fechada."""
 
-    def __init__(self, build: ExtractorBuild, source: dict[str, str], options: dict[str, int | str]) -> None:
+    def __init__(self, build: ExtractorBuild, source: dict[str, str], options: dict[str, int | str],
+                 cpus: list[int] | None = None, max_heap_mib: int | None = None) -> None:
         if len(source) != 1 or next(iter(source)) not in ("pcap", "iface"):
             raise ValueError("A fonte do extrator deve ser um arquivo (pcap) ou uma interface (iface).")
         (kind, location), = source.items()
         arguments = [f"--{kind}", location]
         for key, value in options.items():
             arguments += [f"--{key}", str(value)]
-        command, environment = build.command("nids-extractor.jar", "nids.extractor.NidsExtractor", arguments)
+        command, environment = build.command("nids-extractor.jar", "nids.extractor.NidsExtractor", arguments,
+                                             max_heap_mib)
+        # A afinidade é aplicada antes de a JVM iniciar, e todas as suas threads a herdam.
         self.process = subprocess.Popen(command, env=environment, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                                        stderr=subprocess.PIPE, text=True, bufsize=1)
+                                        stderr=subprocess.PIPE, text=True, bufsize=1,
+                                        preexec_fn=None if cpus is None else pin_before_exec(cpus))
         self.start: dict[str, Any] | None = None
         self.end: dict[str, Any] | None = None
         self.header: list[str] = []

@@ -2,7 +2,7 @@
 
 ## 1. Termos
 
-Os termos técnicos do desenho experimental têm definição única no [glossário do projeto](../docs/glossario.md). Este protocolo usa essas definições sem alterá-las.
+Os termos técnicos do desenho experimental têm definição única no [glossário do projeto](glossario.md). Este protocolo usa essas definições sem alterá-las.
 
 ## 2. Pergunta e hipótese
 
@@ -38,7 +38,9 @@ Cada fluxo recebe até cinco marcações de tempo.
 
 Nas estratégias síncronas, a classificação e a explicação de um fluxo explicado ficam disponíveis juntas, então `t3` e `t4` coincidem. No modo assíncrono, `t4` é posterior a `t3` e inclui a espera na fila de explicações pendentes.
 
-No NIDS, `t0` é lido no extrator logo depois do cálculo dos atributos do fluxo emitido. A espera do fluxo na fila de saída do extrator fica entre `t0` e `t1`. `t1` e `t2` delimitam a chamada `predict_proba`. `t3` é o retorno da escrita do registro de classificação no canal de saída. Os eventos e o relógio comum estão na [decisão 9](../docs/decisoes.md).
+No NIDS, `t0` é lido no extrator logo depois do cálculo dos atributos do fluxo emitido. A espera do fluxo na fila de saída do extrator fica entre `t0` e `t1`. `t1` e `t2` delimitam a chamada `predict_proba`. `t3` é o retorno da escrita do registro de classificação no canal de saída. Os eventos e o relógio comum estão na [decisão 9](decisoes.md).
+
+`t4` é o retorno da escrita do registro da explicação no canal de saída das explicações. Nas estratégias síncronas, o NIDS escreve o registro da explicação e depois o da classificação, e uma única leitura do relógio, depois das duas escritas, vale por `t3` e `t4`. No modo assíncrono, a solicitação de explicação entra na fila de explicações pendentes depois de `t3`, e o processo explicador lê `t4`. Os eventos estão na [decisão 11](decisoes.md).
 
 ### 5.2 Tempos calculados
 
@@ -85,7 +87,7 @@ O piloto define os valores do limiar e do limite.
 
 ## 9. Piloto
 
-O piloto define os níveis de carga, o número de repetições e os valores dos critérios de viabilidade da seção 8. Para isso, ele realiza três verificações.
+O piloto define os níveis de carga, o número de repetições e os valores dos critérios de viabilidade da seção 8, e confirma ou ajusta os limites das filas da [decisão 13](decisoes.md). Para isso, ele realiza três verificações.
 
 1. Verifica se os atributos que o NIDS extrai em tempo real correspondem aos usados no treinamento dos classificadores, incluindo as regras que definem quando um fluxo termina.
 2. Verifica se a velocidade de reprodução do tráfego altera os atributos temporais do fluxo, como o tempo entre pacotes. Isso separa esse efeito do custo de processamento do NIDS.
@@ -93,8 +95,6 @@ O piloto define os níveis de carga, o número de repetições e os valores dos 
 
 ## 10. Decisões em aberto
 
-As decisões já tomadas estão em [docs/decisoes.md](../docs/decisoes.md). As decisões abaixo ainda não foram tomadas.
+As decisões já tomadas estão em [docs/decisoes.md](decisoes.md). As decisões abaixo ainda não foram tomadas.
 
-- Critério de seleção da estratégia Síncrono condicional, que inclui a grandeza avaliada (probabilidade ou incerteza), o limiar e a forma de calibração no conjunto de validação.
-- Limites das filas e política de descarte.
 - Níveis de carga, número de repetições e valores dos critérios de viabilidade, todos definidos pelo piloto.

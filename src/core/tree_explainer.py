@@ -13,6 +13,13 @@ class TreeShapResult:
     contributions: np.ndarray
 
 
+def explained_output(estimator: Any, inputs: np.ndarray) -> np.ndarray:
+    """Saída bruta que o TreeSHAP explica: a probabilidade de ataque no Random Forest e o escore em log-odds no XGBoost."""
+    if hasattr(estimator, "get_booster"):
+        return estimator.predict(inputs, output_margin=True).astype(np.float64)
+    return estimator.predict_proba(inputs)[:, 1]
+
+
 class TreeShapExplainer:
     """Explica a classe 1 de um classificador binário de árvores, sem conjunto de referência."""
 

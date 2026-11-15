@@ -129,14 +129,15 @@ python main.py conferir-extracao --trecho validacao
 
 O comando extrai os fluxos do trecho com o extrator original e os compara com a tabela de referência: nomes e ordem das colunas, fluxos presentes de cada lado e os valores das 80 entradas. Os fluxos que começam nos últimos 120 s do trecho formam a borda e são contados à parte. O comando também executa o extrator do NIDS no mesmo trecho e confere que as linhas de atributos são as mesmas. O relatório vai para `relatorios/extracao-pcap-<execução>.md`, e o registro, para `training-runs/traffic/extracao/`. O comando termina com erro se alguma conferência falhar.
 
-## NIDS de referência
+## NIDS e estratégias de explicação
 
 ```bash
 python main.py nids-executar --modelo random-forest --trecho validacao
-python main.py nids-executar --modelo xgboost --interface eth0
+python main.py nids-executar --modelo xgboost --trecho validacao --estrategia sincrono-condicional --criterio incerteza
+python main.py nids-executar --modelo xgboost --interface eth0 --estrategia assincrono
 ```
 
-O NIDS implementa a estratégia Sem XAI. O extrator do NIDS, em Java, forma os fluxos e os emite pela varredura do tempo limite ([decisão 8](../docs/decisoes.md)). Na captura ao vivo, o extrator guarda os fluxos emitidos na fila de saída, para que a leitura dos pacotes não espere o classificador ([decisão 9](../docs/decisoes.md)). O processo Python recebe cada fluxo por um pipe, monta as 80 entradas na ordem do manifesto do modelo congelado, chama `predict_proba`, aplica o limiar e escreve o registro no canal de saída. As marcações `t0` a `t3` e o relógio comum seguem a [decisão 9](../docs/decisoes.md). A configuração está em [configs/nids.json](../configs/nids.json).
+O NIDS implementa as quatro estratégias de explicação, escolhidas por `--estrategia`: `sem-xai`, o padrão, `sincrono-total`, `sincrono-condicional` e `assincrono` ([decisão 11](../docs/decisoes.md)). O Síncrono condicional exige `--criterio probabilidade` ou `--criterio incerteza`, com o limiar fixado na configuração ([decisão 12](../docs/decisoes.md)). O extrator do NIDS, em Java, forma os fluxos e os emite pela varredura do tempo limite ([decisão 8](../docs/decisoes.md)). Na captura ao vivo, o extrator guarda os fluxos emitidos na fila de saída, para que a leitura dos pacotes não espere o classificador ([decisão 9](../docs/decisoes.md)). O processo Python recebe cada fluxo por um pipe, monta as 80 entradas na ordem do manifesto do modelo congelado, chama `predict_proba`, aplica o limiar e escreve o registro no canal de saída. Conforme a estratégia, ele gera a explicação TreeSHAP do fluxo antes de entregar a classificação ou encaminha a solicitação de explicação ao processo explicador, pela fila de explicações pendentes. As marcações `t0` a `t3` e o relógio comum seguem a [decisão 9](../docs/decisoes.md), e `t4`, a [decisão 11](../docs/decisoes.md). Os limites das filas estão na [decisão 13](../docs/decisoes.md), e as CPUs de cada processo, na [decisão 14](../docs/decisoes.md). A configuração está em [configs/nids.json](../configs/nids.json).
 
 A fonte é um trecho preparado (`--trecho`), um PCAP qualquer (`--pcap`) ou uma interface (`--interface`, com permissão de captura). Com `--trecho` e sem `--interface`, o NIDS lê o arquivo do trecho e compara os fluxos e as previsões com o modelo aplicado à tabela de referência. Essa conferência não calcula métricas de detecção. SIGTERM ou SIGINT encerram a captura ao vivo, e os fluxos ainda abertos são emitidos.
 
@@ -145,12 +146,26 @@ Cada execução grava `training-runs/nids/<arquivo|interface>/<execução>/`:
 | Arquivo | Conteúdo |
 | --- | --- |
 | `classifications.jsonl` | Canal de saída: um registro por fluxo classificado, com identificação do fluxo, classe e probabilidade de ataque. |
-| `flows.csv` | Um registro por fluxo recebido: causa da emissão, instantes dos pacotes, relógio da captura, `t0` a `t3`, previsão, motivo quando o fluxo não é classificável e as 89 colunas do extrator. |
-| `report.json` | Contadores, verificações, resumo dos tempos, CPU e memória dos dois processos, versões e hashes. |
+| `flows.csv` | Um registro por fluxo recebido: causa da emissão, instantes dos pacotes, relógio da captura, `t0` a `t3`, previsão, motivo quando o fluxo não é classificável, seleção para explicação e o seu início e fim, situação da explicação, instante da solicitação no modo assíncrono e as 89 colunas do extrator. |
+| `explanations.jsonl` | Canal de saída das explicações, nas estratégias que explicam: um registro por fluxo explicado, com o valor de referência e as 80 contribuições na ordem do manifesto. |
+| `explanations.csv` | Marcações de cada explicação: retirada da fila, no modo assíncrono, início e fim da chamada ao explicador e `t4`. |
+| `report.json` | Contadores, verificações, cobertura explicativa, fila de explicações pendentes, resumo dos tempos, CPUs, CPU e memória de cada processo, versões e hashes. |
 
-A execução falha se os fluxos emitidos pelo extrator diferirem dos recebidos, se os recebidos diferirem dos classificados mais os não classificáveis, se alguma marcação estiver fora de ordem ou se a conferência com a tabela de referência falhar. Um fluxo com algum valor que os dados de treino não têm, como `NaN`, é um fluxo não classificável: o NIDS não o entrega ao classificador, registra o motivo e o conta ([decisão 10](../docs/decisoes.md)). O resumo legível vai para `relatorios/nids-execucao-<fonte>-<execução>.md`.
+A execução falha se os fluxos emitidos pelo extrator diferirem dos recebidos mais os descartados na fila de saída do extrator, se os recebidos diferirem dos classificados mais os não classificáveis, se alguma marcação estiver fora de ordem, se alguma explicação não reproduzir a saída explicada do fluxo, se as solicitações de explicação não fecharem com as concluídas, descartadas e pendentes, se algum processo estiver fora das CPUs configuradas ou se a conferência com a tabela de referência falhar. Um fluxo com algum valor que os dados de treino não têm, como `NaN`, é um fluxo não classificável: o NIDS não o entrega ao classificador, registra o motivo e o conta ([decisão 10](../docs/decisoes.md)). O resumo legível vai para `relatorios/nids-execucao-<fonte>-<execução>.md`.
 
-A reprodução em rede emulada e a validação em baixa carga estão descritas em [scripts/README.md](../scripts/README.md). O comando `nids-validar` compara a execução reproduzida com a execução do mesmo trecho lido do arquivo e termina com erro se a cadeia de contadores não fechar.
+A reprodução em rede emulada e a validação em baixa carga estão descritas em [scripts/README.md](../scripts/README.md). O comando `nids-validar` compara a execução reproduzida com a execução do mesmo trecho lido do arquivo, com a mesma estratégia, e termina com erro se a cadeia de contadores não fechar.
+
+```bash
+python main.py calibrar-selecao
+```
+
+Aplica os dois modelos congelados ao conjunto de validação e mostra, para a grade de limiares da configuração, quantos registros cada critério de seleção do Síncrono condicional escolhe, no total, entre os ataques, entre os benignos e entre os erros de classificação. O conjunto de teste não é usado. O relatório vai para `relatorios/selecao-condicional-<execução>.md`, e o registro, para `training-runs/nids/calibracao/`. Os limiares escolhidos com essa tabela são gravados em `selection.thresholds` da configuração, com a execução de calibração em `selection.calibration_run`.
+
+```bash
+python main.py nids-comparar-estrategias --execucoes ../training-runs/nids/arquivo/<execução> ...
+```
+
+Confere que execuções do mesmo modelo e da mesma fonte, uma por estratégia e por critério do Síncrono condicional, usam as mesmas entradas fixas e as mesmas CPUs, passaram nas próprias verificações e registram os tempos da sua estratégia. Na leitura de arquivo, também confere que os arquivos de classificação são idênticos, que o Assíncrono explica os mesmos fluxos que o Síncrono total, com as mesmas contribuições, e que o Síncrono condicional explica exatamente os fluxos que o critério seleciona. O relatório vai para `relatorios/nids-estrategias-<execução>.md`, e o registro, para `training-runs/nids/comparacao/`.
 
 ## Primeiro treinamento do Random Forest
 
@@ -201,7 +216,7 @@ pip install -r requirements-dev.txt
 python -m pytest
 ```
 
-Os testes cobrem as regras da preparação dos dados, a amostragem para o treinamento e o cálculo das métricas. Os testes do extrator e do NIDS usam PCAPs sintéticos, gerados por `tests/integration/pcap_factory.py`. Eles conferem que o extrator do NIDS emite os mesmos fluxos que o extrator original, inclusive em conexões divididas pelo tempo limite, e rodam quando o extrator está compilado. Os testes do TreeSHAP usam um Random Forest e um XGBoost sintéticos e comparam as contribuições com o valor de Shapley calculado por força bruta, além da identidade da soma, dos atributos sem divisão e das recusas do adaptador. Os testes de integração verificam arquivos pequenos e o salvamento e carregamento do Random Forest em um diretório temporário.
+Os testes cobrem as regras da preparação dos dados, a amostragem para o treinamento e o cálculo das métricas. Os testes do extrator e do NIDS usam PCAPs sintéticos, gerados por `tests/integration/pcap_factory.py`. Eles conferem que o extrator do NIDS emite os mesmos fluxos que o extrator original, inclusive em conexões divididas pelo tempo limite, e o descarte com a fila de saída cheia, e rodam quando o extrator está compilado. Os testes das estratégias de explicação usam um classificador e um explicador de valores fixos e um relógio que avança a cada leitura, para conferir a ordem das marcações. Os do processo explicador usam um Random Forest sintético e um atraso fixo por explicação, para forçar descartes e o encerramento pelo tempo máximo de esvaziamento. Os testes do TreeSHAP usam um Random Forest e um XGBoost sintéticos e comparam as contribuições com o valor de Shapley calculado por força bruta, além da identidade da soma, dos atributos sem divisão e das recusas do adaptador. Os testes de integração verificam arquivos pequenos e o salvamento e carregamento do Random Forest em um diretório temporário.
 
 ## TG-006: árvore de decisão e Random Forest no Iris
 

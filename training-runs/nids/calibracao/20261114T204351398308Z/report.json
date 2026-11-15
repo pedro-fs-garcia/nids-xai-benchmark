@@ -1,0 +1,585 @@
+{
+  "stage": "selection calibration",
+  "run_id": "20261114T204351398308Z",
+  "config": "configs/nids.json",
+  "config_sha256": "0faa4ab2800cad9ba83ac6095c55a37f404ca02cafd58dc8885470ae633f31ba",
+  "frozen_run": "training-runs/frozen-models/20261111T181031847482Z",
+  "data_manifest_sha256": "69b1ff4ad68e2465013bc0266324f615b4780092fe4d2fbe0ca53595c423f779",
+  "split": "validation",
+  "test_used": false,
+  "records": 315000,
+  "attacks": 75816,
+  "benign": 239184,
+  "grid": {
+    "probabilidade": [
+      0.01,
+      0.05,
+      0.1,
+      0.2,
+      0.3,
+      0.4,
+      0.5,
+      0.6,
+      0.7,
+      0.8,
+      0.9,
+      0.95,
+      0.99
+    ],
+    "incerteza": [
+      0.05,
+      0.1,
+      0.15,
+      0.2,
+      0.25,
+      0.3,
+      0.35,
+      0.4,
+      0.45,
+      0.49
+    ]
+  },
+  "models": {
+    "random-forest": {
+      "model_sha256": "b18708731de1a1901969789a93479a6a4e4b228ea56aff24c65bf4bfd7c71805",
+      "false_negatives": 196,
+      "false_positives": 8,
+      "criteria": {
+        "probabilidade": [
+          {
+            "threshold": 0.01,
+            "selected": 79535,
+            "selected_share": 0.2524920634920635,
+            "attacks_selected": 75815,
+            "attacks_selected_share": 0.9999868101719953,
+            "benign_selected": 3720,
+            "benign_selected_share": 0.015552879791290388,
+            "errors_selected": 203,
+            "errors_selected_share": 0.9950980392156863
+          },
+          {
+            "threshold": 0.05,
+            "selected": 76046,
+            "selected_share": 0.24141587301587303,
+            "attacks_selected": 75811,
+            "attacks_selected_share": 0.9999340508599768,
+            "benign_selected": 235,
+            "benign_selected_share": 0.0009825071911164626,
+            "errors_selected": 199,
+            "errors_selected_share": 0.9754901960784313
+          },
+          {
+            "threshold": 0.1,
+            "selected": 75883,
+            "selected_share": 0.2408984126984127,
+            "attacks_selected": 75803,
+            "attacks_selected_share": 0.9998285322359396,
+            "benign_selected": 80,
+            "benign_selected_share": 0.00033447053314602983,
+            "errors_selected": 191,
+            "errors_selected_share": 0.9362745098039216
+          },
+          {
+            "threshold": 0.2,
+            "selected": 75807,
+            "selected_share": 0.24065714285714285,
+            "attacks_selected": 75782,
+            "attacks_selected_share": 0.9995515458478421,
+            "benign_selected": 25,
+            "benign_selected_share": 0.00010452204160813432,
+            "errors_selected": 170,
+            "errors_selected_share": 0.8333333333333334
+          },
+          {
+            "threshold": 0.3,
+            "selected": 75748,
+            "selected_share": 0.24046984126984128,
+            "attacks_selected": 75736,
+            "attacks_selected_share": 0.9989448137596286,
+            "benign_selected": 12,
+            "benign_selected_share": 5.0170579971904475e-05,
+            "errors_selected": 124,
+            "errors_selected_share": 0.6078431372549019
+          },
+          {
+            "threshold": 0.4,
+            "selected": 75686,
+            "selected_share": 0.24027301587301586,
+            "attacks_selected": 75678,
+            "attacks_selected_share": 0.9981798037353593,
+            "benign_selected": 8,
+            "benign_selected_share": 3.3447053314602983e-05,
+            "errors_selected": 66,
+            "errors_selected_share": 0.3235294117647059
+          },
+          {
+            "threshold": 0.5,
+            "selected": 75628,
+            "selected_share": 0.24008888888888888,
+            "attacks_selected": 75620,
+            "attacks_selected_share": 0.99741479371109,
+            "benign_selected": 8,
+            "benign_selected_share": 3.3447053314602983e-05,
+            "errors_selected": 8,
+            "errors_selected_share": 0.0392156862745098
+          },
+          {
+            "threshold": 0.6,
+            "selected": 75514,
+            "selected_share": 0.23972698412698412,
+            "attacks_selected": 75508,
+            "attacks_selected_share": 0.99593753297457,
+            "benign_selected": 6,
+            "benign_selected_share": 2.5085289985952238e-05,
+            "errors_selected": 6,
+            "errors_selected_share": 0.029411764705882353
+          },
+          {
+            "threshold": 0.7,
+            "selected": 75445,
+            "selected_share": 0.2395079365079365,
+            "attacks_selected": 75439,
+            "attacks_selected_share": 0.9950274348422496,
+            "benign_selected": 6,
+            "benign_selected_share": 2.5085289985952238e-05,
+            "errors_selected": 6,
+            "errors_selected_share": 0.029411764705882353
+          },
+          {
+            "threshold": 0.8,
+            "selected": 75386,
+            "selected_share": 0.23932063492063493,
+            "attacks_selected": 75382,
+            "attacks_selected_share": 0.994275614645985,
+            "benign_selected": 4,
+            "benign_selected_share": 1.6723526657301492e-05,
+            "errors_selected": 4,
+            "errors_selected_share": 0.0196078431372549
+          },
+          {
+            "threshold": 0.9,
+            "selected": 75214,
+            "selected_share": 0.23877460317460317,
+            "attacks_selected": 75210,
+            "attacks_selected_share": 0.9920069642291864,
+            "benign_selected": 4,
+            "benign_selected_share": 1.6723526657301492e-05,
+            "errors_selected": 4,
+            "errors_selected_share": 0.0196078431372549
+          },
+          {
+            "threshold": 0.95,
+            "selected": 75063,
+            "selected_share": 0.2382952380952381,
+            "attacks_selected": 75059,
+            "attacks_selected_share": 0.9900153002004853,
+            "benign_selected": 4,
+            "benign_selected_share": 1.6723526657301492e-05,
+            "errors_selected": 4,
+            "errors_selected_share": 0.0196078431372549
+          },
+          {
+            "threshold": 0.99,
+            "selected": 65884,
+            "selected_share": 0.20915555555555557,
+            "attacks_selected": 65882,
+            "attacks_selected_share": 0.8689722486018783,
+            "benign_selected": 2,
+            "benign_selected_share": 8.361763328650746e-06,
+            "errors_selected": 2,
+            "errors_selected_share": 0.00980392156862745
+          }
+        ],
+        "incerteza": [
+          {
+            "threshold": 0.05,
+            "selected": 108,
+            "selected_share": 0.00034285714285714285,
+            "attacks_selected": 107,
+            "attacks_selected_share": 0.0014113115964967816,
+            "benign_selected": 1,
+            "benign_selected_share": 4.180881664325373e-06,
+            "errors_selected": 25,
+            "errors_selected_share": 0.12254901960784313
+          },
+          {
+            "threshold": 0.1,
+            "selected": 172,
+            "selected_share": 0.000546031746031746,
+            "attacks_selected": 170,
+            "attacks_selected_share": 0.0022422707607892794,
+            "benign_selected": 2,
+            "benign_selected_share": 8.361763328650746e-06,
+            "errors_selected": 60,
+            "errors_selected_share": 0.29411764705882354
+          },
+          {
+            "threshold": 0.15,
+            "selected": 231,
+            "selected_share": 0.0007333333333333333,
+            "attacks_selected": 227,
+            "attacks_selected_share": 0.00299409095705392,
+            "benign_selected": 4,
+            "benign_selected_share": 1.6723526657301492e-05,
+            "errors_selected": 88,
+            "errors_selected_share": 0.43137254901960786
+          },
+          {
+            "threshold": 0.2,
+            "selected": 303,
+            "selected_share": 0.0009619047619047619,
+            "attacks_selected": 297,
+            "attacks_selected_share": 0.003917378917378918,
+            "benign_selected": 6,
+            "benign_selected_share": 2.5085289985952238e-05,
+            "errors_selected": 118,
+            "errors_selected_share": 0.5784313725490197
+          },
+          {
+            "threshold": 0.25,
+            "selected": 372,
+            "selected_share": 0.001180952380952381,
+            "attacks_selected": 359,
+            "attacks_selected_share": 0.004735148253666772,
+            "benign_selected": 13,
+            "benign_selected_share": 5.435146163622985e-05,
+            "errors_selected": 148,
+            "errors_selected_share": 0.7254901960784313
+          },
+          {
+            "threshold": 0.3,
+            "selected": 421,
+            "selected_share": 0.0013365079365079365,
+            "attacks_selected": 400,
+            "attacks_selected_share": 0.0052759312018571276,
+            "benign_selected": 21,
+            "benign_selected_share": 8.779851495083283e-05,
+            "errors_selected": 166,
+            "errors_selected_share": 0.8137254901960784
+          },
+          {
+            "threshold": 0.35,
+            "selected": 512,
+            "selected_share": 0.0016253968253968254,
+            "attacks_selected": 473,
+            "attacks_selected_share": 0.006238788646196054,
+            "benign_selected": 39,
+            "benign_selected_share": 0.00016305438490868954,
+            "errors_selected": 180,
+            "errors_selected_share": 0.8823529411764706
+          },
+          {
+            "threshold": 0.4,
+            "selected": 669,
+            "selected_share": 0.002123809523809524,
+            "attacks_selected": 593,
+            "attacks_selected_share": 0.007821568006753193,
+            "benign_selected": 76,
+            "benign_selected_share": 0.00031774700648872834,
+            "errors_selected": 187,
+            "errors_selected_share": 0.9166666666666666
+          },
+          {
+            "threshold": 0.45,
+            "selected": 983,
+            "selected_share": 0.0031206349206349205,
+            "attacks_selected": 752,
+            "attacks_selected_share": 0.0099187506594914,
+            "benign_selected": 231,
+            "benign_selected_share": 0.0009657836644591612,
+            "errors_selected": 195,
+            "errors_selected_share": 0.9558823529411765
+          },
+          {
+            "threshold": 0.49,
+            "selected": 13651,
+            "selected_share": 0.04333650793650794,
+            "attacks_selected": 9933,
+            "attacks_selected_share": 0.13101456157011712,
+            "benign_selected": 3718,
+            "benign_selected_share": 0.015544518027961737,
+            "errors_selected": 201,
+            "errors_selected_share": 0.9852941176470589
+          }
+        ]
+      }
+    },
+    "xgboost": {
+      "model_sha256": "ed0b315b8aee00c1988a6fb28a69ea3a0fc4c901fdc59832b7a2d451f54ea1e7",
+      "false_negatives": 22,
+      "false_positives": 10,
+      "criteria": {
+        "probabilidade": [
+          {
+            "threshold": 0.01,
+            "selected": 76208,
+            "selected_share": 0.24193015873015872,
+            "attacks_selected": 75812,
+            "attacks_selected_share": 0.9999472406879815,
+            "benign_selected": 396,
+            "benign_selected_share": 0.0016556291390728477,
+            "errors_selected": 28,
+            "errors_selected_share": 0.875
+          },
+          {
+            "threshold": 0.05,
+            "selected": 75891,
+            "selected_share": 0.2409238095238095,
+            "attacks_selected": 75807,
+            "attacks_selected_share": 0.9998812915479582,
+            "benign_selected": 84,
+            "benign_selected_share": 0.0003511940598033313,
+            "errors_selected": 23,
+            "errors_selected_share": 0.71875
+          },
+          {
+            "threshold": 0.1,
+            "selected": 75854,
+            "selected_share": 0.24080634920634922,
+            "attacks_selected": 75803,
+            "attacks_selected_share": 0.9998285322359396,
+            "benign_selected": 51,
+            "benign_selected_share": 0.00021322496488059402,
+            "errors_selected": 19,
+            "errors_selected_share": 0.59375
+          },
+          {
+            "threshold": 0.2,
+            "selected": 75833,
+            "selected_share": 0.24073968253968253,
+            "attacks_selected": 75801,
+            "attacks_selected_share": 0.9998021525799303,
+            "benign_selected": 32,
+            "benign_selected_share": 0.00013378821325841193,
+            "errors_selected": 17,
+            "errors_selected_share": 0.53125
+          },
+          {
+            "threshold": 0.3,
+            "selected": 75821,
+            "selected_share": 0.2407015873015873,
+            "attacks_selected": 75800,
+            "attacks_selected_share": 0.9997889627519257,
+            "benign_selected": 21,
+            "benign_selected_share": 8.779851495083283e-05,
+            "errors_selected": 16,
+            "errors_selected_share": 0.5
+          },
+          {
+            "threshold": 0.4,
+            "selected": 75812,
+            "selected_share": 0.24067301587301587,
+            "attacks_selected": 75797,
+            "attacks_selected_share": 0.9997493932679118,
+            "benign_selected": 15,
+            "benign_selected_share": 6.27132249648806e-05,
+            "errors_selected": 13,
+            "errors_selected_share": 0.40625
+          },
+          {
+            "threshold": 0.5,
+            "selected": 75804,
+            "selected_share": 0.24064761904761905,
+            "attacks_selected": 75794,
+            "attacks_selected_share": 0.9997098237838978,
+            "benign_selected": 10,
+            "benign_selected_share": 4.180881664325373e-05,
+            "errors_selected": 10,
+            "errors_selected_share": 0.3125
+          },
+          {
+            "threshold": 0.6,
+            "selected": 75793,
+            "selected_share": 0.24061269841269842,
+            "attacks_selected": 75786,
+            "attacks_selected_share": 0.9996043051598608,
+            "benign_selected": 7,
+            "benign_selected_share": 2.926617165027761e-05,
+            "errors_selected": 7,
+            "errors_selected_share": 0.21875
+          },
+          {
+            "threshold": 0.7,
+            "selected": 75785,
+            "selected_share": 0.2405873015873016,
+            "attacks_selected": 75779,
+            "attacks_selected_share": 0.9995119763638283,
+            "benign_selected": 6,
+            "benign_selected_share": 2.5085289985952238e-05,
+            "errors_selected": 6,
+            "errors_selected_share": 0.1875
+          },
+          {
+            "threshold": 0.8,
+            "selected": 75773,
+            "selected_share": 0.24054920634920635,
+            "attacks_selected": 75767,
+            "attacks_selected_share": 0.9993536984277726,
+            "benign_selected": 6,
+            "benign_selected_share": 2.5085289985952238e-05,
+            "errors_selected": 6,
+            "errors_selected_share": 0.1875
+          },
+          {
+            "threshold": 0.9,
+            "selected": 75730,
+            "selected_share": 0.2404126984126984,
+            "attacks_selected": 75726,
+            "attacks_selected_share": 0.9988129154795822,
+            "benign_selected": 4,
+            "benign_selected_share": 1.6723526657301492e-05,
+            "errors_selected": 4,
+            "errors_selected_share": 0.125
+          },
+          {
+            "threshold": 0.95,
+            "selected": 75679,
+            "selected_share": 0.24025079365079366,
+            "attacks_selected": 75675,
+            "attacks_selected_share": 0.9981402342513453,
+            "benign_selected": 4,
+            "benign_selected_share": 1.6723526657301492e-05,
+            "errors_selected": 4,
+            "errors_selected_share": 0.125
+          },
+          {
+            "threshold": 0.99,
+            "selected": 75289,
+            "selected_share": 0.2390126984126984,
+            "attacks_selected": 75285,
+            "attacks_selected_share": 0.9929962013295347,
+            "benign_selected": 4,
+            "benign_selected_share": 1.6723526657301492e-05,
+            "errors_selected": 4,
+            "errors_selected_share": 0.125
+          }
+        ],
+        "incerteza": [
+          {
+            "threshold": 0.05,
+            "selected": 11,
+            "selected_share": 3.492063492063492e-05,
+            "attacks_selected": 5,
+            "attacks_selected_share": 6.59491400232141e-05,
+            "benign_selected": 6,
+            "benign_selected_share": 2.5085289985952238e-05,
+            "errors_selected": 5,
+            "errors_selected_share": 0.15625
+          },
+          {
+            "threshold": 0.1,
+            "selected": 19,
+            "selected_share": 6.0317460317460316e-05,
+            "attacks_selected": 11,
+            "attacks_selected_share": 0.00014508810805107102,
+            "benign_selected": 8,
+            "benign_selected_share": 3.3447053314602983e-05,
+            "errors_selected": 6,
+            "errors_selected_share": 0.1875
+          },
+          {
+            "threshold": 0.15,
+            "selected": 28,
+            "selected_share": 8.888888888888889e-05,
+            "attacks_selected": 15,
+            "attacks_selected_share": 0.00019784742006964228,
+            "benign_selected": 13,
+            "benign_selected_share": 5.435146163622985e-05,
+            "errors_selected": 9,
+            "errors_selected_share": 0.28125
+          },
+          {
+            "threshold": 0.2,
+            "selected": 36,
+            "selected_share": 0.00011428571428571428,
+            "attacks_selected": 21,
+            "attacks_selected_share": 0.0002769863880974992,
+            "benign_selected": 15,
+            "benign_selected_share": 6.27132249648806e-05,
+            "errors_selected": 10,
+            "errors_selected_share": 0.3125
+          },
+          {
+            "threshold": 0.25,
+            "selected": 48,
+            "selected_share": 0.00015238095238095237,
+            "attacks_selected": 26,
+            "attacks_selected_share": 0.0003429355281207133,
+            "benign_selected": 22,
+            "benign_selected_share": 9.19793966151582e-05,
+            "errors_selected": 10,
+            "errors_selected_share": 0.3125
+          },
+          {
+            "threshold": 0.3,
+            "selected": 60,
+            "selected_share": 0.00019047619047619048,
+            "attacks_selected": 34,
+            "attacks_selected_share": 0.00044845415215785585,
+            "benign_selected": 26,
+            "benign_selected_share": 0.0001087029232724597,
+            "errors_selected": 11,
+            "errors_selected_share": 0.34375
+          },
+          {
+            "threshold": 0.35,
+            "selected": 76,
+            "selected_share": 0.00024126984126984126,
+            "attacks_selected": 40,
+            "attacks_selected_share": 0.0005275931201857128,
+            "benign_selected": 36,
+            "benign_selected_share": 0.00015051173991571343,
+            "errors_selected": 14,
+            "errors_selected_share": 0.4375
+          },
+          {
+            "threshold": 0.4,
+            "selected": 124,
+            "selected_share": 0.00039365079365079363,
+            "attacks_selected": 77,
+            "attacks_selected_share": 0.001015616756357497,
+            "benign_selected": 47,
+            "benign_selected_share": 0.00019650143822329253,
+            "errors_selected": 15,
+            "errors_selected_share": 0.46875
+          },
+          {
+            "threshold": 0.45,
+            "selected": 212,
+            "selected_share": 0.000673015873015873,
+            "attacks_selected": 132,
+            "attacks_selected_share": 0.0017410572966128522,
+            "benign_selected": 80,
+            "benign_selected_share": 0.00033447053314602983,
+            "errors_selected": 19,
+            "errors_selected_share": 0.59375
+          },
+          {
+            "threshold": 0.49,
+            "selected": 919,
+            "selected_share": 0.0029174603174603173,
+            "attacks_selected": 527,
+            "attacks_selected_share": 0.006951039358446766,
+            "benign_selected": 392,
+            "benign_selected_share": 0.0016389056124155462,
+            "errors_selected": 24,
+            "errors_selected_share": 0.75
+          }
+        ]
+      }
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "libraries": {
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "scipy": "1.18.1",
+      "joblib": "1.6.0",
+      "xgboost-cpu": "3.4.1"
+    },
+    "platform": "Linux-7.0.0-43-generic-x86_64-desconhecido-with-glibc2.43",
+    "cpu": "13th Gen Intel(R) Core(TM) i5-1334U",
+    "logical_cpus": 12
+  }
+}

@@ -45,12 +45,14 @@ LD_LIBRARY_PATH=$B/native java -Djava.library.path=$B/native -cp "$B/nids-extrac
 
 Na captura ao vivo, `--iface INTERFACE` substitui `--pcap`, e o processo precisa de permissão de captura. A captura termina quando a entrada padrão é fechada ou recebe a linha `stop`. As opções `--snaplen`, `--read-timeout-ms`, `--idle-margin-us` e `--buffer-bytes` têm os padrões 65535, 100, 2000000 e 268435456. Na captura ao vivo, `--read-timeout-ms` define quanto o kernel espera para entregar um bloco parcial de pacotes, `--buffer-bytes` define o tamanho do buffer de captura da libpcap, e a leitura sem pacotes espera 1 ms antes de tentar de novo.
 
-A opção `--flow-output` escolhe como as linhas dos fluxos chegam à saída padrão. Com `queue`, o padrão da captura ao vivo, a thread que lê os pacotes guarda cada linha na fila de saída, e outra thread a escreve. Com `direct`, o padrão da leitura de arquivo, a mesma thread lê os pacotes e escreve as linhas.
+A opção `--flow-output` escolhe como as linhas dos fluxos chegam à saída padrão. Com `queue`, o padrão da captura ao vivo, a thread que lê os pacotes guarda cada linha na fila de saída, e outra thread a escreve. Com `direct`, o padrão da leitura de arquivo, a mesma thread lê os pacotes e escreve as linhas. A opção `--flow-queue-limit` limita a fila de saída, em fluxos. Com a fila cheia, o fluxo emitido é descartado e contado, e o seu número de sequência não sai ([decisão 13](../docs/decisoes.md)). Sem a opção, a fila não tem limite.
 
 O `NidsExtractor` escreve três tipos de linha:
 
 | Tipo | Conteúdo |
 |---|---|
-| `start` | Commit, tempos limite, fonte, opções, tamanho do buffer de captura pedido e mapeado pelo kernel, modo de saída dos fluxos, versão do Java, leitura do relógio monotônico e cabeçalho das 89 colunas. |
+| `start` | Commit, tempos limite, fonte, opções, tamanho do buffer de captura pedido e mapeado pelo kernel, modo de saída dos fluxos, limite da fila de saída, versão do Java, leitura do relógio monotônico e cabeçalho das 89 colunas. |
 | `flow` | Sequência, causa da emissão, instantes do primeiro e do último pacote, relógio da captura, `t0` e a linha de atributos. |
-| `end` | Pacotes lidos, usados e descartados, pacotes que chegaram a um fluxo já emitido, fluxos por causa, maior tamanho da fila de saída e estatísticas do libpcap. |
+| `end` | Pacotes lidos, usados e descartados, pacotes que chegaram a um fluxo já emitido, fluxos por causa, maior tamanho da fila de saída, fluxos descartados com a fila cheia, estatísticas do libpcap e, do próprio processo, o tempo de CPU, o pico de memória residente e o heap máximo. |
+
+O adaptador Python fixa o extrator nas CPUs da configuração antes de a JVM iniciar e passa o heap máximo por `-Xmx` ([decisão 14](../docs/decisoes.md)).

@@ -85,8 +85,19 @@ def test_run_checks_pass_when_every_emitted_flow_arrives_with_ordered_marks():
 def test_run_checks_fail_on_a_lost_flow_on_unordered_marks_and_on_a_late_packet_in_file_mode():
     flows = [_classified(1, 10, 20, 30, 40), _classified(2, 15, 14, 50, 60)]
     checks = run_checks("arquivo", {"flows_emitted": 3, "packets_after_emission": 1}, flows)
-    assert not checks["emitted_equals_received"] and not checks["timestamps_ordered"]
+    assert not checks["emitted_equals_received_plus_dropped"] and not checks["timestamps_ordered"]
     assert not checks["no_packets_after_emission_in_file_mode"] and checks["received_equals_classified_plus_errors"]
+
+
+def test_flows_dropped_in_the_extractor_queue_are_the_missing_sequences():
+    flows = [_classified(1, 10, 20, 30, 40), _classified(4, 15, 40, 50, 60)]
+    live = run_checks("interface", {"flows_emitted": 4, "flows_dropped": 2, "packets_after_emission": 0}, flows)
+    assert all(live.values())
+    repeated = run_checks("interface", {"flows_emitted": 4, "flows_dropped": 2}, [flows[0], flows[0]])
+    beyond = run_checks("interface", {"flows_emitted": 4, "flows_dropped": 2}, [flows[0], _classified(5, 1, 2, 3, 4)])
+    assert not repeated["emitted_equals_received_plus_dropped"] and not beyond["emitted_equals_received_plus_dropped"]
+    file_mode = run_checks("arquivo", {"flows_emitted": 4, "flows_dropped": 2, "packets_after_emission": 0}, flows)
+    assert not file_mode["no_dropped_flow_in_file_mode"]
 
 
 COUNTERS = {"segment_packets": 100, "tcpreplay_successful": 100, "tcpreplay_failed": 0, "h1_sent": 100,
@@ -94,7 +105,7 @@ COUNTERS = {"segment_packets": 100, "tcpreplay_successful": 100, "tcpreplay_fail
 
 
 def test_replay_checks_pass_when_every_packet_goes_from_tcpreplay_to_the_extractor():
-    assert all(replay_checks(COUNTERS, {"emitted_equals_received": True}).values())
+    assert all(replay_checks(COUNTERS, {"emitted_equals_received_plus_dropped": True}).values())
 
 
 @pytest.mark.parametrize("change, failed", [

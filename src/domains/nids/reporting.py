@@ -12,11 +12,33 @@ CAUSES = {
     "end_of_capture": "fim da captura",
 }
 CHECKS = {
-    "emitted_equals_received": "Fluxos emitidos pelo extrator = fluxos recebidos pelo classificador",
+    "emitted_equals_received_plus_dropped": "Fluxos emitidos pelo extrator = fluxos recebidos pelo classificador + "
+                                            "fluxos descartados na fila de saída do extrator",
+    "no_dropped_flow_in_file_mode": "Nenhum fluxo descartado na fila de saída do extrator (modo arquivo)",
     "received_equals_classified_plus_errors": "Fluxos recebidos = classificados + não classificáveis",
     "timestamps_ordered": "t0 ≤ t1 ≤ t2 ≤ t3 em todos os fluxos classificados",
     "no_packets_after_emission_in_file_mode": "Nenhum pacote chegou a um fluxo já emitido (modo arquivo)",
+    "selection_follows_strategy": "Fluxos selecionados = fluxos que a estratégia manda explicar",
+    "explanations_match_classifications": "Cada explicação corresponde a um fluxo classificado, pelo número de "
+                                          "sequência e pelo `Flow ID`",
+    "contributions_cover_every_input": "Cada explicação tem uma contribuição por entrada do classificador",
+    "sum_identity": "Valor de referência + soma das contribuições = saída explicada, dentro da tolerância",
+    "explained_output_matches_classification": "A saída explicada leva à probabilidade registrada na classificação",
+    "explained_equals_selected": "Fluxos explicados = fluxos selecionados",
+    "explanation_marks_ordered": "Marcações dos fluxos explicados na ordem da estratégia: t2 ≤ seleção ≤ explicação "
+                                 "≤ t4 = t3 nas síncronas; t3 ≤ solicitação ≤ retirada da fila ≤ explicação ≤ t4 "
+                                 "no modo assíncrono",
+    "every_selected_flow_requested_or_dropped": "Cada fluxo selecionado tem a solicitação aceita na fila ou descartada",
+    "no_explanation_without_accepted_request": "Toda explicação concluída corresponde a uma solicitação aceita",
+    "explanation_requests_accounted": "Solicitações aceitas e descartadas = contadores da fila no classificador",
+    "explainer_received_every_accepted_request": "O processo explicador retirou da fila todas as solicitações aceitas",
+    "explainer_ended_without_error": "O processo explicador terminou sem erro",
+    "no_pending_after_normal_end": "Nenhuma explicação pendente quando o processo explicador termina normalmente",
+    "no_dropped_request_in_file_mode": "Nenhuma solicitação descartada (modo arquivo)",
+    "explainer_uses_the_same_model": "O processo explicador carregou o mesmo modelo congelado do classificador",
+    "processes_on_configured_cpus": "Classificador, explicador e extrator nas CPUs configuradas",
 }
+SCALES = {"probability": "probabilidade", "log-odds": "log-odds"}
 
 
 def render_run(summary: dict[str, Any]) -> str:
@@ -25,13 +47,13 @@ def render_run(summary: dict[str, Any]) -> str:
     origin = (f"o arquivo `{source.get('pcap')}`" if source["kind"] == "arquivo"
               else f"a interface `{source.get('iface')}`")
     lines = [
-        f"# Execução do NIDS de referência: {MODEL_NAMES[summary['model']]}, {source['kind']}",
+        f"# Execução do NIDS: {summary['strategy']}, {MODEL_NAMES[summary['model']]}, {source['kind']}",
         "",
         f"A execução {'passou' if summary['passed'] else 'não passou'} nas verificações. O NIDS leu {origin}, "
         f"formou os fluxos com o extrator da [decisão 3](../docs/decisoes.md) e classificou cada fluxo com o "
-        f"{MODEL_NAMES[summary['model']]} congelado, na estratégia Sem XAI. Os termos seguem o "
+        f"{MODEL_NAMES[summary['model']]} congelado, na estratégia {summary['strategy']}. Os termos seguem o "
         "[glossário](../docs/glossario.md), e as marcações de tempo seguem a seção 5.1 do "
-        "[protocolo](protocolo-experimental.md).",
+        "[protocolo](../docs/protocolo-experimental.md).",
         "",
     ]
     if summary["segment"]:
@@ -47,6 +69,7 @@ def render_run(summary: dict[str, Any]) -> str:
         f"| Pacotes descartados por não serem IPv4 | {_integer(end.get('packets_discarded', 0))} |",
         f"| Pacotes que chegaram a um fluxo já emitido | {_integer(end.get('packets_after_emission', 0))} |",
         f"| Fluxos emitidos pelo extrator | {_integer(end.get('flows_emitted', 0))} |",
+        f"| Fluxos descartados na fila de saída do extrator | {_integer(end.get('flows_dropped') or 0)} |",
         f"| Fluxos recebidos pelo classificador | {_integer(flows['received'])} |",
         f"| Fluxos classificados | {_integer(flows['classified'])} |",
         f"| Fluxos não classificáveis | {_integer(flows['errors'])} |",
@@ -63,13 +86,15 @@ def render_run(summary: dict[str, Any]) -> str:
         lines += [f"O buffer de captura foi pedido com {_integer(round(start['buffer_bytes'] / 2**20))} MiB"
                   + (f", e o kernel mapeou {_integer(round(ring / 2**20))} MiB" if ring else "") + ".", ""]
     if end.get("output_queue_max") is not None:
+        limit = start.get("flow_queue_limit")
         lines += [f"A fila de saída do extrator chegou a {_integer(end['output_queue_max'])} fluxos à espera da "
-                  "escrita.", ""]
+                  "escrita" + (f", com limite de {_integer(limit)}" if limit else "") + ".", ""]
     lines += ["Causas de emissão: " + ", ".join(
         f"{CAUSES.get(cause, cause)} ({_integer(count)})" for cause, count in flows["by_cause"].items()) + ".", ""]
     if flows["error_examples"]:
         lines += ["Exemplos de fluxos não classificáveis: " + "; ".join(f"fluxo {item['seq']} (`{item['flow_id']}`): {item['error']}"
                                                    for item in flows["error_examples"]) + ".", ""]
+    lines += _explanation_lines(summary)
     lines += ["## Verificações", "", "| Verificação | Resultado |", "|---|---|",
               *[f"| {CHECKS[name]} | {'aprovada' if value else 'reprovada'} |"
                 for name, value in summary["checks"].items()], ""]
@@ -109,26 +134,296 @@ def render_run(summary: dict[str, Any]) -> str:
             "|---|---:|---:|---:|---:|---:|",
         ]
         for key, label in (("inference_ns", "Tempo de inferência, t2 − t1"),
+                           ("explanation_ns", "Tempo de explicação"),
                            ("classification_latency_ns", "Latência de classificação, t3 − t0"),
+                           ("explanation_latency_ns", "Latência de explicação, t4 − t0"),
                            ("wait_before_inference_ns", "Espera e preparo da entrada, t1 − t0"),
-                           ("delivery_ns", "Entrega no canal de saída, t3 − t2")):
+                           ("queue_wait_ns", "Espera na fila de explicações pendentes"),
+                           ("selection_ns", "Seleção para explicação"),
+                           ("delivery_ns", "Escrita nos canais de saída")):
+            if key not in timings:
+                continue
             item = timings[key]
             lines.append(f"| {label} | {_ms(item['mean'])} | {_ms(item['median'])} | {_ms(item['p95'])} | "
                          f"{_ms(item['p99'])} | {_ms(item['max'])} |")
         lines += [""]
-    resources = summary["resources"]
-    classifier, extractor = resources["classifier_process"], resources["extractor_process"]
+    lines += _resource_lines(summary["resources"])
     lines += [
-        f"O processo do classificador usou {_decimal(classifier['user_seconds'] + classifier['system_seconds'], 1)} s "
-        f"de CPU, com pico de {_integer(round(classifier['max_rss_kib'] / 1024))} MiB de memória. O extrator usou "
-        f"{_decimal(extractor['user_seconds'] + extractor['system_seconds'], 1)} s de CPU, com pico de "
-        f"{_integer(round(extractor['max_rss_kib'] / 1024))} MiB.",
-        "",
         f"O registro da execução está em [training-runs/nids/{summary['source']['kind']}/{summary['run_id']}/report.json]"
         f"(../training-runs/nids/{summary['source']['kind']}/{summary['run_id']}/report.json).",
         "",
     ]
     return "\n".join(lines)
+
+
+CRITERION_NAMES = {"probabilidade": "Probabilidade", "incerteza": "Incerteza"}
+CRITERION_RULES = {
+    "probabilidade": "a probabilidade de ataque é maior ou igual a {threshold}",
+    "incerteza": "a distância entre a probabilidade de ataque e 0,5 é menor ou igual a {threshold}",
+}
+
+
+def render_calibration(summary: dict[str, Any]) -> str:
+    lines = [
+        "# Calibração do critério de seleção do Síncrono condicional",
+        "",
+        "Este relatório mostra, no conjunto de validação, quantos registros cada critério de seleção escolhe para "
+        "explicação, por limiar. Ele sustenta a escolha dos limiares da estratégia Síncrono condicional. O conjunto "
+        "de teste não foi usado. Os termos seguem o [glossário](../docs/glossario.md).",
+        "",
+        f"A validação tem {_integer(summary['records'])} registros, com {_integer(summary['attacks'])} ataques e "
+        f"{_integer(summary['benign'])} benignos. A classe prevista de cada registro vem do limiar de classificação "
+        "de 0,5, fixado nas [decisões 5 e 6](../docs/decisoes.md).",
+        "",
+        "## Critérios",
+        "",
+        "- **Probabilidade.** O fluxo é selecionado quando a probabilidade de ataque é maior ou igual ao limiar. "
+        "Com limiar de até 0,5, o critério seleciona os fluxos classificados como ataque e os benignos mais "
+        "próximos da fronteira de classificação.",
+        "- **Incerteza.** O fluxo é selecionado quando a distância entre a probabilidade de ataque e 0,5 é menor "
+        "ou igual ao limiar. O critério seleciona os fluxos de classificação menos segura, das duas classes.",
+        "",
+        "Nas tabelas, as proporções de ataques e de benignos são calculadas sobre os registros de cada classe, "
+        "pelo rótulo. Os erros de classificação são os registros cuja classe prevista difere do rótulo.",
+        "",
+    ]
+    for name, model in summary["models"].items():
+        errors = model["false_negatives"] + model["false_positives"]
+        lines += [
+            f"## {MODEL_NAMES[name]}",
+            "",
+            f"O {MODEL_NAMES[name]} erra {_integer(errors)} registros da validação: "
+            f"{_integer(model['false_negatives'])} ataques classificados como benignos e "
+            f"{_integer(model['false_positives'])} benignos classificados como ataque.",
+            "",
+        ]
+        for criterion, rows in model["criteria"].items():
+            lines += [
+                f"### {CRITERION_NAMES[criterion]}",
+                "",
+                "| Limiar | Registros selecionados | Ataques selecionados | Benignos selecionados | "
+                "Erros de classificação selecionados |",
+                "|---:|---:|---:|---:|---:|",
+                *[f"| {_number(row['threshold'])} | {_integer(row['selected'])} ({_percent(row['selected_share'], 3)}) | "
+                  f"{_integer(row['attacks_selected'])} ({_percent(row['attacks_selected_share'], 3)}) | "
+                  f"{_integer(row['benign_selected'])} ({_percent(row['benign_selected_share'], 3)}) | "
+                  f"{_integer(row['errors_selected'])} de {_integer(errors)} |" for row in rows],
+                "",
+            ]
+    lines += [
+        "## Reprodução",
+        "",
+        "```bash",
+        "cd src && python main.py calibrar-selecao",
+        "```",
+        "",
+        f"A grade de limiares está em [{summary['config']}](../{summary['config']}). O registro da calibração está em "
+        f"[training-runs/nids/calibracao/{summary['run_id']}/report.json]"
+        f"(../training-runs/nids/calibracao/{summary['run_id']}/report.json).",
+        "",
+    ]
+    return "\n".join(lines)
+
+
+COMPARISON_CHECKS = {
+    "four_strategies_once_each": "Uma execução de cada estratégia, e de cada critério do Síncrono condicional",
+    "same_fixed_inputs": "Mesmas entradas fixas: configuração, modelo, TreeSHAP, extrator, tráfego, CPUs e versões",
+    "every_run_passed": "Todas as execuções passaram nas próprias verificações",
+    "measurement_points_present": "Cada execução registra os tempos da sua estratégia",
+    "processes_on_configured_cpus": "Classificador, explicador e extrator nas CPUs configuradas, em todas as execuções",
+    "identical_classifications": "Arquivos de classificação idênticos",
+    "same_flows": "Mesmos fluxos recebidos, classificados e não classificáveis",
+    "async_explanations_equal_total": "Assíncrono explica os mesmos fluxos que o Síncrono total, com as mesmas "
+                                      "contribuições",
+}
+
+
+def render_comparison(summary: dict[str, Any]) -> str:
+    source = ("o mesmo arquivo" if summary["file_mode"] else "a captura do mesmo trecho reproduzido na rede emulada")
+    segment = f" do trecho `{summary['segment']}`" if summary["segment"] else ""
+    lines = [
+        f"# Comparabilidade das estratégias de explicação: {MODEL_NAMES[summary['model']]}",
+        "",
+        f"A conferência foi {'aprovada' if summary['passed'] else 'reprovada'}. Ela compara execuções do NIDS com o "
+        f"{MODEL_NAMES[summary['model']]} que leram {source}{segment}, uma por estratégia de explicação. Os termos "
+        "seguem o [glossário](../docs/glossario.md).",
+        "",
+    ]
+    if not summary["file_mode"]:
+        lines += ["Na rede emulada, os atributos temporais variam entre as execuções, e as previsões e as explicações "
+                  "do mesmo fluxo não precisam coincidir. Cada execução é conferida com a execução por arquivo da "
+                  "mesma estratégia por `nids-validar`.", ""]
+    labels = {**COMPARISON_CHECKS, **{
+        name: f"Síncrono condicional por {name.split('_')[1]} explica exatamente os fluxos que o critério seleciona, "
+              "com as contribuições do Síncrono total"
+        for name in summary["checks"] if name.startswith("conditional_")}}
+    lines += ["## Verificações", "", "| Verificação | Resultado |", "|---|---|",
+              *[f"| {labels[name]} | {'aprovada' if value else 'reprovada'} |"
+                for name, value in summary["checks"].items()], ""]
+    if summary["differences"]:
+        lines += ["| Explicações comparadas | Fluxos explicados nas duas | Maior diferença absoluta |",
+                  "|---|---:|---:|",
+                  *[f"| {_difference_name(name)} | {_integer(item['common'])} | {item['max_abs_difference']:g} |"
+                    for name, item in summary["differences"].items()], ""]
+    lines += [
+        "## Execuções",
+        "",
+        "| Estratégia | Classificados | Selecionados | Explicados | Descartados | Pendentes | Maior fila |",
+        "|---|---:|---:|---:|---:|---:|---:|",
+    ]
+    for row in summary["runs"]:
+        name = row["strategy"] + (f" ({row['criterion']}, limiar {_number(row['threshold'])})" if row["criterion"] else "")
+        lines.append(f"| [{name}](nids-execucao-{row['source_kind']}-{row['run_id']}.md) | {_integer(row['classified'])} | "
+                     f"{_integer(row['selected'])} | {_integer(row['completed'])} | {_integer(row['dropped'])} | "
+                     f"{_integer(row['pending'])} | {'—' if row['queue_max'] is None else _integer(row['queue_max'])} |")
+    lines += [
+        "",
+        "Os tempos abaixo mostram que a instrumentação funciona nas quatro estratégias. As execuções não controlam a "
+        "carga, então eles não são resultados do experimento.",
+        "",
+        "| Estratégia | Inferência, média (ms) | Explicação, média (ms) | Latência de classificação, p95 / p99 (ms) | "
+        "Latência de explicação, p95 / p99 (ms) | CPU: classificador / explicador / extrator (s) |",
+        "|---|---:|---:|---:|---:|---|",
+    ]
+    for row in summary["runs"]:
+        timings, cpu = row["timings"], row["cpu_seconds"]
+        name = row["strategy"] + (f" ({row['criterion']})" if row["criterion"] else "")
+        lines.append(
+            f"| {name} | {_ms(timings['inference_ns']['mean'])} | "
+            f"{_ms(timings['explanation_ns']['mean']) if 'explanation_ns' in timings else '—'} | "
+            f"{_ms(timings['classification_latency_ns']['p95'])} / {_ms(timings['classification_latency_ns']['p99'])} | "
+            + (f"{_ms(timings['explanation_latency_ns']['p95'])} / {_ms(timings['explanation_latency_ns']['p99'])}"
+               if "explanation_latency_ns" in timings else "—")
+            + " | " + " / ".join("—" if cpu[name] is None else _decimal(cpu[name], 1)
+                                 for name in ("classifier", "explainer", "extractor")) + " |")
+    lines += [
+        "",
+        "## Reprodução",
+        "",
+        "```bash",
+        "cd src && python main.py nids-comparar-estrategias --execucoes "
+        + " ".join(f"../{path}" for path in summary["compared_runs"]),
+        "```",
+        "",
+        f"O registro da conferência está em [training-runs/nids/comparacao/{summary['run_id']}/report.json]"
+        f"(../training-runs/nids/comparacao/{summary['run_id']}/report.json).",
+        "",
+    ]
+    return "\n".join(lines)
+
+
+def _difference_name(name: str) -> str:
+    if name == "total_vs_async":
+        return "Síncrono total e Assíncrono"
+    return f"Síncrono total e Síncrono condicional por {name.removeprefix('total_vs_conditional_')}"
+
+
+def _number(value: float) -> str:
+    return f"{value:g}".replace(".", ",")
+
+
+def _explanation_lines(summary: dict[str, Any]) -> list[str]:
+    explanations, warmup = summary["explanations"], summary["warmup"]
+    lines = ["## Explicações", ""]
+    selection = summary.get("selection")
+    if selection:
+        rule = CRITERION_RULES[selection["criterion"]].format(threshold=_number(selection["threshold"]))
+        lines += [f"O NIDS seleciona para explicação os fluxos em que {rule}. O limiar vem da calibração registrada "
+                  f"em [{selection['calibration_run']}](../{selection['calibration_run']}/report.json).", ""]
+    if not explanations["selected"] and warmup["explainer_construction_ns"] is None:
+        return lines + [f"A estratégia {summary['strategy']} não gera explicações. A chamada de aquecimento da "
+                        f"inferência, antes de a captura abrir, levou {_ms(warmup['inference_ns'])} ms.", ""]
+    identity = explanations["sum_identity"]
+    lines += [
+        f"O TreeSHAP segue a [decisão 7](../docs/decisoes.md). Antes de a captura abrir, a construção do explicador "
+        f"levou {_ms(warmup['explainer_construction_ns'])} ms, e as chamadas de aquecimento levaram "
+        f"{_ms(warmup['inference_ns'])} ms na inferência e {_ms(warmup['explanation_ns'])} ms na explicação.",
+        "",
+        "| Cobertura explicativa | Fluxos | Proporção dos classificados |",
+        "|---|---:|---:|",
+        f"| Classificados | {_integer(explanations['eligible'])} | 100,00% |",
+        f"| Selecionados para explicação | {_integer(explanations['selected'])} | "
+        f"{_percent(explanations['selected_share'])} |",
+        f"| Com a explicação concluída | {_integer(explanations['completed'])} | "
+        f"{_percent(explanations['completed_share'])} |",
+        "",
+    ]
+    if identity["residual"] is not None:
+        lines += [f"A soma do valor de referência com as contribuições difere da saída explicada em no máximo "
+                  f"{identity['residual']:.2g}, na escala de {SCALES[explanations['scale']]}, contra a tolerância de "
+                  f"{identity['tolerance']:g}.", ""]
+    return lines + _queue_lines(summary)
+
+
+PROCESS_NAMES = {"classifier": "classificador", "explainer": "explicador", "extractor": "extrator"}
+
+
+def _resource_lines(resources: dict[str, Any]) -> list[str]:
+    rows = []
+    for key, process in (("classifier", resources["classifier_process"]), ("explainer", resources["explainer_process"]),
+                         ("extractor", resources["extractor_process"])):
+        if not process:
+            continue
+        cpu_seconds = (process["cpu_ns"] / 1e9 if "cpu_ns" in process
+                       else process["user_seconds"] + process["system_seconds"])
+        configured = resources["cpus"]["configured"][key]
+        rows.append(f"| {PROCESS_NAMES[key]} | {', '.join(map(str, configured))} | "
+                    f"{_cpu_text(resources['cpus'][key])} | "
+                    f"{_decimal(cpu_seconds, 1)} | {_integer(round(process['max_rss_kib'] / 1024))} |")
+    available = resources.get("memory_available_kib_at_start")
+    return [
+        "## Recursos",
+        "",
+        "| Processo | CPUs configuradas | CPUs observadas | CPU usada (s) | Pico de memória (MiB) |",
+        "|---|---|---|---:|---:|",
+        *rows,
+        "",
+        *([f"A máquina tinha {_integer(round(available / 1024))} MiB de memória disponível no início da execução.", ""]
+          if available else []),
+    ]
+
+
+def _cpu_text(value: list[Any] | None) -> str:
+    """CPUs observadas: uma lista por grupo de threads com a mesma afinidade, ou uma lista só."""
+    if value is None:
+        return "—"
+    groups = value if value and isinstance(value[0], list) else [value]
+    return "; ".join(", ".join(map(str, group)) for group in groups)
+
+
+def _queue_lines(summary: dict[str, Any]) -> list[str]:
+    queue = summary.get("explanation_queue")
+    if not queue:
+        return []
+    size = queue["size"]
+    policy = ("a solicitação espera vaga na fila, porque na leitura de arquivo não há captura a perder"
+              if queue["full_queue_policy"] == "wait" else "a solicitação que chega com a fila cheia é descartada")
+    lines = [
+        "### Fila de explicações pendentes",
+        "",
+        f"A fila tem limite de {_integer(queue['limit'])} solicitações. Com ela cheia, {policy}.",
+        "",
+        "| Solicitações | Quantidade |",
+        "|---|---:|",
+        f"| Feitas | {_integer(queue['requested'])} |",
+        f"| Aceitas na fila | {_integer(queue['accepted'])} |",
+        f"| Descartadas com a fila cheia | {_integer(queue['dropped'])} |",
+        f"| Concluídas | {_integer(queue['completed'])} |",
+        f"| Pendentes no fim | {_integer(queue['pending'])} |",
+        "",
+        f"A fila chegou a {_integer(size['max'])} solicitações pendentes.",
+    ]
+    if queue["drain_after_last_request_ns"] is not None:
+        lines[-1] += (f" A última explicação ficou disponível {_ms(queue['drain_after_last_request_ns'])} ms depois "
+                      "da última solicitação.")
+    if queue["killed_after_drain_timeout"]:
+        lines[-1] += (f" O processo explicador não esvaziou a fila em {_decimal(queue['drain_timeout_s'], 0)} s e foi "
+                      "encerrado.")
+    return lines + [""]
+
+
+def _percent(share: float | None, digits: int = 2) -> str:
+    return "—" if share is None else _decimal(share * 100, digits) + "%"
 
 
 def _packet_shift_lines(shifts: dict[str, Any] | None) -> list[str]:
@@ -163,7 +458,9 @@ VALIDATION_CHECKS = {
     "h2_received_equals_h1_sent": "Pacotes recebidos por h2 = pacotes transmitidos por h1",
     "no_capture_drops": "Nenhum descarte na interface de h2 nem no libpcap",
     "extractor_read_equals_h2_received": "Pacotes lidos pelo extrator = pacotes recebidos por h2",
-    "replay_run_flow_chain": "Fluxos emitidos = recebidos = classificados + não classificáveis, na execução reproduzida",
+    "replay_run_flow_chain": "A execução reproduzida passou nas próprias verificações, incluindo fluxos emitidos = "
+                             "recebidos + descartados na fila de saída do extrator e recebidos = classificados + "
+                             "não classificáveis",
 }
 
 
@@ -174,7 +471,8 @@ def render_validation(summary: dict[str, Any]) -> str:
     tool = f"tcpreplay {build['version']}" if build else "tcpreplay"
     command = " ".join([Path(replay["replay_command"][0]).name, *replay["replay_command"][1:-1]])
     lines = [
-        f"# Validação do NIDS em baixa carga: {MODEL_NAMES[summary['model']]}, trecho `{summary['segment']}`",
+        f"# Validação do NIDS em baixa carga: {summary.get('strategy', 'Sem XAI')}, {MODEL_NAMES[summary['model']]}, "
+        f"trecho `{summary['segment']}`",
         "",
         f"A validação foi {'aprovada' if summary['passed'] else 'reprovada'}. Ela compara a execução do NIDS que "
         "capturou o trecho reproduzido na rede emulada com a execução que leu o mesmo trecho do arquivo. A execução "
@@ -206,6 +504,7 @@ def render_validation(summary: dict[str, Any]) -> str:
             ("pcap_dropped", "Descartados pelo libpcap"), ("extractor_read", "Lidos pelo extrator"),
             ("extractor_valid", "IPv4 usados pelo extrator"), ("file_extractor_read", "Lidos do arquivo, na execução por arquivo"),
             ("packets_after_emission", "Chegaram a um fluxo já emitido"), ("flows_emitted", "Fluxos emitidos"),
+            ("flows_dropped_in_extractor_queue", "Fluxos descartados na fila de saída do extrator"),
             ("flows_received", "Fluxos recebidos pelo classificador"), ("flows_classified", "Fluxos classificados"),
             ("flows_with_error", "Fluxos não classificáveis"))],
         "",
@@ -266,7 +565,9 @@ def render_validation(summary: dict[str, Any]) -> str:
         "## Reprodução do ensaio",
         "",
         "```bash",
-        f"sudo python3 scripts/emular_baixa_carga.py --modelo {summary['model']} --trecho {summary['segment']}",
+        f"sudo python3 scripts/emular_baixa_carga.py --modelo {summary['model']} --trecho {summary['segment']} "
+        f"--estrategia {summary.get('strategy_key', 'sem-xai')}"
+        + (f" --criterio {summary['selection']['criterion']}" if summary.get("selection") else ""),
         f"cd src && python main.py nids-validar --reproduzida ../{summary['replay_run']} --arquivo ../{summary['file_run']}",
         "```",
         "",

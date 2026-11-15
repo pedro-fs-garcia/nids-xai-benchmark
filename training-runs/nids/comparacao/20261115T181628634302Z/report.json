@@ -1,0 +1,221 @@
+{
+  "stage": "strategy comparison",
+  "run_id": "20261115T181628634302Z",
+  "model": "random-forest",
+  "source_kind": "interface",
+  "segment": "validacao",
+  "compared_runs": [
+    "training-runs/nids/interface/20261114T231310076383Z",
+    "training-runs/nids/interface/20261114T235210953962Z",
+    "training-runs/nids/interface/20261115T153359440606Z",
+    "training-runs/nids/interface/20261115T161302774522Z"
+  ],
+  "passed": true,
+  "checks": {
+    "four_strategies_once_each": true,
+    "same_fixed_inputs": true,
+    "every_run_passed": true,
+    "measurement_points_present": true,
+    "processes_on_configured_cpus": true
+  },
+  "file_mode": false,
+  "differences": {},
+  "runs": [
+    {
+      "run_id": "20261114T231310076383Z",
+      "source_kind": "interface",
+      "strategy": "Sem XAI",
+      "criterion": null,
+      "threshold": null,
+      "classified": 32085,
+      "selected": 0,
+      "completed": 0,
+      "dropped": 0,
+      "pending": 0,
+      "queue_max": null,
+      "flows_dropped_in_extractor": 0,
+      "timings": {
+        "inference_ns": {
+          "mean": 3877277.631852891,
+          "p95": 7109007.599999998,
+          "p99": 11371574.959999997
+        },
+        "classification_latency_ns": {
+          "mean": 41898457.71397849,
+          "p95": 172666645.2,
+          "p99": 355299235.8399999
+        }
+      },
+      "cpu_seconds": {
+        "classifier": 151.508224,
+        "explainer": null,
+        "extractor": 168.57
+      },
+      "max_rss_mib": {
+        "classifier": 438.0234375,
+        "explainer": null,
+        "extractor": 2087.703125
+      }
+    },
+    {
+      "run_id": "20261114T235210953962Z",
+      "source_kind": "interface",
+      "strategy": "Síncrono total",
+      "criterion": null,
+      "threshold": null,
+      "classified": 32086,
+      "selected": 32086,
+      "completed": 32086,
+      "dropped": 0,
+      "pending": 0,
+      "queue_max": null,
+      "flows_dropped_in_extractor": 0,
+      "timings": {
+        "inference_ns": {
+          "mean": 4240020.129682728,
+          "p95": 6074895.75,
+          "p99": 10039384.050000012
+        },
+        "explanation_ns": {
+          "mean": 6855510.3708470985,
+          "p95": 9772584.5,
+          "p99": 13868520.750000013
+        },
+        "classification_latency_ns": {
+          "mean": 996861877.9236739,
+          "p95": 6476724079.0,
+          "p99": 8359146848.400002
+        },
+        "explanation_latency_ns": {
+          "mean": 996861877.9236739,
+          "p95": 6476724079.0,
+          "p99": 8359146848.400002
+        }
+      },
+      "cpu_seconds": {
+        "classifier": 466.48787599999997,
+        "explainer": null,
+        "extractor": 199.6
+      },
+      "max_rss_mib": {
+        "classifier": 607.82421875,
+        "explainer": null,
+        "extractor": 2100.30078125
+      }
+    },
+    {
+      "run_id": "20261115T153359440606Z",
+      "source_kind": "interface",
+      "strategy": "Síncrono condicional",
+      "criterion": "probabilidade",
+      "threshold": 0.5,
+      "classified": 32086,
+      "selected": 679,
+      "completed": 679,
+      "dropped": 0,
+      "pending": 0,
+      "queue_max": null,
+      "flows_dropped_in_extractor": 0,
+      "timings": {
+        "inference_ns": {
+          "mean": 4050169.8594090883,
+          "p95": 7250388.5,
+          "p99": 11586567.000000004
+        },
+        "explanation_ns": {
+          "mean": 7585375.7790868925,
+          "p95": 15260430.600000001,
+          "p99": 23659205.12
+        },
+        "classification_latency_ns": {
+          "mean": 49539089.81325188,
+          "p95": 200546214.0,
+          "p99": 478541390.1500006
+        },
+        "explanation_latency_ns": {
+          "mean": 27405124.674521353,
+          "p95": 55245838.200000055,
+          "p99": 130390661.62000097
+        }
+      },
+      "cpu_seconds": {
+        "classifier": 166.121274,
+        "explainer": null,
+        "extractor": 197.17
+      },
+      "max_rss_mib": {
+        "classifier": 444.82421875,
+        "explainer": null,
+        "extractor": 2096.5
+      }
+    },
+    {
+      "run_id": "20261115T161302774522Z",
+      "source_kind": "interface",
+      "strategy": "Assíncrono",
+      "criterion": null,
+      "threshold": null,
+      "classified": 32086,
+      "selected": 32086,
+      "completed": 32086,
+      "dropped": 0,
+      "pending": 0,
+      "queue_max": 452,
+      "flows_dropped_in_extractor": 0,
+      "timings": {
+        "inference_ns": {
+          "mean": 4849684.503210123,
+          "p95": 8337346.5,
+          "p99": 11916425.750000006
+        },
+        "explanation_ns": {
+          "mean": 7906478.70610235,
+          "p95": 12761366.5,
+          "p99": 17868933.450000003
+        },
+        "classification_latency_ns": {
+          "mean": 111230272.79835442,
+          "p95": 587143942.0,
+          "p99": 1387307342.9500003
+        },
+        "explanation_latency_ns": {
+          "mean": 414454861.6872156,
+          "p95": 2619799766.25,
+          "p99": 4486901500.650003
+        },
+        "queue_wait_ns": {
+          "mean": 295212041.52072555,
+          "p95": 2124600612.5,
+          "p99": 3532246445.5000005
+        }
+      },
+      "cpu_seconds": {
+        "classifier": 268.99371099999996,
+        "explainer": 260.432203,
+        "extractor": 175.98
+      },
+      "max_rss_mib": {
+        "classifier": 602.84375,
+        "explainer": 204.73046875,
+        "extractor": 2116.83984375
+      }
+    }
+  ],
+  "environment": {
+    "python": "3.12.3",
+    "libraries": {
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "scipy": "1.18.1",
+      "joblib": "1.6.0",
+      "xgboost-cpu": "3.4.1",
+      "shap": "0.54.1",
+      "matplotlib": "3.11.2",
+      "threadpoolctl": "3.8.0",
+      "pandas": "3.1.1"
+    },
+    "platform": "Linux-7.0.0-43-generic-x86_64-desconhecido-with-glibc2.43",
+    "cpu": "13th Gen Intel(R) Core(TM) i5-1334U",
+    "logical_cpus": 12
+  }
+}

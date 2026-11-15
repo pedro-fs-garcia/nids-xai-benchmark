@@ -6,18 +6,32 @@ from typing import Any
 
 from config import get_settings
 from domains.nids.dependencies import get_nids_service
-from domains.nids.schemas import MODELS
+from domains.nids.schemas import CRITERIA, MODELS, STRATEGIES
 
 
 def register(subparsers: Any) -> None:
-    run = subparsers.add_parser("nids-executar", help="Executa o NIDS de referência, sem explicações.")
+    run = subparsers.add_parser("nids-executar", help="Executa o NIDS com uma estratégia de explicação.")
     run.add_argument("--config", type=Path, default=get_settings().nids_config)
     run.add_argument("--modelo", choices=MODELS, required=True)
+    run.add_argument("--estrategia", choices=tuple(STRATEGIES), default="sem-xai",
+                     help="Estratégia de explicação. O padrão é sem-xai.")
+    run.add_argument("--criterio", choices=tuple(CRITERIA),
+                     help="Critério de seleção do sincrono-condicional, com o limiar fixado na configuração.")
     run.add_argument("--trecho", help="Trecho preparado por preparar-pcap. Sem --interface, é lido do arquivo.")
     run.add_argument("--pcap", type=Path, help="Arquivo PCAP qualquer, sem conferência com a tabela de referência.")
     run.add_argument("--interface", help="Interface de rede para a captura ao vivo.")
     run.add_argument("--sinal-pronto", type=Path, help="Arquivo criado quando a captura está aberta.")
     run.set_defaults(handler=run_nids)
+    calibration = subparsers.add_parser(
+        "calibrar-selecao", help="Mostra, na validação, o que cada critério de seleção escolhe, por limiar.")
+    calibration.add_argument("--config", type=Path, default=get_settings().nids_config)
+    calibration.set_defaults(handler=run_calibration)
+    compare = subparsers.add_parser(
+        "nids-comparar-estrategias", help="Confere a comparabilidade de execuções das quatro estratégias.")
+    compare.add_argument("--config", type=Path, default=get_settings().nids_config)
+    compare.add_argument("--execucoes", type=Path, nargs="+", required=True,
+                         help="Pastas das execuções do mesmo modelo e da mesma fonte, uma por estratégia e critério.")
+    compare.set_defaults(handler=run_compare)
     validate = subparsers.add_parser("nids-validar", help="Compara uma execução reproduzida com a do mesmo arquivo.")
     validate.add_argument("--config", type=Path, default=get_settings().nids_config)
     validate.add_argument("--reproduzida", type=Path, required=True)
@@ -27,7 +41,17 @@ def register(subparsers: Any) -> None:
 
 def run_nids(args: argparse.Namespace) -> int:
     return _execute(lambda: get_nids_service(args.config).run(
-        args.modelo, pcap=args.pcap, interface=args.interface, segment=args.trecho, ready_file=args.sinal_pronto))
+        args.modelo, pcap=args.pcap, interface=args.interface, segment=args.trecho, ready_file=args.sinal_pronto,
+        strategy_key=args.estrategia, criterion=args.criterio))
+
+
+def run_compare(args: argparse.Namespace) -> int:
+    return _execute(lambda: get_nids_service(args.config).compare_strategies(
+        [path.resolve() for path in args.execucoes]))
+
+
+def run_calibration(args: argparse.Namespace) -> int:
+    return _execute(lambda: get_nids_service(args.config).calibrate_selection())
 
 
 def run_validate(args: argparse.Namespace) -> int:

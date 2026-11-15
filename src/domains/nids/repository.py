@@ -3,19 +3,55 @@
 import csv
 import json
 import os
-import resource
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import IO, Any
 
 from domains.explanations.repository import ExplanationRepository
+from domains.explanations.schemas import SplitData, TreeShapConfig
 from domains.model_artifacts.repository import ModelArtifactRepository
 from domains.model_artifacts.schemas import LoadedModel
-from domains.model_training.repository import ModelTrainingRepository, sha256
+from domains.model_training.repository import sha256
 from domains.nids.exceptions import NidsError
-from domains.nids.schemas import NidsConfig
+from domains.nids.schemas import CRITERIA, MODELS, NidsConfig
 
 csv.field_size_limit(1 << 20)
+
+
+PROCESSES = ("classifier", "explainer", "extractor", "replay")
+
+
+def _checked_resources(resources: dict[str, Any]) -> None:
+    """CPUs de cada processo do experimento e heap máximo do extrator. Nenhuma CPU é dividida entre processos."""
+    if set(resources) != {"cpus", "extractor_max_heap_mib"} or set(resources["cpus"]) != set(PROCESSES):
+        raise ValueError(f"resources deve ter cpus de {list(PROCESSES)} e extractor_max_heap_mib")
+    cpus = [cpu for name in PROCESSES for cpu in resources["cpus"][name]]
+    available = set(range(os.cpu_count() or 0))
+    if not all(type(cpu) is int for cpu in cpus) or len(cpus) != len(set(cpus)) or not set(cpus) <= available:
+        raise ValueError("cada processo precisa de CPUs próprias, existentes na máquina")
+    if any(not resources["cpus"][name] for name in PROCESSES):
+        raise ValueError("cada processo precisa de ao menos uma CPU")
+    if type(resources["extractor_max_heap_mib"]) is not int or resources["extractor_max_heap_mib"] < 256:
+        raise ValueError("extractor_max_heap_mib deve ser um inteiro de pelo menos 256")
+
+
+def _checked_selection(selection: dict[str, Any]) -> dict[str, Any]:
+    """Grade de calibração e limiares do Síncrono condicional. Um limiar nulo ainda não foi fixado."""
+    if set(selection) != {"calibration_grid", "calibration_run", "thresholds"}:
+        raise ValueError("selection deve ter calibration_grid, calibration_run e thresholds")
+    grid, thresholds = selection["calibration_grid"], selection["thresholds"]
+    if set(grid) != set(CRITERIA) or set(thresholds) != set(CRITERIA):
+        raise ValueError(f"a grade e os limiares devem cobrir os critérios {sorted(CRITERIA)}")
+    for criterion, limit in CRITERIA.items():
+        if set(thresholds[criterion]) != set(MODELS):
+            raise ValueError(f"os limiares de {criterion} devem cobrir os dois classificadores")
+        fixed = [value for value in thresholds[criterion].values() if value is not None]
+        if not grid[criterion] or not all(type(value) in (int, float) and 0 < value <= limit
+                                          for value in [*grid[criterion], *fixed]):
+            raise ValueError(f"os limiares de {criterion} devem ser maiores que 0 e de no máximo {limit}")
+        if fixed and selection["calibration_run"] is None:
+            raise ValueError("limiares fixados exigem a execução de calibração que os sustenta")
+    return selection
 
 
 class NidsRepository:
@@ -28,18 +64,39 @@ class NidsRepository:
     def read_config(self, path: Path) -> NidsConfig:
         try:
             content = json.loads(path.read_text(encoding="utf-8"))
-            if set(content) != {"frozen_run", "preparation_manifest", "extractor", "classifier_threads",
+            if set(content) != {"frozen_run", "preparation_manifest", "tree_shap_config", "selection",
+                                "explanation_queue", "resources", "extractor", "classifier_threads",
                                 "shared_clock_tolerance_ns"}:
                 raise ValueError("campos inesperados ou ausentes")
-            if set(content["extractor"]) != {"snaplen", "read-timeout-ms", "idle-margin-us", "buffer-bytes"}:
-                raise ValueError("extractor deve ter snaplen, read-timeout-ms, idle-margin-us e buffer-bytes")
+            if set(content["extractor"]) != {"snaplen", "read-timeout-ms", "idle-margin-us", "buffer-bytes",
+                                             "flow-queue-limit"}:
+                raise ValueError("extractor deve ter snaplen, read-timeout-ms, idle-margin-us, buffer-bytes e "
+                                 "flow-queue-limit")
+            queue_settings = content["explanation_queue"]
+            if (set(queue_settings) != {"limit", "drain_timeout_s"} or type(queue_settings["limit"]) is not int
+                    or queue_settings["limit"] < 1 or not queue_settings["drain_timeout_s"] > 0):
+                raise ValueError("explanation_queue deve ter limit e drain_timeout_s positivos")
+            _checked_resources(content["resources"])
             if type(content["classifier_threads"]) is not int or content["classifier_threads"] < 1:
                 raise ValueError("classifier_threads deve ser um inteiro positivo")
             return NidsConfig(path, sha256(path), content, self.root / content["frozen_run"],
-                              self.root / content["preparation_manifest"], dict(content["extractor"]),
-                              content["classifier_threads"], int(content["shared_clock_tolerance_ns"]))
+                              self.root / content["preparation_manifest"], self.root / content["tree_shap_config"],
+                              _checked_selection(content["selection"]), dict(content["explanation_queue"]),
+                              content["resources"], dict(content["extractor"]), content["classifier_threads"],
+                              int(content["shared_clock_tolerance_ns"]))
         except (OSError, KeyError, ValueError, TypeError) as error:
             raise NidsError(f"Configuração inválida em {path}: {error}") from error
+
+    def validation_split(self) -> SplitData:
+        """Conjunto de validação, o único que a calibração do critério de seleção pode usar."""
+        return ExplanationRepository(self.root, self.data_dir, self.runs_dir, self.reports_dir).load_split("validation")
+
+    def tree_shap(self, path: Path, frozen_run: Path) -> TreeShapConfig:
+        """Configuração validada do TreeSHAP, que deve se referir aos mesmos modelos congelados do NIDS."""
+        config = ExplanationRepository(self.root, self.data_dir, self.runs_dir, self.reports_dir).read_config(path)
+        if config.frozen_run.resolve() != frozen_run.resolve():
+            raise NidsError("A configuração do TreeSHAP se refere a outros modelos congelados.")
+        return config
 
     def data_manifest(self) -> dict[str, Any]:
         return self.read_json(self.data_dir / "manifest.json")
@@ -80,8 +137,12 @@ class NidsRepository:
         """Canal de saída do NIDS: uma linha JSON por classificação, entregue ao sistema a cada escrita."""
         return (run_dir / "classifications.jsonl").open("w", encoding="utf-8")
 
-    def open_table(self, run_dir: Path, header: list[str]) -> tuple[IO[str], Any]:
-        stream = (run_dir / "flows.csv").open("w", newline="", encoding="utf-8")
+    def open_explanations(self, run_dir: Path) -> IO[str]:
+        """Canal de saída das explicações: uma linha JSON por fluxo explicado, entregue ao sistema a cada escrita."""
+        return (run_dir / "explanations.jsonl").open("w", encoding="utf-8")
+
+    def open_table(self, run_dir: Path, header: list[str], name: str = "flows.csv") -> tuple[IO[str], Any]:
+        stream = (run_dir / name).open("w", newline="", encoding="utf-8")
         writer = csv.DictWriter(stream, fieldnames=header)
         writer.writeheader()
         return stream, writer
@@ -109,19 +170,31 @@ class NidsRepository:
         path.write_text(json.dumps({"pid": os.getpid(), "run_dir": str(run_dir)}) + "\n", encoding="utf-8")
 
     def relative(self, path: Path) -> str:
-        return path.resolve().relative_to(self.root.resolve()).as_posix()
+        """Caminho relativo à raiz do projeto. Um arquivo fora do projeto, como uma configuração passada por
+        --config, fica com o caminho absoluto."""
+        resolved = path.resolve()
+        if not resolved.is_relative_to(self.root.resolve()):
+            return resolved.as_posix()
+        return resolved.relative_to(self.root.resolve()).as_posix()
 
     def environment(self) -> dict[str, Any]:
-        return ModelTrainingRepository(self.data_dir, self.runs_dir, self.reports_dir).environment()
+        """Versões do Python e das bibliotecas, incluindo o shap e o threadpoolctl, e a máquina."""
+        return ExplanationRepository(self.root, self.data_dir, self.runs_dir, self.reports_dir).environment()
+
+    def read_explanation_records(self, report: dict[str, Any]) -> dict[int, dict[str, Any]]:
+        """Registros do canal de saída das explicações de uma execução, conferidos pelo hash, pelo número de
+        sequência do fluxo."""
+        info = report["artifacts"].get("explanations.jsonl")
+        if info is None:
+            return {}
+        with self.checked(info).open(encoding="utf-8") as stream:
+            return {record["seq"]: record for record in map(json.loads, stream)}
+
+    def read_flow_marks(self, report: dict[str, Any]) -> list[dict[str, str]]:
+        """Colunas de classificação e de seleção da tabela por fluxo de uma execução, conferida pelo hash."""
+        keep = ("seq", "error", "attack_probability", "prediction", "selected", "explanation")
+        with self.checked(report["artifacts"]["flows.csv"]).open(newline="", encoding="utf-8") as stream:
+            return [{key: row[key] for key in keep} for row in csv.DictReader(stream)]
 
     def cpu_state(self) -> dict[str, Any]:
         return ExplanationRepository(self.root, self.data_dir, self.runs_dir, self.reports_dir).cpu_state()
-
-    def resource_usage(self) -> dict[str, Any]:
-        """CPU e pico de memória do processo do NIDS e, separadamente, do extrator, que é um processo filho."""
-        usage = {}
-        for name, who in (("classifier_process", resource.RUSAGE_SELF), ("extractor_process", resource.RUSAGE_CHILDREN)):
-            value = resource.getrusage(who)
-            usage[name] = {"user_seconds": value.ru_utime, "system_seconds": value.ru_stime,
-                           "max_rss_kib": value.ru_maxrss}
-        return usage

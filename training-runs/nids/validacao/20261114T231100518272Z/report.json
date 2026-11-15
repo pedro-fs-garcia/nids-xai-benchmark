@@ -1,0 +1,363 @@
+{
+  "stage": "low-load validation",
+  "run_id": "20261114T231100518272Z",
+  "passed": true,
+  "checks": {
+    "tcpreplay_sent_whole_segment": true,
+    "h1_sent_equals_tcpreplay_successful": true,
+    "h2_received_equals_h1_sent": true,
+    "no_capture_drops": true,
+    "extractor_read_equals_h2_received": true,
+    "replay_run_flow_chain": true
+  },
+  "counters": {
+    "segment_packets": 18354,
+    "tcpreplay_attempted": 18354,
+    "tcpreplay_successful": 18354,
+    "tcpreplay_failed": 0,
+    "tcpreplay_truncated": 0,
+    "h1_sent": 18354,
+    "h2_received": 18354,
+    "h2_dropped": 0,
+    "pcap_received": 18354,
+    "pcap_dropped": 0,
+    "pcap_interface_dropped": 0,
+    "extractor_read": 18354,
+    "extractor_valid": 15647,
+    "extractor_discarded": 2707,
+    "file_extractor_read": 18354,
+    "file_extractor_valid": 15647,
+    "packets_after_emission": 0,
+    "flows_emitted": 1175,
+    "flows_dropped_in_extractor_queue": 0,
+    "flows_received": 1175,
+    "flows_classified": 1170,
+    "flows_with_error": 5
+  },
+  "model": "random-forest",
+  "segment": "dev",
+  "strategy": "Sem XAI",
+  "strategy_key": "sem-xai",
+  "selection": null,
+  "replay_run": "training-runs/nids/interface/20261114T223607557539Z",
+  "file_run": "training-runs/nids/arquivo/20261114T214846211516Z",
+  "replay": {
+    "topology": {
+      "hosts": [
+        "h1",
+        "h2"
+      ],
+      "link": "h1-eth0 <-> h2-eth0, enlace direto (veth)",
+      "switch": null,
+      "mtu": 3723,
+      "ipv6": "desativado"
+    },
+    "replay_command": [
+      "/home/pedro/projects/explicabilidade-ia/tcpreplay/build/tcpreplay",
+      "--intf1=h1-eth0",
+      "--multiplier=1",
+      "--stats=60",
+      "/home/pedro/projects/explicabilidade-ia/derived-data/pcap/tuesday/segment-dev.pcap"
+    ],
+    "replay_seconds": 311.69959366499825,
+    "wait_after_replay_s": 137.0,
+    "replay_started_utc": "2026-11-14T22:36:08.095587+00:00",
+    "tcpreplay_build": {
+      "version": "4.6.2",
+      "binary": "tcpreplay/build/tcpreplay",
+      "binary_sha256": "944a8b3cf88563408ed70faccbf8486ef1695125014948fc75116f18f3db99ff",
+      "archive": {
+        "url": "https://github.com/appneta/tcpreplay/releases/download/v4.6.2/tcpreplay-4.6.2.tar.xz",
+        "sha256": "83a7ca2f9daa367949926cfe34d30193e756c233c164b38f84f0d6d272a87e66"
+      }
+    }
+  },
+  "tcpreplay": {
+    "exit_code": 0,
+    "attempted_packets": 18354,
+    "attempted_bytes": 3970335,
+    "seconds": 311.6,
+    "rated_bytes_per_second": 12741.6,
+    "rated_mbps": 0.101,
+    "rated_packets_per_second": 58.9,
+    "successful": 18354,
+    "failed": 0,
+    "truncated": 0,
+    "retried_enobufs": 0,
+    "retried_eagain": 0
+  },
+  "flows": {
+    "file": 1175,
+    "replay": 1175,
+    "matched_inside": 243,
+    "matched_border": 932,
+    "file_only_inside": 0,
+    "replay_only_inside": 0,
+    "swapped_direction_inside": 0,
+    "replay_offset_us": 295526555809524,
+    "file_only_examples": [],
+    "replay_only_examples": []
+  },
+  "emission": {
+    "flows": 1175,
+    "per_second": 3.7696552189376322,
+    "peak_per_second": 143
+  },
+  "packet_shifts": {
+    "flows": 0,
+    "conserved_in_connection": 0,
+    "connections": 0,
+    "examples": []
+  },
+  "exact_attributes": {},
+  "temporal_attributes": {
+    "Flow Duration": {
+      "differing": 241,
+      "max_abs_difference": 451.0,
+      "median_relative_difference": 0.0014817359932999764
+    },
+    "Flow Bytes/s": {
+      "differing": 235,
+      "max_abs_difference": 11000000.0,
+      "median_relative_difference": 0.0015872378043880935
+    },
+    "Flow Packets/s": {
+      "differing": 241,
+      "max_abs_difference": 250000.0,
+      "median_relative_difference": 0.0014839347928941697
+    },
+    "Flow IAT Mean": {
+      "differing": 241,
+      "max_abs_difference": 139.0,
+      "median_relative_difference": 0.0014817359932999764
+    },
+    "Flow IAT Std": {
+      "differing": 198,
+      "max_abs_difference": 116.67261889578003,
+      "median_relative_difference": 0.005071783497545628
+    },
+    "Flow IAT Max": {
+      "differing": 239,
+      "max_abs_difference": 148.0,
+      "median_relative_difference": 0.001597914301332997
+    },
+    "Flow IAT Min": {
+      "differing": 207,
+      "max_abs_difference": 139.0,
+      "median_relative_difference": 0.6666666666666666
+    },
+    "Fwd IAT Total": {
+      "differing": 180,
+      "max_abs_difference": 451.0,
+      "median_relative_difference": 0.3333333333333333
+    },
+    "Fwd IAT Mean": {
+      "differing": 180,
+      "max_abs_difference": 157.0,
+      "median_relative_difference": 0.3333333333333333
+    },
+    "Fwd IAT Std": {
+      "differing": 81,
+      "max_abs_difference": 116.67261889578003,
+      "median_relative_difference": 1.798085376943667e-05
+    },
+    "Fwd IAT Max": {
+      "differing": 179,
+      "max_abs_difference": 157.0,
+      "median_relative_difference": 0.3333333333333333
+    },
+    "Fwd IAT Min": {
+      "differing": 155,
+      "max_abs_difference": 157.0,
+      "median_relative_difference": 0.6666666666666666
+    },
+    "Bwd IAT Total": {
+      "differing": 178,
+      "max_abs_difference": 156.0,
+      "median_relative_difference": 0.5
+    },
+    "Bwd IAT Mean": {
+      "differing": 178,
+      "max_abs_difference": 156.0,
+      "median_relative_difference": 0.5
+    },
+    "Bwd IAT Std": {
+      "differing": 62,
+      "max_abs_difference": 85.55992052357396,
+      "median_relative_difference": 3.7170153770053865e-05
+    },
+    "Bwd IAT Max": {
+      "differing": 178,
+      "max_abs_difference": 156.0,
+      "median_relative_difference": 0.5
+    },
+    "Bwd IAT Min": {
+      "differing": 163,
+      "max_abs_difference": 156.0,
+      "median_relative_difference": 0.6666666666666666
+    },
+    "Fwd Packets/s": {
+      "differing": 241,
+      "max_abs_difference": 250000.0,
+      "median_relative_difference": 0.0014839347928941697
+    },
+    "Bwd Packets/s": {
+      "differing": 227,
+      "max_abs_difference": 15669.014084507044,
+      "median_relative_difference": 0.001640656262504978
+    },
+    "Fwd Bytes/Bulk Avg": {
+      "differing": 0,
+      "max_abs_difference": 0.0,
+      "median_relative_difference": 0.0
+    },
+    "Fwd Packet/Bulk Avg": {
+      "differing": 0,
+      "max_abs_difference": 0.0,
+      "median_relative_difference": 0.0
+    },
+    "Fwd Bulk Rate Avg": {
+      "differing": 7,
+      "max_abs_difference": 11000000.0,
+      "median_relative_difference": 0.0007633587786259542
+    },
+    "Bwd Bytes/Bulk Avg": {
+      "differing": 0,
+      "max_abs_difference": 0.0,
+      "median_relative_difference": 0.0
+    },
+    "Bwd Packet/Bulk Avg": {
+      "differing": 0,
+      "max_abs_difference": 0.0,
+      "median_relative_difference": 0.0
+    },
+    "Bwd Bulk Rate Avg": {
+      "differing": 7,
+      "max_abs_difference": 236758.0,
+      "median_relative_difference": 0.0028659783583730447
+    },
+    "Active Mean": {
+      "differing": 33,
+      "max_abs_difference": 467.0,
+      "median_relative_difference": 0.0004863725613820186
+    },
+    "Active Std": {
+      "differing": 7,
+      "max_abs_difference": 61.978969662915915,
+      "median_relative_difference": 0.0006958921314176119
+    },
+    "Active Max": {
+      "differing": 33,
+      "max_abs_difference": 467.0,
+      "median_relative_difference": 0.00032112825266503343
+    },
+    "Active Min": {
+      "differing": 33,
+      "max_abs_difference": 467.0,
+      "median_relative_difference": 0.0010038163962991372
+    },
+    "Idle Mean": {
+      "differing": 34,
+      "max_abs_difference": 121.0,
+      "median_relative_difference": 8.169765469713221e-07
+    },
+    "Idle Std": {
+      "differing": 7,
+      "max_abs_difference": 93.3380951166182,
+      "median_relative_difference": 8.609034984885479e-06
+    },
+    "Idle Max": {
+      "differing": 34,
+      "max_abs_difference": 121.0,
+      "median_relative_difference": 8.444551104632814e-07
+    },
+    "Idle Min": {
+      "differing": 34,
+      "max_abs_difference": 121.0,
+      "median_relative_difference": 1.0792165844946062e-06
+    },
+    "Total TCP Flow Time": {
+      "differing": 61,
+      "max_abs_difference": 451.0,
+      "median_relative_difference": 5.391050011896736e-06
+    }
+  },
+  "flows_with_equal_exact_attributes": 243,
+  "predictions": {
+    "compared": 243,
+    "differing": 0,
+    "differing_with_equal_exact_attributes": 0,
+    "examples": []
+  },
+  "labels": {
+    "matched_inside": {
+      "BENIGN": 243
+    },
+    "file_only_inside": {}
+  },
+  "replay_timings": {
+    "inference_ns": {
+      "count": 1170,
+      "mean": 6735309.010256411,
+      "median": 6469875.0,
+      "p95": 13796788.799999997,
+      "p99": 18485938.809999995,
+      "min": 2643146.0,
+      "max": 28597570.0
+    },
+    "classification_latency_ns": {
+      "count": 1170,
+      "mean": 73068777.27521367,
+      "median": 29949928.5,
+      "p95": 272443745.94999987,
+      "p99": 406397270.2199998,
+      "min": 3292945.0,
+      "max": 426710233.0
+    },
+    "wait_before_inference_ns": {
+      "count": 1170,
+      "mean": 66234437.81025641,
+      "median": 21979310.5,
+      "p95": 269558721.54999983,
+      "p99": 403352911.0799998,
+      "min": 456042.0,
+      "max": 423744724.0
+    },
+    "selection_ns": {
+      "count": 1170,
+      "mean": 923.0700854700855,
+      "median": 751.5,
+      "p95": 2250.1,
+      "p99": 3103.049999999997,
+      "min": 172.0,
+      "max": 8387.0
+    },
+    "delivery_ns": {
+      "count": 1170,
+      "mean": 64869.45042735043,
+      "median": 54481.5,
+      "p95": 146805.3999999999,
+      "p99": 190637.05999999994,
+      "min": 14531.0,
+      "max": 256479.0
+    },
+    "classified_per_second": 3.888131683291225
+  },
+  "environment": {
+    "python": "3.12.3",
+    "libraries": {
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "scipy": "1.18.1",
+      "joblib": "1.6.0",
+      "xgboost-cpu": "3.4.1",
+      "shap": "0.54.1",
+      "matplotlib": "3.11.2",
+      "threadpoolctl": "3.8.0",
+      "pandas": "3.1.1"
+    },
+    "platform": "Linux-7.0.0-43-generic-x86_64-desconhecido-with-glibc2.43",
+    "cpu": "13th Gen Intel(R) Core(TM) i5-1334U",
+    "logical_cpus": 12
+  }
+}

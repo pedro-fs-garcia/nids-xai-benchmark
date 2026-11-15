@@ -1,0 +1,399 @@
+{
+  "stage": "nids run",
+  "run_id": "20261114T213653982404Z",
+  "passed": true,
+  "checks": {
+    "emitted_equals_received_plus_dropped": true,
+    "no_dropped_flow_in_file_mode": true,
+    "received_equals_classified_plus_errors": true,
+    "timestamps_ordered": true,
+    "no_packets_after_emission_in_file_mode": true,
+    "selection_follows_strategy": true,
+    "explanations_match_classifications": true,
+    "sum_identity": true,
+    "explained_equals_selected": true,
+    "explanation_marks_ordered": true,
+    "explained_output_matches_classification": true,
+    "contributions_cover_every_input": true,
+    "processes_on_configured_cpus": true
+  },
+  "model": "random-forest",
+  "source": {
+    "kind": "arquivo",
+    "pcap": "/home/pedro/projects/explicabilidade-ia/derived-data/pcap/tuesday/segment-validacao.pcap"
+  },
+  "segment": {
+    "name": "validacao",
+    "stop": "2017-07-04T12:30:00Z",
+    "stop_us": 1499171400000000,
+    "pcap": {
+      "file": "derived-data/pcap/tuesday/segment-validacao.pcap",
+      "bytes": 4847864345,
+      "sha256": "a22b9c78f256cf981fa24b832c83bf4a221c0ff883a5d1898a4abf5edbfab16a"
+    },
+    "reference": {
+      "file": "derived-data/pcap/tuesday/reference-validacao.csv",
+      "bytes": 17578153,
+      "sha256": "e5ed458970165363866d226a86541fafe1085dfd718d02436230df99f16e8996"
+    },
+    "border_seconds": 120,
+    "manifest": "derived-data/pcap/tuesday/manifest.json",
+    "manifest_sha256": "caabbefeb879428f05e778b0df32c4637518901159d9705c759a2dffdecbd3b0"
+  },
+  "config": "configs/nids.json",
+  "config_sha256": "43a195abfead0f9036b04c9f1606b9a6cea306ddf5aecee59fb79d0a3dfcb4cf",
+  "selection_calibration_run": "training-runs/nids/calibracao/20261114T204351398308Z",
+  "frozen_run": "training-runs/frozen-models/20261111T181031847482Z",
+  "model_manifest_sha256": "b18708731de1a1901969789a93479a6a4e4b228ea56aff24c65bf4bfd7c71805",
+  "classifier_threads": 1,
+  "extractor_options": {
+    "snaplen": 65535,
+    "read-timeout-ms": 100,
+    "idle-margin-us": 2000000,
+    "buffer-bytes": 268435456,
+    "flow-queue-limit": 10000
+  },
+  "extractor_build": {
+    "extractor_commit": "13a061520b862d605eea746c79ca4033b30d98fc",
+    "java": "openjdk version \"17.0.21.0.3\" 2026-10-24",
+    "release": 8,
+    "libpcap": "/usr/lib/x86_64-linux-gnu/libpcap.so.0.8",
+    "jars": {
+      "nids-extractor.jar": "75c7b3825a3f3a29827f3bc93ac4b80beed6e73f5f53e4e4d10f943e37a3f96e",
+      "reference-extractor.jar": "a934558afd72f16424a935c3b0ce2334b4733ae845a00b1988b6ee835f9f6338"
+    },
+    "patches": {
+      "01-flow-emission-sweep.patch": "06a76076bed3b391ca5f3d306fc2c4aecd915240296ef73d07b4bc60a8aa9ca1",
+      "02-live-capture.patch": "4fc3091fa0b1791b1de9b0d4d2ad369bf71fa3a939e0e20f882112fb21d3cc48"
+    },
+    "sources": {
+      "NidsExtractor.java": "62992d472cdb6cd31bcb898e3e46060737d024cf79b375f3898ea02b6859814c",
+      "ReferenceExtractor.java": "624309cb3acd7d933381308d23c0f87647a598ae8867608f4ecd49b663cfccec"
+    },
+    "libraries": {
+      "commons-lang3-3.6.jar": "89c27f03fff18d0b06e7afd7ef25e209766df95b6c1269d6c3ebbdea48d5f284",
+      "commons-math3-3.5.jar": "dcf9768726b82e8d7b8a928447b08bca7cfe2773d5120a63a41ec224207c1a29",
+      "jnetpcap.jar": "7dfff1e5abd453293415074dd09e10edbeb00cf37b8db9a07d44108e1a10c163",
+      "slf4j-api-1.7.25.jar": "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
+      "slf4j-nop-1.7.25.jar": "6cb127138f41b5a869f9ecdd061ad17799a0e3fe7204600797154eb0432eeb12",
+      "tika-core-1.17.jar": "77c0a63d7693dc968553f92ef061469979b04d458bb11996d7738c45c5f66b5c"
+    },
+    "native": {
+      "libjnetpcap-pcap100.so": "b758a46ef7ff3cf39b2956de4c08e19a5585cbb6aefd6ce4416566227211aec9",
+      "libjnetpcap.so": "93d8c8c53a63e448f82e778791a0a725d1345a4c80c9d7334f7c9f8067688a49"
+    }
+  },
+  "extractor_start": {
+    "extractor_commit": "13a061520b862d605eea746c79ca4033b30d98fc",
+    "flow_timeout_us": 120000000,
+    "activity_timeout_us": 5000000,
+    "source": "file",
+    "location": "/home/pedro/projects/explicabilidade-ia/derived-data/pcap/tuesday/segment-validacao.pcap",
+    "snaplen": 65535,
+    "read_timeout_ms": 100,
+    "idle_sleep_ms": 1,
+    "capture_mode": "file",
+    "buffer_bytes": null,
+    "ring_bytes": null,
+    "flow_output": "direct",
+    "flow_queue_limit": null,
+    "idle_margin_us": 2000000,
+    "java_version": "17.0.21.0.3",
+    "monotonic_ns": 48466372810025
+  },
+  "extractor_end": {
+    "stop_reason": "end_of_file",
+    "packets_read": 3954069,
+    "packets_valid": 3946908,
+    "packets_discarded": 7161,
+    "idle_reads": 0,
+    "packets_after_emission": 0,
+    "first_disordered_packet_id": -1,
+    "open_flows_before_flush": 2207,
+    "flows_emitted": 32108,
+    "flows_by_cause": {
+      "timeout_sweep": 29537,
+      "tcp_new_connection": 364,
+      "end_of_capture": 2207
+    },
+    "output_queue_max": null,
+    "flows_dropped": 0,
+    "process": {
+      "cpu_ns": 244670000000,
+      "max_rss_kib": 1852796,
+      "max_heap_bytes": 4294967296
+    },
+    "pcap_stats": null,
+    "monotonic_ns": 48698287759533
+  },
+  "shared_clock_difference_ns": 483099,
+  "flows": {
+    "received": 32108,
+    "classified": 32086,
+    "errors": 22,
+    "by_cause": {
+      "timeout_sweep": 29537,
+      "tcp_new_connection": 364,
+      "end_of_capture": 2207
+    },
+    "predictions": {
+      "0": 31407,
+      "1": 679
+    },
+    "error_examples": [
+      {
+        "seq": 257,
+        "flow_id": "192.168.10.51-224.0.0.22-0-0-0",
+        "error": "Valor não finito em Flow Bytes/s."
+      },
+      {
+        "seq": 306,
+        "flow_id": "192.168.10.17-224.0.0.22-0-0-0",
+        "error": "Valor não finito em Flow Bytes/s."
+      },
+      {
+        "seq": 348,
+        "flow_id": "192.168.10.19-224.0.0.22-0-0-0",
+        "error": "Valor não finito em Flow Bytes/s."
+      },
+      {
+        "seq": 699,
+        "flow_id": "192.168.10.12-224.0.0.22-0-0-0",
+        "error": "Valor não finito em Flow Bytes/s."
+      },
+      {
+        "seq": 1121,
+        "flow_id": "192.168.10.16-128.100.100.128-123-123-17",
+        "error": "Valor não finito em Flow IAT Mean."
+      }
+    ]
+  },
+  "timings": {
+    "inference_ns": {
+      "count": 32086,
+      "mean": 4694318.089696441,
+      "median": 4461410.0,
+      "p95": 6620875.75,
+      "p99": 8467362.15,
+      "min": 2721543.0,
+      "max": 78462187.0
+    },
+    "classification_latency_ns": {
+      "count": 32086,
+      "mean": 377718257.8536745,
+      "median": 403465555.5,
+      "p95": 520372977.75,
+      "p99": 609335151.2500001,
+      "min": 3253056.0,
+      "max": 765566997.0
+    },
+    "wait_before_inference_ns": {
+      "count": 32086,
+      "mean": 372941242.779904,
+      "median": 398926759.5,
+      "p95": 514334684.75,
+      "p99": 603239606.3500004,
+      "min": 268851.0,
+      "max": 757011033.0
+    },
+    "selection_ns": {
+      "count": 32086,
+      "mean": 1363.702393567288,
+      "median": 1192.0,
+      "p95": 2544.75,
+      "p99": 3522.300000000003,
+      "min": 384.0,
+      "max": 32329.0
+    },
+    "delivery_ns": {
+      "count": 32086,
+      "mean": 49550.83827837686,
+      "median": 43016.5,
+      "p95": 85147.0,
+      "p99": 113026.95000000007,
+      "min": 15174.0,
+      "max": 12551184.0
+    },
+    "classified_per_second": 138.19873491481772,
+    "explanation_ns": {
+      "count": 30,
+      "mean": 8236111.133333334,
+      "median": 7457837.0,
+      "p95": 11358769.549999999,
+      "p99": 11682695.49,
+      "min": 4869482.0,
+      "max": 11697781.0
+    },
+    "explanation_latency_ns": {
+      "count": 30,
+      "mean": 320143418.6,
+      "median": 319678319.5,
+      "p95": 424068447.9,
+      "p99": 430041895.81,
+      "min": 174231063.0,
+      "max": 430187624.0
+    }
+  },
+  "artifacts": {
+    "classifications.jsonl": {
+      "file": "training-runs/nids/arquivo/20261114T213653982404Z/classifications.jsonl",
+      "bytes": 9461323,
+      "sha256": "00c021357e4efd430edf48e873d867b904493411e2708598816c2feb14b3ee6f"
+    },
+    "flows.csv": {
+      "file": "training-runs/nids/arquivo/20261114T213653982404Z/flows.csv",
+      "bytes": 25507211,
+      "sha256": "81500c9745caabfa7939548c92f756cca5bc3d0815480d70e03f9a869cbfadfa"
+    },
+    "explanations.jsonl": {
+      "file": "training-runs/nids/arquivo/20261114T213653982404Z/explanations.jsonl",
+      "bytes": 58525,
+      "sha256": "e861ff2569be6efb59c0a87a749935404841ab619ea44d2181bd42d71d5d8102"
+    },
+    "explanations.csv": {
+      "file": "training-runs/nids/arquivo/20261114T213653982404Z/explanations.csv",
+      "bytes": 1640,
+      "sha256": "e2daa37b6dfe62a39ac61676cb0c2a7851be1de0550b1200bad3e0e164b7851e"
+    }
+  },
+  "cpu_state": {
+    "affinity": [
+      2
+    ],
+    "scaling_governor": {
+      "2": "powersave"
+    },
+    "mains_power_online": true
+  },
+  "environment": {
+    "python": "3.12.3",
+    "libraries": {
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "scipy": "1.18.1",
+      "joblib": "1.6.0",
+      "xgboost-cpu": "3.4.1",
+      "shap": "0.54.1",
+      "matplotlib": "3.11.2",
+      "threadpoolctl": "3.8.0",
+      "pandas": "3.1.1"
+    },
+    "platform": "Linux-7.0.0-43-generic-x86_64-desconhecido-with-glibc2.43",
+    "cpu": "13th Gen Intel(R) Core(TM) i5-1334U",
+    "logical_cpus": 12
+  },
+  "strategy": "Síncrono condicional",
+  "strategy_key": "sincrono-condicional",
+  "selection": {
+    "criterion": "incerteza",
+    "threshold": 0.4,
+    "calibration_run": "training-runs/nids/calibracao/20261114T204351398308Z"
+  },
+  "tree_shap_config": "configs/tree-shap.json",
+  "tree_shap_config_sha256": "4578aea08402859e3054a6848947c80311d65860a74aa52579e5dcb8fc45ee52",
+  "explainer": {
+    "feature_perturbation": "tree_path_dependent",
+    "model_output": "raw",
+    "approximate": false,
+    "check_additivity": false
+  },
+  "warmup": {
+    "explainer_construction_ns": 12211729,
+    "explanation_ns": 10951053,
+    "inference_ns": 11095175
+  },
+  "explanations": {
+    "eligible": 32086,
+    "selected": 30,
+    "completed": 30,
+    "selected_share": 0.0009349872218413015,
+    "completed_share": 0.0009349872218413015,
+    "scale": "probability",
+    "sum_identity": {
+      "residual": 4.996003610813204e-16,
+      "tolerance": 1e-09
+    },
+    "explained_output_vs_probability": {
+      "max_difference": 0.0,
+      "tolerance": 1e-12
+    }
+  },
+  "shared_clock_difference_explainer_ns": null,
+  "resources": {
+    "classifier_process": {
+      "user_seconds": 176.260326,
+      "system_seconds": 3.654654,
+      "max_rss_kib": 454400,
+      "threads": 23,
+      "thread_affinities": [
+        [
+          2
+        ]
+      ]
+    },
+    "explainer_process": null,
+    "extractor_process": {
+      "cpu_ns": 244670000000,
+      "max_rss_kib": 1852796,
+      "max_heap_bytes": 4294967296
+    },
+    "children_total": {
+      "user_seconds": 240.116936,
+      "system_seconds": 4.723491,
+      "max_rss_kib": 1852768
+    },
+    "memory_available_kib_at_start": 9417796,
+    "cpus": {
+      "configured": {
+        "classifier": [
+          2
+        ],
+        "explainer": [
+          0
+        ],
+        "extractor": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "replay": [
+          8
+        ]
+      },
+      "classifier": [
+        [
+          2
+        ]
+      ],
+      "explainer": null,
+      "extractor": [
+        4,
+        5,
+        6,
+        7
+      ]
+    }
+  },
+  "conference": {
+    "passed": true,
+    "reference_flows": 32086,
+    "matched_inside": 29880,
+    "matched_border": 2206,
+    "reference_only_inside": 0,
+    "nids_only_inside": 21,
+    "nids_only_inside_with_nan": 21,
+    "attribute_mismatches": {},
+    "rounding_differences": 54980,
+    "max_rounding_relative": 6.0135204107969466e-15,
+    "compared_predictions": 29880,
+    "differing_predictions": 0,
+    "max_probability_difference": 0.0,
+    "probability_atol": 1e-12,
+    "labels_of_matched": {
+      "BENIGN": 29310,
+      "FTP-Patator - Attempted": 12,
+      "FTP-Patator": 558
+    }
+  }
+}

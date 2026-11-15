@@ -1,21 +1,28 @@
 #!/usr/bin/env python3
-"""Reproduz um trecho de PCAP em rede emulada pelo Mininet e captura o tráfego com o NIDS de referência.
+"""Reproduz um trecho de PCAP em rede emulada pelo Mininet e captura o tráfego com o NIDS.
 
 Executar com sudo e o Python do sistema, que tem o módulo do Mininet:
 
     sudo python3 scripts/emular_baixa_carga.py --modelo random-forest --trecho validacao
+    sudo python3 scripts/emular_baixa_carga.py --modelo random-forest xgboost --trecho validacao \\
+        --estrategia sem-xai sincrono-total sincrono-condicional assincrono --criterio probabilidade
 
-Topologia: dois hosts em enlace direto, sem switch. h1 envia o trecho com o tcpreplay na velocidade original.
-h2 executa o NIDS, que captura a interface em modo promíscuo. Depois do último pacote, o script espera o tempo
-limite dos fluxos e a margem do relógio ocioso, para a varredura emitir os últimos fluxos, e então encerra o NIDS.
-O registro da reprodução vai para replay.json, na pasta da execução do NIDS.
+Cada combinação de modelo, estratégia e critério é um ensaio, executado em sequência, cada um com a sua rede.
+O critério só se aplica ao sincrono-condicional.
 
-O progresso de cada etapa e os relatórios do tcpreplay, a cada 60 s, saem no stderr. O stdout recebe só a linha
-JSON final, com a pasta da execução.
+Topologia: dois hosts em enlace direto, sem switch. h1 envia o trecho com o tcpreplay na velocidade original,
+fixo na CPU de reprodução da configuração do NIDS. h2 executa o NIDS, que captura a interface em modo promíscuo.
+Depois do último pacote, o script espera o tempo limite dos fluxos e a margem do relógio ocioso, para a varredura
+emitir os últimos fluxos, e então encerra o NIDS. No modo assíncrono, o NIDS ainda espera a fila de explicações
+pendentes esvaziar. O registro da reprodução vai para replay.json, na pasta da execução do NIDS.
+
+O progresso de cada etapa e os relatórios do tcpreplay, a cada 60 s, saem no stderr. O stdout recebe uma linha
+JSON por ensaio, com a pasta da execução.
 """
 
 import argparse
 import hashlib
+import itertools
 import json
 import os
 import re
@@ -35,8 +42,12 @@ TCPREPLAY_MINIMUM = (4, 6, 0)
 FLOW_TIMEOUT_S = 120
 SETTLE_S = 15
 STATS_INTERVAL_S = 60
-# O extrator tem 30 s para parar. O restante cobre o fechamento dos arquivos e a gravação do relatório.
-NIDS_STOP_TIMEOUT_S = 180
+# O extrator tem 30 s para parar, e o processo explicador, o tempo máximo de esvaziamento da configuração. Os 180 s
+# restantes cobrem o fechamento dos arquivos, as verificações e a gravação do relatório.
+EXTRACTOR_STOP_S = 30
+REPORT_S = 180
+STRATEGIES = ("sem-xai", "sincrono-total", "sincrono-condicional", "assincrono")
+CRITERIA = ("probabilidade", "incerteza")
 COUNTERS = ("rx_packets", "rx_bytes", "rx_dropped", "tx_packets", "tx_bytes", "tx_dropped")
 OFFLOADS = ("rx", "tx", "sg", "tso", "gso", "gro", "lro")
 
@@ -59,13 +70,36 @@ def main() -> int:
     if sha256(pcap) != segment["pcap"]["sha256"]:
         print(f"O trecho {pcap} difere do manifesto da preparação.", file=sys.stderr)
         return 1
+    trials = [(model, strategy, criterion) for model, strategy in itertools.product(arguments.modelo, arguments.estrategia)
+              for criterion in (arguments.criterio if strategy == "sincrono-condicional" else [None])]
+    replay_s = (segment["summary"]["last_packet_us"] - segment["summary"]["first_packet_us"]) / 1e6
+    wait_s = FLOW_TIMEOUT_S + nids_config["extractor"]["idle-margin-us"] / 1e6 + SETTLE_S
+    log(f"Trecho {arguments.trecho} conferido: {segment['summary']['packets']} pacotes, cerca de {replay_s / 60:.1f} min "
+        f"de tráfego. {len(trials)} ensaios, cerca de {len(trials) * (replay_s + wait_s) / 60:.0f} min no total. "
+        f"tcpreplay {replay_tool['version']}.")
+    failures = 0
+    for number, (model, strategy, criterion) in enumerate(trials, start=1):
+        log(f"Ensaio {number} de {len(trials)}: {model}, {strategy}" + (f", {criterion}" if criterion else "") + ".")
+        try:
+            result = run_trial(model, strategy, criterion, arguments.trecho, segment, pcap, nids_config, replay_tool,
+                               owner)
+        except Exception as error:  # noqa: BLE001 - um ensaio que falha não interrompe os seguintes.
+            log(f"O ensaio falhou: {error}")
+            result = {"model": model, "strategy": strategy, "criterion": criterion, "error": str(error),
+                      "exit_code": 1}
+        failures += result["exit_code"] != 0
+        print(json.dumps(result, ensure_ascii=False), flush=True)
+    return 0 if failures == 0 else 1
+
+
+def run_trial(model: str, strategy: str, criterion: str | None, segment_name: str, segment: dict, pcap: Path,
+              nids_config: dict, replay_tool: dict, owner: tuple[int, int]) -> dict:
+    """Um ensaio: cria a rede, inicia o NIDS em h2, reproduz o trecho em h1 e grava replay.json."""
     mtu = max(1500, min(65535, segment["summary"]["max_frame_bytes"] - 14))
     idle_margin_s = nids_config["extractor"]["idle-margin-us"] / 1e6
     wait_s = FLOW_TIMEOUT_S + idle_margin_s + SETTLE_S
-    replay_s = (segment["summary"]["last_packet_us"] - segment["summary"]["first_packet_us"]) / 1e6
-    log(f"Trecho {arguments.trecho} conferido: {segment['summary']['packets']} pacotes, cerca de {replay_s / 60:.1f} min "
-        f"de tráfego. Duração prevista do ensaio: {(replay_s + wait_s) / 60:.0f} min. MTU: {mtu} bytes. "
-        f"tcpreplay {replay_tool['version']}.")
+    replay_cpus = nids_config["resources"]["cpus"]["replay"]
+    nids_stop_timeout_s = EXTRACTOR_STOP_S + nids_config["explanation_queue"]["drain_timeout_s"] + REPORT_S
 
     from mininet.log import setLogLevel
     from mininet.net import Mininet
@@ -77,11 +111,12 @@ def main() -> int:
     network.addLink(sender, receiver)
     network.build()
     log("Rede emulada criada: h1-eth0 <-> h2-eth0.")
-    record: dict = {"stage": "low-load replay", "model": arguments.modelo, "segment": arguments.trecho,
-                    "pcap": segment["pcap"], "segment_packets": segment["summary"]["packets"],
+    record: dict = {"stage": "low-load replay", "model": model, "strategy": strategy, "criterion": criterion,
+                    "segment": segment_name, "pcap": segment["pcap"], "segment_packets": segment["summary"]["packets"],
                     "topology": {"hosts": ["h1", "h2"], "link": "h1-eth0 <-> h2-eth0, enlace direto (veth)",
                                  "switch": None, "mtu": mtu, "ipv6": "desativado"},
-                    "wait_after_replay_s": wait_s, "tcpreplay_build": replay_tool}
+                    "wait_after_replay_s": wait_s, "tcpreplay_build": replay_tool, "replay_cpus": replay_cpus,
+                    "nids_stop_timeout_s": nids_stop_timeout_s}
     nids = None
     run_dir = None
     nids_log: dict[str, Path] = {}
@@ -97,10 +132,11 @@ def main() -> int:
         ready = Path(f"/tmp/nids-pronto-{os.getpid()}.json")
         ready.unlink(missing_ok=True)
         environment = {**os.environ, "PYTHONDONTWRITEBYTECODE": "1"}
-        command = [str(VENV_PYTHON), "main.py", "nids-executar", "--modelo", arguments.modelo,
-                   "--trecho", arguments.trecho, "--interface", "h2-eth0", "--sinal-pronto", str(ready)]
+        command = [str(VENV_PYTHON), "main.py", "nids-executar", "--modelo", model, "--estrategia", strategy,
+                   *(["--criterio", criterion] if criterion else []),
+                   "--trecho", segment_name, "--interface", "h2-eth0", "--sinal-pronto", str(ready)]
         record["nids_command"] = command
-        log(f"Iniciando o NIDS em h2, com o {arguments.modelo}.")
+        log(f"Iniciando o NIDS em h2, com o {model}.")
         # A saída do NIDS vai para arquivos: um pipe lido só no fim poderia encher e travar a captura.
         nids_log = {"stdout": Path(f"/tmp/nids-{os.getpid()}.out"), "stderr": Path(f"/tmp/nids-{os.getpid()}.err")}
         with nids_log["stdout"].open("w") as out, nids_log["stderr"].open("w") as err:
@@ -117,9 +153,12 @@ def main() -> int:
         replay_command = [str(TCPREPLAY_BUILD / "tcpreplay"), "--intf1=h1-eth0", "--multiplier=1", f"--stats={STATS_INTERVAL_S}", str(pcap)]
         record["replay_command"] = replay_command
         record["replay_started_utc"] = datetime.now(timezone.utc).isoformat()
-        log(f"Reprodução iniciada em h1. O tcpreplay informa o progresso a cada {STATS_INTERVAL_S} s.")
+        log(f"Reprodução iniciada em h1, na CPU {', '.join(map(str, replay_cpus))}. O tcpreplay informa o progresso "
+            f"a cada {STATS_INTERVAL_S} s.")
         started = time.monotonic()
-        replay = sender.popen(replay_command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        # O taskset fixa o tcpreplay antes de ele começar, fora das CPUs dos processos do NIDS.
+        replay = sender.popen(["taskset", "-c", ",".join(map(str, replay_cpus)), *replay_command],
+                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         lines = []
         for line in replay.stdout:
             lines.append(line.rstrip("\n"))
@@ -140,12 +179,13 @@ def main() -> int:
         after = {"h1-eth0": counters(sender, "h1-eth0"), "h2-eth0": counters(receiver, "h2-eth0")}
         record["interface_counters"] = {name: {key: after[name][key] - before[name][key] for key in COUNTERS}
                                         for name in after}
-        log("Encerrando o NIDS.")
+        log("Encerrando o NIDS." + (" O NIDS espera a fila de explicações pendentes esvaziar."
+                                    if strategy == "assincrono" else ""))
         nids.send_signal(signal.SIGTERM)
         try:
-            nids.wait(timeout=NIDS_STOP_TIMEOUT_S)
+            nids.wait(timeout=nids_stop_timeout_s)
         except subprocess.TimeoutExpired:
-            log(f"O NIDS não encerrou em {NIDS_STOP_TIMEOUT_S} s e será encerrado à força.")
+            log(f"O NIDS não encerrou em {nids_stop_timeout_s} s e será encerrado à força.")
             nids.kill()
             nids.wait()
             record["nids_stop_timeout"] = True
@@ -174,17 +214,24 @@ def main() -> int:
             for report in (ROOT / "relatorios").glob(f"nids-execucao-interface-{run_dir.name}.md"):
                 os.chown(report, *owner)
             log(f"Registro gravado em {run_dir / 'replay.json'}.")
-    print(json.dumps({"run_dir": str(run_dir), "nids_exit_code": record.get("nids", {}).get("exit_code"),
-                      "tcpreplay": {key: record.get("tcpreplay", {}).get(key) for key in ("successful", "failed")}},
-                     ensure_ascii=False))
-    return 0 if record.get("nids", {}).get("exit_code") == 0 and not record.get("nids_stop_timeout") else 1
+    succeeded = record.get("nids", {}).get("exit_code") == 0 and not record.get("nids_stop_timeout")
+    return {"model": model, "strategy": strategy, "criterion": criterion, "run_dir": str(run_dir),
+            "nids_exit_code": record.get("nids", {}).get("exit_code"),
+            "tcpreplay": {key: record.get("tcpreplay", {}).get(key) for key in ("successful", "failed")},
+            "exit_code": 0 if succeeded else 1}
 
 
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--modelo", choices=("random-forest", "xgboost"), required=True)
+    parser.add_argument("--modelo", choices=("random-forest", "xgboost"), nargs="+", required=True)
     parser.add_argument("--trecho", required=True)
-    return parser.parse_args()
+    parser.add_argument("--estrategia", choices=STRATEGIES, nargs="+", default=["sem-xai"])
+    parser.add_argument("--criterio", choices=CRITERIA, nargs="+", default=[],
+                        help="Critérios do sincrono-condicional, com os limiares fixados na configuração do NIDS.")
+    arguments = parser.parse_args()
+    if ("sincrono-condicional" in arguments.estrategia) != bool(arguments.criterio):
+        parser.error("--criterio é obrigatório com sincrono-condicional e só se aplica a ele.")
+    return arguments
 
 
 def check_tcpreplay() -> dict[str, str]:

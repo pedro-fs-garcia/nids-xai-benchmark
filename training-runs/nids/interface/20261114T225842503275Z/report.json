@@ -1,0 +1,879 @@
+{
+  "stage": "nids run",
+  "run_id": "20261114T225842503275Z",
+  "passed": true,
+  "checks": {
+    "emitted_equals_received_plus_dropped": true,
+    "no_dropped_flow_in_file_mode": true,
+    "received_equals_classified_plus_errors": true,
+    "timestamps_ordered": true,
+    "no_packets_after_emission_in_file_mode": true,
+    "selection_follows_strategy": true,
+    "explanations_match_classifications": true,
+    "sum_identity": true,
+    "every_selected_flow_requested_or_dropped": true,
+    "no_explanation_without_accepted_request": true,
+    "explanation_marks_ordered": true,
+    "explained_output_matches_classification": true,
+    "contributions_cover_every_input": true,
+    "explanation_requests_accounted": true,
+    "explainer_received_every_accepted_request": true,
+    "explainer_ended_without_error": true,
+    "no_pending_after_normal_end": true,
+    "no_dropped_request_in_file_mode": true,
+    "explainer_uses_the_same_model": true,
+    "processes_on_configured_cpus": true
+  },
+  "model": "random-forest",
+  "source": {
+    "kind": "interface",
+    "iface": "h2-eth0"
+  },
+  "segment": {
+    "name": "dev",
+    "stop": "2017-07-04T11:58:44Z",
+    "stop_us": 1499169524000000,
+    "pcap": {
+      "file": "derived-data/pcap/tuesday/segment-dev.pcap",
+      "bytes": 4264023,
+      "sha256": "cb611dd573fca2f07d54d188e76644bf4742173e0921403e5e16ca984857e735"
+    },
+    "reference": {
+      "file": "derived-data/pcap/tuesday/reference-dev.csv",
+      "bytes": 604724,
+      "sha256": "79378935b65144d8138393fcf3121d7757d5f4c4c8897e883f1d0ede4cec70a3"
+    },
+    "border_seconds": 120,
+    "manifest": "derived-data/pcap/tuesday/manifest.json",
+    "manifest_sha256": "caabbefeb879428f05e778b0df32c4637518901159d9705c759a2dffdecbd3b0"
+  },
+  "config": "configs/nids.json",
+  "config_sha256": "43a195abfead0f9036b04c9f1606b9a6cea306ddf5aecee59fb79d0a3dfcb4cf",
+  "selection_calibration_run": "training-runs/nids/calibracao/20261114T204351398308Z",
+  "frozen_run": "training-runs/frozen-models/20261111T181031847482Z",
+  "model_manifest_sha256": "b18708731de1a1901969789a93479a6a4e4b228ea56aff24c65bf4bfd7c71805",
+  "classifier_threads": 1,
+  "extractor_options": {
+    "snaplen": 65535,
+    "read-timeout-ms": 100,
+    "idle-margin-us": 2000000,
+    "buffer-bytes": 268435456,
+    "flow-queue-limit": 10000
+  },
+  "extractor_build": {
+    "extractor_commit": "13a061520b862d605eea746c79ca4033b30d98fc",
+    "java": "openjdk version \"17.0.21.0.3\" 2026-10-24",
+    "release": 8,
+    "libpcap": "/usr/lib/x86_64-linux-gnu/libpcap.so.0.8",
+    "jars": {
+      "nids-extractor.jar": "75c7b3825a3f3a29827f3bc93ac4b80beed6e73f5f53e4e4d10f943e37a3f96e",
+      "reference-extractor.jar": "a934558afd72f16424a935c3b0ce2334b4733ae845a00b1988b6ee835f9f6338"
+    },
+    "patches": {
+      "01-flow-emission-sweep.patch": "06a76076bed3b391ca5f3d306fc2c4aecd915240296ef73d07b4bc60a8aa9ca1",
+      "02-live-capture.patch": "4fc3091fa0b1791b1de9b0d4d2ad369bf71fa3a939e0e20f882112fb21d3cc48"
+    },
+    "sources": {
+      "NidsExtractor.java": "62992d472cdb6cd31bcb898e3e46060737d024cf79b375f3898ea02b6859814c",
+      "ReferenceExtractor.java": "624309cb3acd7d933381308d23c0f87647a598ae8867608f4ecd49b663cfccec"
+    },
+    "libraries": {
+      "commons-lang3-3.6.jar": "89c27f03fff18d0b06e7afd7ef25e209766df95b6c1269d6c3ebbdea48d5f284",
+      "commons-math3-3.5.jar": "dcf9768726b82e8d7b8a928447b08bca7cfe2773d5120a63a41ec224207c1a29",
+      "jnetpcap.jar": "7dfff1e5abd453293415074dd09e10edbeb00cf37b8db9a07d44108e1a10c163",
+      "slf4j-api-1.7.25.jar": "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
+      "slf4j-nop-1.7.25.jar": "6cb127138f41b5a869f9ecdd061ad17799a0e3fe7204600797154eb0432eeb12",
+      "tika-core-1.17.jar": "77c0a63d7693dc968553f92ef061469979b04d458bb11996d7738c45c5f66b5c"
+    },
+    "native": {
+      "libjnetpcap-pcap100.so": "b758a46ef7ff3cf39b2956de4c08e19a5585cbb6aefd6ce4416566227211aec9",
+      "libjnetpcap.so": "93d8c8c53a63e448f82e778791a0a725d1345a4c80c9d7334f7c9f8067688a49"
+    }
+  },
+  "extractor_start": {
+    "extractor_commit": "13a061520b862d605eea746c79ca4033b30d98fc",
+    "flow_timeout_us": 120000000,
+    "activity_timeout_us": 5000000,
+    "source": "interface",
+    "location": "h2-eth0",
+    "snaplen": 65535,
+    "read_timeout_ms": 100,
+    "idle_sleep_ms": 1,
+    "capture_mode": "non_blocking",
+    "buffer_bytes": 268435456,
+    "ring_bytes": 268435456,
+    "flow_output": "queue",
+    "flow_queue_limit": 10000,
+    "idle_margin_us": 2000000,
+    "java_version": "17.0.21.0.3",
+    "monotonic_ns": 53375995693793
+  },
+  "extractor_end": {
+    "stop_reason": "stop_requested",
+    "packets_read": 18354,
+    "packets_valid": 15647,
+    "packets_discarded": 2707,
+    "idle_reads": 399246,
+    "packets_after_emission": 0,
+    "first_disordered_packet_id": -1,
+    "open_flows_before_flush": 0,
+    "flows_emitted": 1175,
+    "flows_by_cause": {
+      "timeout_sweep": 1174,
+      "tcp_new_connection": 1
+    },
+    "output_queue_max": 33,
+    "flows_dropped": 0,
+    "process": {
+      "cpu_ns": 20440000000,
+      "max_rss_kib": 458948,
+      "max_heap_bytes": 4294967296
+    },
+    "pcap_stats": {
+      "received": 18354,
+      "dropped": 0,
+      "interface_dropped": 0
+    },
+    "monotonic_ns": 53824883326785
+  },
+  "shared_clock_difference_ns": 434094,
+  "flows": {
+    "received": 1175,
+    "classified": 1170,
+    "errors": 5,
+    "by_cause": {
+      "timeout_sweep": 1174,
+      "tcp_new_connection": 1
+    },
+    "predictions": {
+      "0": 1170
+    },
+    "error_examples": [
+      {
+        "seq": 257,
+        "flow_id": "192.168.10.51-224.0.0.22-0-0-0",
+        "error": "Valor não finito em Flow Bytes/s."
+      },
+      {
+        "seq": 306,
+        "flow_id": "192.168.10.17-224.0.0.22-0-0-0",
+        "error": "Valor não finito em Flow Bytes/s."
+      },
+      {
+        "seq": 348,
+        "flow_id": "192.168.10.19-224.0.0.22-0-0-0",
+        "error": "Valor não finito em Flow Bytes/s."
+      },
+      {
+        "seq": 699,
+        "flow_id": "192.168.10.12-224.0.0.22-0-0-0",
+        "error": "Valor não finito em Flow Bytes/s."
+      },
+      {
+        "seq": 1121,
+        "flow_id": "192.168.10.16-128.100.100.128-123-123-17",
+        "error": "Valor não finito em Flow IAT Mean."
+      }
+    ]
+  },
+  "timings": {
+    "inference_ns": {
+      "count": 1170,
+      "mean": 6862742.782905983,
+      "median": 7428444.0,
+      "p95": 14116119.799999997,
+      "p99": 18180988.799999993,
+      "min": 2859845.0,
+      "max": 26373386.0
+    },
+    "classification_latency_ns": {
+      "count": 1170,
+      "mean": 80077941.62991454,
+      "median": 30500626.5,
+      "p95": 303454339.64999986,
+      "p99": 445108778.28999984,
+      "min": 3525662.0,
+      "max": 466203733.0
+    },
+    "wait_before_inference_ns": {
+      "count": 1170,
+      "mean": 73113168.46752137,
+      "median": 21820864.5,
+      "p95": 300109361.4999998,
+      "p99": 441984169.5899998,
+      "min": 468397.0,
+      "max": 463032756.0
+    },
+    "selection_ns": {
+      "count": 1170,
+      "mean": 1024.2393162393162,
+      "median": 915.0,
+      "p95": 2351.1,
+      "p99": 3066.9199999999983,
+      "min": 195.0,
+      "max": 10391.0
+    },
+    "delivery_ns": {
+      "count": 1170,
+      "mean": 66686.62991452991,
+      "median": 60034.0,
+      "p95": 139464.94999999998,
+      "p99": 190642.90999999997,
+      "min": 17167.0,
+      "max": 238484.0
+    },
+    "classified_per_second": 3.888302549914919,
+    "explanation_ns": {
+      "count": 1170,
+      "mean": 10168477.848717948,
+      "median": 6048876.0,
+      "p95": 21829321.999999996,
+      "p99": 28252638.63999997,
+      "min": 4667414.0,
+      "max": 37775982.0
+    },
+    "explanation_latency_ns": {
+      "count": 1170,
+      "mean": 124109579.2982906,
+      "median": 62867171.5,
+      "p95": 434799997.14999974,
+      "p99": 655884437.0099998,
+      "min": 8673785.0,
+      "max": 694024776.0
+    },
+    "queue_wait_ns": {
+      "count": 1170,
+      "mean": 33728020.34017094,
+      "median": 17576610.0,
+      "p95": 127934775.49999991,
+      "p99": 207558483.6099999,
+      "min": 183426.0,
+      "max": 226887626.0
+    }
+  },
+  "artifacts": {
+    "classifications.jsonl": {
+      "file": "training-runs/nids/interface/20261114T225842503275Z/classifications.jsonl",
+      "bytes": 343133,
+      "sha256": "8a382396b8917e3fa1122921b650e2384c1b7591c6164a0f6f83e1bde72708b3"
+    },
+    "flows.csv": {
+      "file": "training-runs/nids/interface/20261114T225842503275Z/flows.csv",
+      "bytes": 898166,
+      "sha256": "1ec1860e3889b60305bda2f6fdbf46c7b64f3822e74b26126b6ed6b0ba5a3c63"
+    },
+    "explanations.jsonl": {
+      "file": "training-runs/nids/interface/20261114T225842503275Z/explanations.jsonl",
+      "bytes": 2315036,
+      "sha256": "d2751d7573c90e9d3f1409c24bb0d6fa5e2be1b44fc840a6e5d7db77eb93525f"
+    },
+    "explanations.csv": {
+      "file": "training-runs/nids/interface/20261114T225842503275Z/explanations.csv",
+      "bytes": 76180,
+      "sha256": "c7465ff4177141fe424f1da3d2ad2c3799c5e52406246175c34790ad363e0a8e"
+    }
+  },
+  "cpu_state": {
+    "affinity": [
+      2
+    ],
+    "scaling_governor": {
+      "2": "powersave"
+    },
+    "mains_power_online": true
+  },
+  "environment": {
+    "python": "3.12.3",
+    "libraries": {
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "scipy": "1.18.1",
+      "joblib": "1.6.0",
+      "xgboost-cpu": "3.4.1",
+      "shap": "0.54.1",
+      "matplotlib": "3.11.2",
+      "threadpoolctl": "3.8.0",
+      "pandas": "3.1.1"
+    },
+    "platform": "Linux-7.0.0-43-generic-x86_64-desconhecido-with-glibc2.43",
+    "cpu": "13th Gen Intel(R) Core(TM) i5-1334U",
+    "logical_cpus": 12
+  },
+  "explanation_queue": {
+    "limit": 10000,
+    "drain_timeout_s": 300,
+    "full_queue_policy": "drop_incoming",
+    "requested": 1170,
+    "accepted": 1170,
+    "dropped": 0,
+    "completed": 1170,
+    "pending": 0,
+    "records_without_marks": 0,
+    "explainer_received": 1170,
+    "killed_after_drain_timeout": false,
+    "exit_code": 0,
+    "size": {
+      "max": 45,
+      "max_at_ns": 53757717954908,
+      "max_by_second": [
+        [
+          0,
+          1
+        ],
+        [
+          27,
+          1
+        ],
+        [
+          28,
+          2
+        ],
+        [
+          29,
+          2
+        ],
+        [
+          30,
+          4
+        ],
+        [
+          32,
+          1
+        ],
+        [
+          34,
+          1
+        ],
+        [
+          49,
+          1
+        ],
+        [
+          73,
+          1
+        ],
+        [
+          75,
+          1
+        ],
+        [
+          77,
+          4
+        ],
+        [
+          79,
+          2
+        ],
+        [
+          80,
+          12
+        ],
+        [
+          81,
+          2
+        ],
+        [
+          82,
+          2
+        ],
+        [
+          83,
+          1
+        ],
+        [
+          84,
+          2
+        ],
+        [
+          85,
+          3
+        ],
+        [
+          94,
+          1
+        ],
+        [
+          96,
+          1
+        ],
+        [
+          99,
+          1
+        ],
+        [
+          111,
+          1
+        ],
+        [
+          112,
+          1
+        ],
+        [
+          120,
+          1
+        ],
+        [
+          121,
+          1
+        ],
+        [
+          140,
+          1
+        ],
+        [
+          157,
+          25
+        ],
+        [
+          160,
+          1
+        ],
+        [
+          161,
+          4
+        ],
+        [
+          162,
+          1
+        ],
+        [
+          164,
+          1
+        ],
+        [
+          175,
+          1
+        ],
+        [
+          183,
+          1
+        ],
+        [
+          185,
+          1
+        ],
+        [
+          186,
+          1
+        ],
+        [
+          188,
+          1
+        ],
+        [
+          189,
+          1
+        ],
+        [
+          192,
+          1
+        ],
+        [
+          203,
+          1
+        ],
+        [
+          205,
+          2
+        ],
+        [
+          206,
+          1
+        ],
+        [
+          207,
+          3
+        ],
+        [
+          209,
+          1
+        ],
+        [
+          210,
+          2
+        ],
+        [
+          211,
+          2
+        ],
+        [
+          212,
+          2
+        ],
+        [
+          213,
+          1
+        ],
+        [
+          214,
+          3
+        ],
+        [
+          215,
+          1
+        ],
+        [
+          216,
+          3
+        ],
+        [
+          217,
+          18
+        ],
+        [
+          218,
+          10
+        ],
+        [
+          219,
+          17
+        ],
+        [
+          220,
+          14
+        ],
+        [
+          221,
+          1
+        ],
+        [
+          222,
+          1
+        ],
+        [
+          223,
+          1
+        ],
+        [
+          224,
+          1
+        ],
+        [
+          225,
+          1
+        ],
+        [
+          226,
+          1
+        ],
+        [
+          227,
+          1
+        ],
+        [
+          228,
+          1
+        ],
+        [
+          229,
+          1
+        ],
+        [
+          231,
+          1
+        ],
+        [
+          232,
+          1
+        ],
+        [
+          233,
+          1
+        ],
+        [
+          234,
+          1
+        ],
+        [
+          235,
+          1
+        ],
+        [
+          236,
+          1
+        ],
+        [
+          237,
+          1
+        ],
+        [
+          238,
+          1
+        ],
+        [
+          239,
+          2
+        ],
+        [
+          240,
+          3
+        ],
+        [
+          241,
+          1
+        ],
+        [
+          242,
+          1
+        ],
+        [
+          243,
+          1
+        ],
+        [
+          244,
+          1
+        ],
+        [
+          245,
+          11
+        ],
+        [
+          246,
+          17
+        ],
+        [
+          247,
+          1
+        ],
+        [
+          248,
+          6
+        ],
+        [
+          249,
+          45
+        ],
+        [
+          250,
+          2
+        ],
+        [
+          251,
+          2
+        ],
+        [
+          254,
+          1
+        ],
+        [
+          256,
+          1
+        ],
+        [
+          257,
+          1
+        ],
+        [
+          258,
+          1
+        ],
+        [
+          259,
+          3
+        ],
+        [
+          262,
+          2
+        ],
+        [
+          263,
+          2
+        ],
+        [
+          264,
+          4
+        ],
+        [
+          265,
+          8
+        ],
+        [
+          266,
+          1
+        ],
+        [
+          267,
+          12
+        ],
+        [
+          268,
+          2
+        ],
+        [
+          269,
+          3
+        ],
+        [
+          270,
+          2
+        ],
+        [
+          271,
+          2
+        ],
+        [
+          272,
+          4
+        ],
+        [
+          274,
+          1
+        ],
+        [
+          286,
+          1
+        ],
+        [
+          287,
+          3
+        ],
+        [
+          288,
+          1
+        ],
+        [
+          289,
+          1
+        ],
+        [
+          290,
+          1
+        ],
+        [
+          291,
+          1
+        ],
+        [
+          296,
+          1
+        ],
+        [
+          297,
+          1
+        ],
+        [
+          299,
+          1
+        ],
+        [
+          300,
+          1
+        ]
+      ]
+    },
+    "drain_after_last_request_ns": 20440074,
+    "drain_after_end_of_capture_ns": 0,
+    "wait_for_explainer_after_end_of_capture_ns": 349470865
+  },
+  "strategy": "Assíncrono",
+  "strategy_key": "assincrono",
+  "selection": null,
+  "tree_shap_config": "configs/tree-shap.json",
+  "tree_shap_config_sha256": "4578aea08402859e3054a6848947c80311d65860a74aa52579e5dcb8fc45ee52",
+  "explainer": {
+    "feature_perturbation": "tree_path_dependent",
+    "model_output": "raw",
+    "approximate": false,
+    "check_additivity": false
+  },
+  "warmup": {
+    "explainer_construction_ns": 7806125,
+    "explanation_ns": 10107150,
+    "inference_ns": 4513545,
+    "explainer_process": {
+      "model_sha256": "b18708731de1a1901969789a93479a6a4e4b228ea56aff24c65bf4bfd7c71805",
+      "load_ns": 40193937,
+      "explainer_construction_ns": 7806125,
+      "explanation_ns": 10107150,
+      "pid": 2153899
+    }
+  },
+  "explanations": {
+    "eligible": 1170,
+    "selected": 1170,
+    "completed": 1170,
+    "selected_share": 1.0,
+    "completed_share": 1.0,
+    "scale": "probability",
+    "sum_identity": {
+      "residual": 4.466912950640278e-16,
+      "tolerance": 1e-09
+    },
+    "explained_output_vs_probability": {
+      "max_difference": 0.0,
+      "tolerance": 1e-12
+    }
+  },
+  "shared_clock_difference_explainer_ns": 577935,
+  "resources": {
+    "classifier_process": {
+      "user_seconds": 12.897762,
+      "system_seconds": 0.23804999999999998,
+      "max_rss_kib": 215700,
+      "threads": 24,
+      "thread_affinities": [
+        [
+          2
+        ]
+      ]
+    },
+    "explainer_process": {
+      "user_seconds": 13.03598,
+      "system_seconds": 0.17210499999999998,
+      "max_rss_kib": 205932,
+      "threads": 2,
+      "thread_affinities": [
+        [
+          0
+        ]
+      ]
+    },
+    "extractor_process": {
+      "cpu_ns": 20440000000,
+      "max_rss_kib": 458948,
+      "max_heap_bytes": 4294967296
+    },
+    "children_total": {
+      "user_seconds": 27.349497,
+      "system_seconds": 6.693652,
+      "max_rss_kib": 458988
+    },
+    "memory_available_kib_at_start": 9265100,
+    "cpus": {
+      "configured": {
+        "classifier": [
+          2
+        ],
+        "explainer": [
+          0
+        ],
+        "extractor": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "replay": [
+          8
+        ]
+      },
+      "classifier": [
+        [
+          2
+        ]
+      ],
+      "explainer": [
+        [
+          0
+        ]
+      ],
+      "extractor": [
+        4,
+        5,
+        6,
+        7
+      ]
+    }
+  }
+}

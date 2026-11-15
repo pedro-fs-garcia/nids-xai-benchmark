@@ -84,6 +84,25 @@ def test_output_queue_holds_the_flows_a_slow_reader_has_not_taken(tmp_path):
     assert queued.end["output_queue_max"] >= 200 and queued.start["flow_output"] == "queue"
 
 
+def test_a_full_output_queue_drops_the_flow_that_arrives_and_counts_it(tmp_path):
+    packets = []
+    for index in range(400):
+        packets += [udp(START + index * 1000, A, B, 20000 + index, 53, payload=30),
+                    udp(START + index * 1000 + 300, B, A, 53, 20000 + index, payload=60)]
+    packets.sort(key=lambda packet: packet.timestamp_us)
+    pcap = write_pcap(tmp_path / "burst.pcap", packets)
+    process = NidsExtractorProcess(ExtractorBuild(BUILD), {"pcap": str(pcap)},
+                                   {"flow-output": "queue", "flow-queue-limit": 20}, cpus=[0], max_heap_mib=512)
+    # Sem leitor, o pipe enche, a fila chega ao limite, e os fluxos seguintes são descartados.
+    time.sleep(3)
+    sequences = [flow.seq for event, flow in process.events() if event == "flow"]
+    end = process.end
+    assert process.start["flow_queue_limit"] == 20 and end["output_queue_max"] <= 20
+    assert end["flows_dropped"] > 0 and end["flows_emitted"] == 400 == len(sequences) + end["flows_dropped"]
+    assert sequences == sorted(set(sequences)) and end["process"]["max_heap_bytes"] <= 512 * 2**20
+    assert end["process"]["cpu_ns"] > 0 and end["process"]["max_rss_kib"] > 0
+
+
 def test_pcap_summary_keeps_the_microseconds_of_each_timestamp(tmp_path):
     path = write_pcap(tmp_path / "fraction.pcap", [udp(START + 364_079, A, B, 53, 53), udp(START + 999_999, B, A, 53, 53)])
     summary = PcapTools().summarize(path)

@@ -31,7 +31,8 @@ import java.util.concurrent.LinkedBlockingQueue;
  *
  * Na captura ao vivo, as linhas dos fluxos passam pela fila de saída: a thread que lê os pacotes só as
  * enfileira, e outra thread as escreve. Uma escrita que espera o leitor da saída padrão não interrompe a
- * leitura dos pacotes. Na leitura de arquivo, a mesma thread lê os pacotes e escreve as linhas.
+ * leitura dos pacotes. A fila tem limite, e um fluxo emitido com a fila cheia é descartado e contado. Na
+ * leitura de arquivo, a mesma thread lê os pacotes e escreve as linhas.
  */
 public final class NidsExtractor {
     static final String EXTRACTOR_COMMIT = "13a061520b862d605eea746c79ca4033b30d98fc";
@@ -49,6 +50,8 @@ public final class NidsExtractor {
     private LinkedBlockingQueue<String> outputQueue;
     private Thread writer;
     private int outputQueueMax;
+    // Fluxos descartados porque a fila de saída estava cheia. Os descartados são as sequências que não saem.
+    private long flowsDropped;
     private long sequence;
     private long captureClock;
     private FlowGenerator generator;
@@ -70,6 +73,11 @@ public final class NidsExtractor {
         String flowOutput = options.getOrDefault("--flow-output", live ? "queue" : "direct");
         if (!flowOutput.equals("queue") && !flowOutput.equals("direct")) {
             throw new IllegalArgumentException("--flow-output aceita queue ou direct.");
+        }
+        // Limite da fila de saída, em fluxos. Com a fila cheia, o fluxo emitido é descartado e contado.
+        int flowQueueLimit = Integer.parseInt(options.getOrDefault("--flow-queue-limit", String.valueOf(Integer.MAX_VALUE)));
+        if (flowQueueLimit < 1) {
+            throw new IllegalArgumentException("--flow-queue-limit deve ser positivo.");
         }
         String source = live ? options.get("--iface") : options.get("--pcap");
         PacketReader reader = live
@@ -95,10 +103,11 @@ public final class NidsExtractor {
                 + ",\"buffer_bytes\":" + (live ? String.valueOf(bufferBytes) : "null")
                 + ",\"ring_bytes\":" + (live ? captureRingBytes() : "null")
                 + ",\"flow_output\":" + quote(flowOutput)
+                + ",\"flow_queue_limit\":" + (flowOutput.equals("queue") ? String.valueOf(flowQueueLimit) : "null")
                 + ",\"idle_margin_us\":" + idleMarginMicros + ",\"java_version\":" + quote(System.getProperty("java.version"))
                 + ",\"monotonic_ns\":" + System.nanoTime() + ",\"header\":" + header + "}");
         if (flowOutput.equals("queue")) {
-            startWriter();
+            startWriter(flowQueueLimit);
         }
 
         long total = 0L;
@@ -161,6 +170,7 @@ public final class NidsExtractor {
                 + ",\"first_disordered_packet_id\":" + firstDisordered + ",\"open_flows_before_flush\":" + openBeforeFlush
                 + ",\"flows_emitted\":" + sequence + ",\"flows_by_cause\":" + causes
                 + ",\"output_queue_max\":" + (outputQueue == null ? "null" : String.valueOf(outputQueueMax))
+                + ",\"flows_dropped\":" + flowsDropped + ",\"process\":" + processUsage()
                 + ",\"pcap_stats\":" + (stats == null ? "null"
                         : "{\"received\":" + stats[0] + ",\"dropped\":" + stats[1] + ",\"interface_dropped\":" + stats[2] + "}")
                 + ",\"monotonic_ns\":" + System.nanoTime() + "}");
@@ -180,12 +190,15 @@ public final class NidsExtractor {
             write(line);
             return;
         }
-        outputQueue.add(line);
+        if (!outputQueue.offer(line)) {
+            flowsDropped++;
+            return;
+        }
         outputQueueMax = Math.max(outputQueueMax, outputQueue.size());
     }
 
-    private void startWriter() {
-        outputQueue = new LinkedBlockingQueue<>();
+    private void startWriter(int limit) {
+        outputQueue = new LinkedBlockingQueue<>(limit);
         writer = new Thread(() -> {
             try {
                 for (String line = outputQueue.take(); line != END_OF_OUTPUT; line = outputQueue.take()) {
@@ -211,8 +224,9 @@ public final class NidsExtractor {
         if (writer == null) {
             return;
         }
-        outputQueue.add(END_OF_OUTPUT);
         try {
+            // A marca de fim espera vaga na fila: os fluxos já aceitos são todos escritos antes dela.
+            outputQueue.put(END_OF_OUTPUT);
             writer.join();
         } catch (InterruptedException interrupted) {
             throw new IllegalStateException("A espera pela escrita dos fluxos foi interrompida.", interrupted);
@@ -220,6 +234,27 @@ public final class NidsExtractor {
         if (writerFailure != null) {
             throw writerFailure;
         }
+    }
+
+    /** Tempo de CPU e pico de memória residente do processo do extrator, lidos no fim da execução. */
+    private static String processUsage() {
+        String cpu = "null";
+        java.lang.management.OperatingSystemMXBean system = java.lang.management.ManagementFactory.getOperatingSystemMXBean();
+        if (system instanceof com.sun.management.OperatingSystemMXBean) {
+            cpu = String.valueOf(((com.sun.management.OperatingSystemMXBean) system).getProcessCpuTime());
+        }
+        String peak = "null";
+        try {
+            for (String line : Files.readAllLines(Paths.get("/proc/self/status"), StandardCharsets.UTF_8)) {
+                if (line.startsWith("VmHWM:")) {
+                    peak = line.replaceAll("[^0-9]", "");
+                }
+            }
+        } catch (IOException | RuntimeException unavailable) {
+            peak = "null";
+        }
+        return "{\"cpu_ns\":" + cpu + ",\"max_rss_kib\":" + peak + ",\"max_heap_bytes\":"
+                + Runtime.getRuntime().maxMemory() + "}";
     }
 
     /** Tamanho do buffer de captura que o kernel mapeou no processo, ou "null" se ele não aparece em /proc. */
@@ -297,7 +332,8 @@ public final class NidsExtractor {
         }
         if (args.length % 2 != 0 || options.containsKey("--pcap") == options.containsKey("--iface")) {
             System.err.println("uso: NidsExtractor (--pcap ARQUIVO | --iface INTERFACE) [--snaplen N] "
-                    + "[--read-timeout-ms N] [--idle-margin-us N] [--buffer-bytes N] [--flow-output queue|direct]");
+                    + "[--read-timeout-ms N] [--idle-margin-us N] [--buffer-bytes N] [--flow-output queue|direct] "
+                    + "[--flow-queue-limit N]");
             System.exit(2);
         }
         return options;

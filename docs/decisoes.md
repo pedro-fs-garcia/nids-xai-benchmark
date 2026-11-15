@@ -306,12 +306,12 @@ Por isso, o valor de referência não é a saída média sobre o treino em nenhu
 ### Decisão
 
 - O extrator e o classificador rodam em dois processos ligados por um pipe, uma linha por fluxo emitido.
-- Na captura ao vivo, o extrator guarda a linha de cada fluxo emitido na fila de saída, uma fila em memória e sem limite, e uma thread própria escreve as linhas no pipe. A thread que lê os pacotes não espera o classificador. Na leitura de arquivo, a mesma thread lê os pacotes e escreve as linhas.
+- Na captura ao vivo, o extrator guarda a linha de cada fluxo emitido na fila de saída, uma fila em memória com o limite da [decisão 13](#13-limites-das-filas-e-política-de-descarte), e uma thread própria escreve as linhas no pipe. A thread que lê os pacotes não espera o classificador. Na leitura de arquivo, a mesma thread lê os pacotes e escreve as linhas.
 - `t0` é lido no extrator Java, logo depois do cálculo dos atributos do fluxo emitido (`dumpFlowBasedFeaturesEx`) e antes de a linha entrar na fila de saída ou ser escrita no pipe.
 - `t1` e `t2` são lidos imediatamente antes e depois da chamada `predict_proba` de um fluxo. O intervalo inclui só a chamada ao classificador.
 - `t3` é o retorno da escrita do registro de classificação no canal de saída do NIDS, depois da passagem do registro ao sistema operacional, sem `fsync`. O canal de saída é o arquivo `classifications.jsonl` da execução, com uma linha por fluxo.
 - Os quatro instantes vêm do relógio monotônico do Linux (`CLOCK_MONOTONIC`): `System.nanoTime()` no Java e `time.monotonic_ns()` no Python. Cada execução confere essa base comum. A diferença entre a leitura do extrator na abertura e a leitura do classificador ao recebê-la deve ficar entre 0 e 1 s, ou a execução falha.
-- O classificador usa uma thread, como na medição isolada do TreeSHAP. Esse valor é provisório até a definição do orçamento de CPU dos quatro cenários.
+- O classificador usa uma thread, como na medição isolada do TreeSHAP. As CPUs de cada processo estão na [decisão 14](#14-orçamento-de-cpu-e-de-memória).
 
 ### Justificativa
 
@@ -320,7 +320,7 @@ Por isso, o valor de referência não é a saída média sobre o treino em nenhu
 - Entre `t0` e `t1` ficam a espera na fila de saída, a passagem pelo pipe e a montagem do vetor de entradas. Essa espera faz parte da latência de classificação.
 - Quando a thread que lê os pacotes também escreve os fluxos, um pipe cheio interrompe a leitura, e o buffer de captura transborda. O pipe comporta cerca de 90 fluxos. No trecho `validacao`, a varredura emite mais de 200 fluxos em alguns segundos, e o Random Forest leva de 8 a 14 ms por fluxo, na média de cada ensaio. Num ensaio desse trecho com a escrita direta e o Random Forest, o libpcap descartou 413.628 dos 3.954.069 pacotes.
 - Na leitura de arquivo não há captura a perder. A escrita direta limita a memória do extrator, que lê o arquivo mais rápido do que o classificador consome os fluxos.
-- A fila de saída não tem limite porque os limites das filas e a política de descarte seguem entre as decisões em aberto do [protocolo](../relatorios/protocolo-experimental.md). Cada execução registra o maior tamanho que a fila atingiu.
+- Cada execução registra o maior tamanho que a fila de saída atingiu.
 
 ## 10. Tráfego de entrada e emulação da rede
 
@@ -343,3 +343,94 @@ Por isso, o valor de referência não é a saída média sobre o treino em nenhu
 - O caminho de leitura da captura ao vivo do extrator original (`TrafficFlowWorker`) difere do que gerou os CSVs e não trata ICMP.
 - As descargas de processamento juntariam segmentos TCP em quadros maiores antes da captura, e os atributos de tamanho deixariam de corresponder aos do PCAP. O IPv6 desativado impede que os hosts emitam pacotes próprios durante a captura.
 - O PCAP tem quadros maiores que 1.500 bytes, de até 24.874 bytes no trecho `validacao`, e a MTU precisa comportá-los para que o enlace os entregue inteiros. As versões 4.5.2 e 4.5.3 do `tcpreplay` não enviam os quadros acima de 4.064 bytes quando a MTU passa de uma página de memória. A versão 4.6.0 corrige esse defeito, e o Ubuntu 26.04 distribui a 4.5.2.
+
+## 11. Estratégias de explicação no NIDS
+
+### Decisão
+
+- As quatro estratégias compartilham o caminho de classificação até `t2`. Depois de `t2`, o NIDS decide se o fluxo é selecionado para explicação. Conforme a estratégia, ele gera a explicação antes de entregar a classificação ou encaminha a solicitação de explicação ao processo explicador.
+- O canal de saída das explicações é o arquivo `explanations.jsonl` da execução, com um registro por fluxo explicado. O registro tem o número de sequência e o `Flow ID` do fluxo, o valor de referência e as 80 contribuições, na ordem das entradas do manifesto do modelo congelado. O registro de classificação tem o mesmo formato nas quatro estratégias.
+- Cada fluxo classificado registra o início e o fim da seleção. Cada fluxo explicado registra o início e o fim da chamada ao explicador, que delimitam o tempo de explicação, e `t4`.
+- Nas estratégias síncronas, o NIDS escreve o registro da explicação e, em seguida, o da classificação. Uma única leitura do relógio, depois das duas escritas, vale por `t3` e `t4`.
+- No modo assíncrono, a solicitação de explicação entra na fila de explicações pendentes depois de `t3`. O processo explicador retira a solicitação, gera a explicação, escreve o registro e lê `t4`. Ele também registra o instante da retirada.
+- O classificador inicia o processo explicador antes de a captura abrir. O processo explicador carrega a própria cópia verificada do modelo congelado e constrói o próprio explicador. A diferença entre a leitura do relógio monotônico que ele envia quando fica pronto e a leitura do classificador ao recebê-la deve ficar entre 0 e 1 s, como na decisão 9.
+- Antes de a captura abrir, o NIDS constrói o explicador e faz uma chamada de aquecimento da inferência e outra da explicação, com um vetor de zeros que não vem de nenhum conjunto de dados. Esses tempos ficam registrados à parte.
+
+### Justificativa
+
+- Com o mesmo caminho até `t2`, a diferença de latência entre as estratégias vem só do que cada uma faz depois da classificação. Na leitura de arquivo, o registro de classificação sai idêntico nas quatro estratégias, o que confirma que a explicação não altera a classificação.
+- O protocolo define que, nas estratégias síncronas, a classificação e a explicação de um fluxo explicado ficam disponíveis juntas. A leitura única do relógio depois das duas escritas faz `t3` e `t4` coincidirem.
+- Um processo separado não divide com o classificador o interpretador Python nem a CPU ([decisão 14](#14-orçamento-de-cpu-e-de-memória)). Uma thread no mesmo processo disputaria com a classificação o bloqueio global do interpretador.
+- A construção do explicador ocorre uma vez por execução e não pertence à latência de nenhum fluxo. A primeira chamada de cada operação é mais lenta que as seguintes. Na medição isolada do TreeSHAP, a chamada de aquecimento da inferência do XGBoost levou 0,559 ms, contra a mediana de 0,167 ms das chamadas seguintes ([medição](../relatorios/treeshap-medicao-20261112T113136395550Z.md)).
+
+### Consequências
+
+- As marcações das explicações ficam em `explanations.csv`, separadas dos registros do canal de saída das explicações. Cada execução confere que cada registro de explicação corresponde a um fluxo classificado e que o valor de referência somado às contribuições reproduz a saída explicada do fluxo, nas tolerâncias de [configs/tree-shap.json](../configs/tree-shap.json).
+- No modo assíncrono, a fila de explicações pendentes usa uma thread do próprio classificador para enviar as solicitações ao processo explicador. Esse envio ocorre depois de `t3` e atrasa o fluxo seguinte, que registra o atraso entre `t0` e `t1`.
+
+## 12. Critérios de seleção do Síncrono condicional
+
+### Decisão
+
+- O Síncrono condicional tem dois critérios de seleção, aplicados à probabilidade de ataque que o classificador já calculou para o fluxo.
+  - Pelo critério de probabilidade, o fluxo é selecionado quando a probabilidade de ataque é maior ou igual ao limiar.
+  - Pelo critério de incerteza, o fluxo é selecionado quando a distância entre a probabilidade de ataque e 0,5 é menor ou igual ao limiar.
+- Cada critério tem um limiar por classificador, fixado com a tabela de calibração do conjunto de validação. O comando `calibrar-selecao` produz essa tabela. Para cada limiar de uma grade, ela mostra quantos registros da validação o critério seleciona, no total, entre os ataques, entre os benignos e entre os erros de classificação.
+- O limiar do critério de probabilidade é 0,5, e o do critério de incerteza é 0,4, nos dois classificadores. O critério de incerteza seleciona, então, os fluxos com probabilidade de ataque entre 0,1 e 0,9.
+- Os limiares ficam em [configs/nids.json](../configs/nids.json), com a execução de calibração que os sustenta.
+- O conjunto de teste não participa da calibração.
+
+### Justificativa
+
+- A proposta do trabalho prevê a seleção por limiares de probabilidade e de incerteza.
+- Os dois critérios selecionam fluxos diferentes. Na validação, o critério de probabilidade seleciona de 23,9% a 24,1% dos 315.000 registros com limiares de 0,1 a 0,9, nos dois classificadores, e quase todos os registros selecionados são ataques. O critério de incerteza com limiar 0,4 seleciona 0,21% dos registros no Random Forest e 0,04% no XGBoost. Esses registros contêm 187 dos 204 erros de classificação do Random Forest e 15 dos 32 do XGBoost ([calibração](../relatorios/selecao-condicional-20261114T204351398308Z.md)).
+- O limiar 0,5 coincide com o limiar de classificação. O critério de probabilidade explica os fluxos classificados como ataque e os de probabilidade igual a 0,5, que são classificados como benignos. Na validação, nenhum registro tem probabilidade igual a 0,5, e o critério seleciona exatamente os 75.628 registros que o Random Forest classifica como ataque e os 75.804 que o XGBoost classifica como ataque.
+- Acima de 0,4, a seleção por incerteza cresce depressa no Random Forest. Com o limiar 0,45, ela passaria a 0,31% dos registros, e com 0,49, a 4,33%.
+- A seleção usa a probabilidade já calculada e não chama o classificador de novo. Cada execução registra o tempo da seleção.
+- A [decisão 4](#4-separação-entre-treino-validação-e-teste) reserva a validação para calibrar o critério de seleção.
+
+## 13. Limites das filas e política de descarte
+
+### Decisão
+
+- A fila de saída do extrator comporta 10.000 fluxos. Um fluxo emitido com a fila cheia é descartado e contado. Os fluxos descartados são os números de sequência que não chegam ao classificador.
+- A fila de explicações pendentes comporta 10.000 solicitações de explicação. Uma solicitação que encontra a fila cheia é descartada e contada. A classificação desse fluxo já foi entregue, e a explicação não é gerada.
+- Na leitura de arquivo, o extrator escreve os fluxos diretamente no pipe ([decisão 9](#9-marcações-de-tempo-e-relógio-do-nids)), e a solicitação de explicação espera vaga na fila em vez de ser descartada.
+- Depois do último fluxo, o classificador envia ao processo explicador a marca de fim, e o processo explicador esvazia a fila. O tempo máximo de esvaziamento é de 300 s. Passado esse tempo, o processo explicador é encerrado, e as solicitações que restaram ficam pendentes.
+- Os dois limites e o tempo máximo de esvaziamento ficam em [configs/nids.json](../configs/nids.json). O piloto confirma ou ajusta esses valores.
+
+### Justificativa
+
+- Uma fila sem limite cresce enquanto o consumidor for mais lento que a chegada, até esgotar a memória. Com o limite, a falta de capacidade aparece como descarte contado, e a proporção de descartes é um dos critérios de viabilidade do [protocolo](protocolo-experimental.md) (seção 8).
+- Descartar o item que chega mantém a fila na ordem de chegada e não altera as solicitações já aceitas.
+- No modo assíncrono, a classificação não espera a explicação. O descarte da solicitação mantém essa propriedade quando a fila está cheia.
+- Na leitura de arquivo não há captura a perder. A espera por vaga completa a execução e permite comparar as explicações das estratégias fluxo a fluxo.
+- Na medição isolada, o Random Forest gera uma explicação em 7,4 ms, em média. A fila de explicações cheia leva cerca de 74 s para esvaziar, dentro do tempo máximo de 300 s. Uma linha da fila de saída do extrator tem cerca de 1 kB, e a fila cheia ocupa cerca de 10 MB do heap do extrator. Nos ensaios a 1× do trecho `validacao`, a fila de saída do extrator chegou a 392 fluxos.
+
+### Consequências
+
+- Cada execução registra os fluxos descartados na fila de saída do extrator e as solicitações de explicação feitas, aceitas, descartadas, concluídas e pendentes. Ela confere que os fluxos emitidos somam os recebidos e os descartados e que o processo explicador retirou da fila todas as solicitações aceitas.
+- O tamanho da fila de explicações pendentes ao longo da execução é reconstruído dos instantes de solicitação e de retirada, sem medição no caminho da classificação.
+
+## 14. Orçamento de CPU e de memória
+
+### Decisão
+
+- O classificador roda na CPU lógica 2, o processo explicador na 0, o extrator nas CPUs 4 a 7 e o `tcpreplay` na 8. As CPUs 1 e 3 ficam sem processo do experimento.
+- Todas as threads de cada processo ficam fixas nas suas CPUs. O classificador fixa as próprias threads no início da execução. O extrator e o `tcpreplay` são fixados antes de começar, e o processo explicador fixa as próprias threads ao iniciar. Cada execução registra as CPUs observadas de cada processo e confere que elas são as configuradas.
+- O classificador e o processo explicador usam uma thread cada, com `n_jobs=1` e `threadpool_limits(1)`.
+- O heap máximo do extrator é de 4.096 MiB.
+- Cada execução registra o tempo de CPU e o pico de memória residente do classificador, do processo explicador e do extrator, em separado, e a memória disponível na máquina no início.
+
+### Justificativa
+
+- O processador da máquina, um Intel Core i5-1334U, tem dois núcleos de desempenho, nas CPUs lógicas 0 a 3, e oito núcleos de eficiência, nas CPUs 4 a 11 (`/sys/devices/cpu_core/cpus` e `/sys/devices/cpu_atom/cpus`). As CPUs 0 e 1 pertencem ao mesmo núcleo físico, assim como as CPUs 2 e 3.
+- O classificador e o processo explicador ficam em núcleos de desempenho diferentes, com as CPUs irmãs vazias. Assim, o processo explicador não toma CPU do classificador, e nenhum dos dois divide um núcleo físico. A medição isolada do TreeSHAP também usou a CPU 2.
+- O extrator usa pouca CPU na captura em velocidade original. No ensaio do trecho `validacao` com o Random Forest, ele usou 231 s de CPU em 2.188 s de reprodução. Quatro núcleos de eficiência comportam o extrator e as threads da JVM.
+- O `tcpreplay` fica fora das CPUs do NIDS para que o envio dos pacotes não dispute CPU com a captura e a classificação.
+- Sem limite explícito, a JVM 17 reserva para o heap até 25% da memória física, 3.792 MiB nesta máquina. O limite fixo torna o extrator independente da memória da máquina. Nos ensaios do trecho `validacao`, o pico de memória residente do extrator foi de 2.119 MiB.
+
+### Consequências
+
+- O modo assíncrono usa um núcleo de desempenho a mais que as outras estratégias. A comparação entre as estratégias registra a CPU usada por cada processo.
+- Os núcleos de eficiência são mais lentos que os de desempenho. Um atraso do extrator aparece nos descartes do libpcap, que cada execução registra.

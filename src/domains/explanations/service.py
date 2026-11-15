@@ -10,7 +10,7 @@ import numpy as np
 from threadpoolctl import threadpool_info, threadpool_limits
 
 from core.process_runner import PythonProcessRunner
-from core.tree_explainer import TreeShapExplainer
+from core.tree_explainer import TreeShapExplainer, explained_output
 from core.tree_structure import features_without_split, xgboost_reference_value
 from domains.explanations import reporting
 from domains.explanations.exceptions import ExplanationError
@@ -174,11 +174,10 @@ class ExplanationService:
         if len(references) != 1:
             raise ExplanationError(f"O valor de referência de {name} variou entre chamadas.")
         reference = references.pop()
+        output = explained_output(estimator, inputs)
         if name == "random-forest":
-            output = estimator.predict_proba(inputs)[:, 1]
             scale, output_call = "probability", "predict_proba(X)[:, 1]"
         else:
-            output = estimator.predict(inputs, output_margin=True).astype(np.float64)
             scale, output_call = "log-odds", "predict(X, output_margin=True)"
         unused = features_without_split(estimator)
         order = estimator.n_features_in_ == features and contributions.shape[1] == features
