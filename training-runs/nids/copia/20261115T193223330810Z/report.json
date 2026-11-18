@@ -1,0 +1,70 @@
+{
+  "stage": "copy check",
+  "run_id": "20261115T193223330810Z",
+  "passed": true,
+  "checks": {
+    "every_flow_in_one_copy": true,
+    "same_flows": true,
+    "same_inputs": true,
+    "same_predictions": true
+  },
+  "model": "xgboost",
+  "segment": "campanha",
+  "copy": 16,
+  "original_run": "training-runs/nids/arquivo/20261115T193003910074Z",
+  "copy_run": "training-runs/nids/arquivo/20261115T193553979282Z",
+  "copy_pcap": {
+    "file": "training-runs/nids/copia/20261115T193223330810Z/segment-campanha-copia-16.pcap",
+    "bytes": 4630692199,
+    "sha256": "ea2cb38ec2115e33a0f2c03cff03f636ff8bda6f6c3f9867bf980b23297656a4"
+  },
+  "rewrite": {
+    "tool": {
+      "version": "4.6.2",
+      "file": "tcpreplay/build/tcprewrite",
+      "sha256": "2d552dff4b36acc1f4603f7900824ca204fe509f5f843c081f389cfe1f7c2a60"
+    },
+    "command": [
+      "/home/pedro/projects/explicabilidade-ia/tcpreplay/build/tcprewrite",
+      "--pnat=<pares da cópia>",
+      "--infile=/home/pedro/projects/explicabilidade-ia/derived-data/pcap/tuesday-campanha/segment-campanha.pcap",
+      "--outfile=/home/pedro/projects/explicabilidade-ia/training-runs/nids/copia/20261115T193223330810Z/segment-campanha-copia-16.pcap"
+    ],
+    "pnat_pairs": 1661,
+    "pnat_sha256": "c7c4760e7828634b2d28e52c39919fc36891089b91bd1df7264c1bf47ca3fd31",
+    "output": []
+  },
+  "flows": {
+    "original": 24413,
+    "copy": 24413,
+    "mapped": 24403,
+    "without_copy": 10,
+    "matched": 24413,
+    "only_original": 0,
+    "only_copy": 0,
+    "exact_values": 24413,
+    "differing_predictions": 0
+  },
+  "attribute_mismatches": {},
+  "addresses": {
+    "count": 1661,
+    "first_copy_address": "100.64.224.0"
+  },
+  "environment": {
+    "python": "3.12.3",
+    "libraries": {
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "scipy": "1.18.1",
+      "joblib": "1.6.0",
+      "xgboost-cpu": "3.4.1",
+      "shap": "0.54.1",
+      "matplotlib": "3.11.2",
+      "threadpoolctl": "3.8.0",
+      "pandas": "3.1.1"
+    },
+    "platform": "Linux-7.0.0-43-generic-x86_64-desconhecido-with-glibc2.43",
+    "cpu": "13th Gen Intel(R) Core(TM) i5-1334U",
+    "logical_cpus": 12
+  }
+}

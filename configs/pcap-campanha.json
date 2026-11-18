@@ -1,0 +1,12 @@
+{
+  "base_manifest": "derived-data/pcap/tuesday/manifest.json",
+  "base_segment": "validacao",
+  "flows_csv": "cicids-dataset/tuesday.csv",
+  "output_dir": "derived-data/pcap/tuesday-campanha",
+  "segment": {
+    "name": "campanha",
+    "start": "2017-07-04T12:10:00Z",
+    "stop": "2017-07-04T12:30:00Z"
+  },
+  "border_seconds": 120
+}

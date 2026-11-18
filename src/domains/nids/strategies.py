@@ -87,7 +87,7 @@ def explanation_checks(strategy: Strategy, flows: list[dict[str, Any]], explanat
         "selection_follows_strategy": all(bool(flow["selected"]) == bool(strategy.select(flow["attack_probability"]))
                                           for flow in classified.values()),
         "explanations_match_classifications": len(explanations) == len(by_seq) == len(known) and all(
-            item["flow_id"] == classified[item["seq"]]["values"]["Flow ID"] for item in known),
+            item["flow_id"] == classified[item["seq"]]["flow_id"] for item in known),
         "sum_identity": residual is None or residual <= tolerance,
     }
     if strategy.synchronous or not strategy.explains:

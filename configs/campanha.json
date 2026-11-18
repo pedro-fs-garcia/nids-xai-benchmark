@@ -1,0 +1,19 @@
+{
+  "name": "campanha",
+  "segment": "campanha",
+  "seed": 20261118,
+  "machine": {
+    "require_mains": true,
+    "max_busy_share": 0.25,
+    "min_available_mib": 3072,
+    "window_s": 10,
+    "max_wait_s": 600
+  },
+  "max_attempts": 2,
+  "blocks": [
+    {"label": "campanha", "models": ["random-forest", "xgboost"],
+     "configurations": ["sem-xai", "sincrono-total", "sincrono-condicional-probabilidade",
+                        "sincrono-condicional-incerteza", "assincrono"],
+     "loads": [1, 2, 4], "repetitions": 3}
+  ]
+}

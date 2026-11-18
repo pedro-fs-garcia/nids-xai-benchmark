@@ -1,0 +1,2949 @@
+{
+  "stage": "matrix analysis",
+  "run_id": "20261118T101010406495Z",
+  "matrix": "piloto-2",
+  "matrix_config": "configs/piloto-2.json",
+  "segment": "campanha",
+  "cells": 16,
+  "done": 16,
+  "exhausted": [],
+  "pending": [],
+  "registry": "training-runs/matrizes/piloto-2/registro.jsonl",
+  "attempts": 16,
+  "trials": [
+    {
+      "cell": {
+        "block": "carga-maxima",
+        "model": "xgboost",
+        "configuration": "sincrono-condicional-probabilidade",
+        "load": 4,
+        "repetition": 1,
+        "id": "carga-maxima/xgboost/sincrono-condicional-probabilidade/carga-4/rep-1",
+        "strategy": "sincrono-condicional",
+        "criterion": "probabilidade"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "run_dir": "/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261117T213824843596Z",
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261118T100115486267Z",
+        "report": "relatorios/nids-validacao-20261118T100115486267Z.md",
+        "file_run": "training-runs/nids/arquivo/20261115T200638015105Z",
+        "copies": 4,
+        "checks": {
+          "tcpreplay_sent_whole_segment": true,
+          "h1_sent_equals_tcpreplay_successful": true,
+          "h2_received_equals_h1_sent": true,
+          "no_capture_drops": true,
+          "extractor_read_equals_h2_received": true,
+          "replay_run_flow_chain": true
+        },
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 7,
+        "predictions_compared": 88720,
+        "without_copy": 10
+      },
+      "copies": 4,
+      "load": {
+        "flows_emitted": 97622,
+        "flows_per_second": 81.33949835552913,
+        "packets_per_second": 12353.92,
+        "mbps": 121.88
+      },
+      "drops": {
+        "h2_interface": 0,
+        "libpcap": 0,
+        "libpcap_interface": 0,
+        "packets_received": 14824604,
+        "extractor_queue_flows": 0,
+        "extractor_queue_share": 0.0,
+        "extractor_queue_max": 187
+      },
+      "timings": {
+        "inference_ns": {
+          "mean": 349186.3677552945,
+          "median": 270968.0,
+          "p95": 733922.0499999999,
+          "p99": 1231287.7100000002,
+          "max": 73586081.0
+        },
+        "classification_latency_ns": {
+          "mean": 14887541.48084138,
+          "median": 4715406.0,
+          "p95": 59377037.64999991,
+          "p99": 150348641.52000004,
+          "max": 456812175.0
+        },
+        "wait_before_inference_ns": {
+          "mean": 14450750.129302746,
+          "median": 4261960.0,
+          "p95": 59024256.64999998,
+          "p99": 149956533.1900001,
+          "max": 456213718.0
+        },
+        "explanation_ns": {
+          "mean": 799024.1313131313,
+          "median": 614136.0,
+          "p95": 1716339.2499999998,
+          "p99": 2541805.76,
+          "max": 10960577.0
+        },
+        "explanation_latency_ns": {
+          "mean": 5354011.68975469,
+          "median": 2467553.0,
+          "p95": 9478897.899999993,
+          "p99": 40383925.21999992,
+          "max": 373910531.0
+        }
+      },
+      "classified_per_second": 80.30429223393377,
+      "flows": 97622,
+      "classified": 97554,
+      "explanations": {
+        "eligible": 97554,
+        "selected": 2772,
+        "completed": 2772,
+        "selected_share": 0.028415031674764744,
+        "completed_share": 0.028415031674764744
+      },
+      "queue": {
+        "requested": null,
+        "accepted": null,
+        "dropped": null,
+        "completed": null,
+        "pending": null,
+        "drain_after_end_of_capture_ns": null,
+        "killed_after_drain_timeout": null,
+        "max": null
+      },
+      "resources": {
+        "classifier": {
+          "cpu_seconds": 94.234616,
+          "max_rss_mib": 295.15625
+        },
+        "explainer": null,
+        "extractor": {
+          "cpu_seconds": 286.61,
+          "max_rss_mib": 4909.234375
+        }
+      },
+      "machine": {
+        "mains_online_in_every_sample": true,
+        "frequency_mhz": {
+          "0": 2388.059,
+          "2": 622.585
+        },
+        "throttle_events": {
+          "0": {
+            "core": 0,
+            "package": 0
+          },
+          "1": {
+            "core": 0,
+            "package": 0
+          },
+          "2": {
+            "core": 0,
+            "package": 0
+          },
+          "3": {
+            "core": 0,
+            "package": 0
+          },
+          "4": {
+            "core": 0,
+            "package": 0
+          },
+          "5": {
+            "core": 0,
+            "package": 0
+          },
+          "6": {
+            "core": 0,
+            "package": 0
+          },
+          "7": {
+            "core": 0,
+            "package": 0
+          },
+          "8": {
+            "core": 0,
+            "package": 0
+          },
+          "9": {
+            "core": 0,
+            "package": 0
+          },
+          "10": {
+            "core": 0,
+            "package": 0
+          },
+          "11": {
+            "core": 0,
+            "package": 0
+          }
+        },
+        "busy_share_sibling_cpus": {
+          "1": 0.77,
+          "3": 0.73
+        },
+        "memory_available_mib_min": 4234.70703125
+      }
+    },
+    {
+      "cell": {
+        "block": "carga-maxima",
+        "model": "xgboost",
+        "configuration": "sem-xai",
+        "load": 4,
+        "repetition": 1,
+        "id": "carga-maxima/xgboost/sem-xai/carga-4/rep-1",
+        "strategy": "sem-xai",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "run_dir": "/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261117T220109890537Z",
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261118T100159930675Z",
+        "report": "relatorios/nids-validacao-20261118T100159930675Z.md",
+        "file_run": "training-runs/nids/arquivo/20261115T231006523112Z",
+        "copies": 4,
+        "checks": {
+          "tcpreplay_sent_whole_segment": true,
+          "h1_sent_equals_tcpreplay_successful": true,
+          "h2_received_equals_h1_sent": true,
+          "no_capture_drops": true,
+          "extractor_read_equals_h2_received": true,
+          "replay_run_flow_chain": true
+        },
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 9,
+        "predictions_compared": 88720,
+        "without_copy": 10
+      },
+      "copies": 4,
+      "load": {
+        "flows_emitted": 97622,
+        "flows_per_second": 81.3372918164637,
+        "packets_per_second": 12353.92,
+        "mbps": 121.88
+      },
+      "drops": {
+        "h2_interface": 0,
+        "libpcap": 0,
+        "libpcap_interface": 0,
+        "packets_received": 14824604,
+        "extractor_queue_flows": 0,
+        "extractor_queue_share": 0.0,
+        "extractor_queue_max": 314
+      },
+      "timings": {
+        "inference_ns": {
+          "mean": 354094.1751850257,
+          "median": 274087.0,
+          "p95": 749639.2499999999,
+          "p99": 1260168.8100000003,
+          "max": 10745411.0
+        },
+        "classification_latency_ns": {
+          "mean": 15138789.717910081,
+          "median": 4453852.5,
+          "p95": 54366863.89999992,
+          "p99": 215033832.65000004,
+          "max": 446757525.0
+        },
+        "wait_before_inference_ns": {
+          "mean": 14720512.208100129,
+          "median": 4059607.0,
+          "p95": 54044172.05,
+          "p99": 214596450.77000004,
+          "max": 445431731.0
+        }
+      },
+      "classified_per_second": 80.30465854694941,
+      "flows": 97622,
+      "classified": 97554,
+      "explanations": {
+        "eligible": 97554,
+        "selected": 0,
+        "completed": 0,
+        "selected_share": 0.0,
+        "completed_share": 0.0
+      },
+      "queue": {
+        "requested": null,
+        "accepted": null,
+        "dropped": null,
+        "completed": null,
+        "pending": null,
+        "drain_after_end_of_capture_ns": null,
+        "killed_after_drain_timeout": null,
+        "max": null
+      },
+      "resources": {
+        "classifier": {
+          "cpu_seconds": 92.657626,
+          "max_rss_mib": 293.625
+        },
+        "explainer": null,
+        "extractor": {
+          "cpu_seconds": 278.22,
+          "max_rss_mib": 4945.0703125
+        }
+      },
+      "machine": {
+        "mains_online_in_every_sample": true,
+        "frequency_mhz": {
+          "0": 2590.3805,
+          "2": 733.1405
+        },
+        "throttle_events": {
+          "0": {
+            "core": 0,
+            "package": 0
+          },
+          "1": {
+            "core": 0,
+            "package": 0
+          },
+          "2": {
+            "core": 0,
+            "package": 0
+          },
+          "3": {
+            "core": 0,
+            "package": 0
+          },
+          "4": {
+            "core": 0,
+            "package": 0
+          },
+          "5": {
+            "core": 0,
+            "package": 0
+          },
+          "6": {
+            "core": 0,
+            "package": 0
+          },
+          "7": {
+            "core": 0,
+            "package": 0
+          },
+          "8": {
+            "core": 0,
+            "package": 0
+          },
+          "9": {
+            "core": 0,
+            "package": 0
+          },
+          "10": {
+            "core": 0,
+            "package": 0
+          },
+          "11": {
+            "core": 0,
+            "package": 0
+          }
+        },
+        "busy_share_sibling_cpus": {
+          "1": 0.7142857142857143,
+          "3": 0.81
+        },
+        "memory_available_mib_min": 4195.3125
+      }
+    },
+    {
+      "cell": {
+        "block": "carga-maxima",
+        "model": "xgboost",
+        "configuration": "sincrono-condicional-incerteza",
+        "load": 4,
+        "repetition": 1,
+        "id": "carga-maxima/xgboost/sincrono-condicional-incerteza/carga-4/rep-1",
+        "strategy": "sincrono-condicional",
+        "criterion": "incerteza"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "run_dir": "/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261117T222354901544Z",
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261118T100255177770Z",
+        "report": "relatorios/nids-validacao-20261118T100255177770Z.md",
+        "file_run": "training-runs/nids/arquivo/20261115T200826973250Z",
+        "copies": 4,
+        "checks": {
+          "tcpreplay_sent_whole_segment": true,
+          "h1_sent_equals_tcpreplay_successful": true,
+          "h2_received_equals_h1_sent": true,
+          "no_capture_drops": true,
+          "extractor_read_equals_h2_received": true,
+          "replay_run_flow_chain": true
+        },
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 8,
+        "predictions_compared": 88720,
+        "without_copy": 10
+      },
+      "copies": 4,
+      "load": {
+        "flows_emitted": 97622,
+        "flows_per_second": 81.33876479815221,
+        "packets_per_second": 12353.92,
+        "mbps": 121.88
+      },
+      "drops": {
+        "h2_interface": 0,
+        "libpcap": 0,
+        "libpcap_interface": 0,
+        "packets_received": 14824604,
+        "extractor_queue_flows": 0,
+        "extractor_queue_share": 0.0,
+        "extractor_queue_max": 244
+      },
+      "timings": {
+        "inference_ns": {
+          "mean": 342018.5520634725,
+          "median": 264081.0,
+          "p95": 713796.6499999994,
+          "p99": 1213458.6000000003,
+          "max": 113663813.0
+        },
+        "classification_latency_ns": {
+          "mean": 14896283.899901593,
+          "median": 4393476.0,
+          "p95": 55890998.499999925,
+          "p99": 210407856.88000014,
+          "max": 423673629.0
+        },
+        "wait_before_inference_ns": {
+          "mean": 14491956.350821083,
+          "median": 4007323.0,
+          "p95": 55508765.34999997,
+          "p99": 209999943.82000002,
+          "max": 423217289.0
+        },
+        "explanation_ns": {
+          "mean": 833014.2222222222,
+          "median": 548273.0,
+          "p95": 1704462.9999999993,
+          "p99": 1957272.76,
+          "max": 2605800.0
+        },
+        "explanation_latency_ns": {
+          "mean": 7606275.982905983,
+          "median": 4263800.0,
+          "p95": 20981317.599999975,
+          "p99": 69452336.36,
+          "max": 112962580.0
+        }
+      },
+      "classified_per_second": 80.30034076296126,
+      "flows": 97622,
+      "classified": 97554,
+      "explanations": {
+        "eligible": 97554,
+        "selected": 117,
+        "completed": 117,
+        "selected_share": 0.0011993357525063042,
+        "completed_share": 0.0011993357525063042
+      },
+      "queue": {
+        "requested": null,
+        "accepted": null,
+        "dropped": null,
+        "completed": null,
+        "pending": null,
+        "drain_after_end_of_capture_ns": null,
+        "killed_after_drain_timeout": null,
+        "max": null
+      },
+      "resources": {
+        "classifier": {
+          "cpu_seconds": 89.968894,
+          "max_rss_mib": 295.2109375
+        },
+        "explainer": null,
+        "extractor": {
+          "cpu_seconds": 279.8,
+          "max_rss_mib": 4919.421875
+        }
+      },
+      "machine": {
+        "mains_online_in_every_sample": true,
+        "frequency_mhz": {
+          "0": 2455.0765,
+          "2": 572.5305
+        },
+        "throttle_events": {
+          "0": {
+            "core": 0,
+            "package": 0
+          },
+          "1": {
+            "core": 0,
+            "package": 0
+          },
+          "2": {
+            "core": 0,
+            "package": 0
+          },
+          "3": {
+            "core": 0,
+            "package": 0
+          },
+          "4": {
+            "core": 0,
+            "package": 0
+          },
+          "5": {
+            "core": 0,
+            "package": 0
+          },
+          "6": {
+            "core": 0,
+            "package": 0
+          },
+          "7": {
+            "core": 0,
+            "package": 0
+          },
+          "8": {
+            "core": 0,
+            "package": 0
+          },
+          "9": {
+            "core": 0,
+            "package": 0
+          },
+          "10": {
+            "core": 0,
+            "package": 0
+          },
+          "11": {
+            "core": 0,
+            "package": 0
+          }
+        },
+        "busy_share_sibling_cpus": {
+          "1": 0.77,
+          "3": 0.7777777777777778
+        },
+        "memory_available_mib_min": 4544.671875
+      }
+    },
+    {
+      "cell": {
+        "block": "carga-maxima",
+        "model": "xgboost",
+        "configuration": "assincrono",
+        "load": 4,
+        "repetition": 1,
+        "id": "carga-maxima/xgboost/assincrono/carga-4/rep-1",
+        "strategy": "assincrono",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "run_dir": "/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261117T224639963550Z",
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261118T100351489792Z",
+        "report": "relatorios/nids-validacao-20261118T100351489792Z.md",
+        "file_run": "training-runs/nids/arquivo/20261115T201018001853Z",
+        "copies": 4,
+        "checks": {
+          "tcpreplay_sent_whole_segment": true,
+          "h1_sent_equals_tcpreplay_successful": true,
+          "h2_received_equals_h1_sent": true,
+          "no_capture_drops": true,
+          "extractor_read_equals_h2_received": true,
+          "replay_run_flow_chain": true
+        },
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 7,
+        "predictions_compared": 88720,
+        "without_copy": 10
+      },
+      "copies": 4,
+      "load": {
+        "flows_emitted": 97622,
+        "flows_per_second": 81.33801426248948,
+        "packets_per_second": 12353.92,
+        "mbps": 121.88
+      },
+      "drops": {
+        "h2_interface": 0,
+        "libpcap": 0,
+        "libpcap_interface": 0,
+        "packets_received": 14824604,
+        "extractor_queue_flows": 0,
+        "extractor_queue_share": 0.0,
+        "extractor_queue_max": 452
+      },
+      "timings": {
+        "inference_ns": {
+          "mean": 449536.88374643784,
+          "median": 380307.0,
+          "p95": 862646.0999999986,
+          "p99": 1294709.6700000009,
+          "max": 9291951.0
+        },
+        "classification_latency_ns": {
+          "mean": 35544698.69232425,
+          "median": 6714467.0,
+          "p95": 167300028.59999952,
+          "p99": 563541942.46,
+          "max": 769487460.0
+        },
+        "wait_before_inference_ns": {
+          "mean": 35027784.3825881,
+          "median": 6217020.0,
+          "p95": 166644564.74999985,
+          "p99": 562872754.24,
+          "max": 768943118.0
+        },
+        "explanation_ns": {
+          "mean": 771953.3784570597,
+          "median": 665161.5,
+          "p95": 1452403.7,
+          "p99": 2206516.1,
+          "max": 54712377.0
+        },
+        "explanation_latency_ns": {
+          "mean": 37671153.62665806,
+          "median": 8666360.5,
+          "p95": 171648435.09999976,
+          "p99": 567378521.0300007,
+          "max": 771368171.0
+        },
+        "queue_wait_ns": {
+          "mean": 1244627.10321463,
+          "median": 645441.5,
+          "p95": 3736421.2499999995,
+          "p99": 9765503.82000001,
+          "max": 59775189.0
+        }
+      },
+      "classified_per_second": 80.30445516942989,
+      "flows": 97622,
+      "classified": 97554,
+      "explanations": {
+        "eligible": 97554,
+        "selected": 97554,
+        "completed": 97554,
+        "selected_share": 1.0,
+        "completed_share": 1.0
+      },
+      "queue": {
+        "requested": 97554,
+        "accepted": 97554,
+        "dropped": 0,
+        "completed": 97554,
+        "pending": 0,
+        "drain_after_end_of_capture_ns": 0,
+        "killed_after_drain_timeout": false,
+        "max": 32,
+        "max_at_share_of_run": 0.6326194398682042,
+        "max_in_last_tenth": 15
+      },
+      "resources": {
+        "classifier": {
+          "cpu_seconds": 110.407815,
+          "max_rss_mib": 386.33203125
+        },
+        "explainer": {
+          "cpu_seconds": 90.47757,
+          "max_rss_mib": 204.09375
+        },
+        "extractor": {
+          "cpu_seconds": 283.54,
+          "max_rss_mib": 4987.671875
+        }
+      },
+      "machine": {
+        "mains_online_in_every_sample": true,
+        "frequency_mhz": {
+          "0": 2430.049,
+          "2": 569.8365
+        },
+        "throttle_events": {
+          "0": {
+            "core": 0,
+            "package": 21
+          },
+          "1": {
+            "core": 0,
+            "package": 21
+          },
+          "2": {
+            "core": 21,
+            "package": 21
+          },
+          "3": {
+            "core": 21,
+            "package": 21
+          },
+          "4": {
+            "core": 0,
+            "package": 21
+          },
+          "5": {
+            "core": 0,
+            "package": 21
+          },
+          "6": {
+            "core": 0,
+            "package": 21
+          },
+          "7": {
+            "core": 0,
+            "package": 21
+          },
+          "8": {
+            "core": 0,
+            "package": 21
+          },
+          "9": {
+            "core": 0,
+            "package": 21
+          },
+          "10": {
+            "core": 0,
+            "package": 21
+          },
+          "11": {
+            "core": 0,
+            "package": 21
+          }
+        },
+        "busy_share_sibling_cpus": {
+          "1": 0.7171717171717171,
+          "3": 0.7777777777777778
+        },
+        "memory_available_mib_min": 4264.671875
+      }
+    },
+    {
+      "cell": {
+        "block": "carga-maxima",
+        "model": "random-forest",
+        "configuration": "assincrono",
+        "load": 4,
+        "repetition": 1,
+        "id": "carga-maxima/random-forest/assincrono/carga-4/rep-1",
+        "strategy": "assincrono",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "run_dir": "/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261117T230929822226Z",
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261118T100446275405Z",
+        "report": "relatorios/nids-validacao-20261118T100446275405Z.md",
+        "file_run": "training-runs/nids/arquivo/20261115T195845825041Z",
+        "copies": 4,
+        "checks": {
+          "tcpreplay_sent_whole_segment": true,
+          "h1_sent_equals_tcpreplay_successful": true,
+          "h2_received_equals_h1_sent": true,
+          "no_capture_drops": true,
+          "extractor_read_equals_h2_received": true,
+          "replay_run_flow_chain": true
+        },
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 17,
+        "predictions_compared": 88720,
+        "without_copy": 10
+      },
+      "copies": 4,
+      "load": {
+        "flows_emitted": 97622,
+        "flows_per_second": 81.337376438743,
+        "packets_per_second": 12353.92,
+        "mbps": 121.88
+      },
+      "drops": {
+        "h2_interface": 0,
+        "libpcap": 0,
+        "libpcap_interface": 0,
+        "packets_received": 14824604,
+        "extractor_queue_flows": 0,
+        "extractor_queue_share": 0.0,
+        "extractor_queue_max": 7586
+      },
+      "timings": {
+        "inference_ns": {
+          "mean": 8139179.707587592,
+          "median": 7851074.5,
+          "p95": 11725733.449999997,
+          "p99": 14350157.420000002,
+          "max": 41177384.0
+        },
+        "classification_latency_ns": {
+          "mean": 20049671056.44846,
+          "median": 14365882205.5,
+          "p95": 60143236402.299995,
+          "p99": 69361473590.26,
+          "max": 71399912790.0
+        },
+        "wait_before_inference_ns": {
+          "mean": 20041389623.49641,
+          "median": 14357315223.5,
+          "p95": 60135495713.4,
+          "p99": 69353234661.56,
+          "max": 71391119158.0
+        },
+        "explanation_ns": {
+          "mean": 12481785.236515423,
+          "median": 12903499.0,
+          "p95": 17525378.6,
+          "p99": 20947969.040000014,
+          "max": 59626333.0
+        },
+        "explanation_latency_ns": {
+          "mean": 89491068534.44185,
+          "median": 98436628360.0,
+          "p95": 173684909416.80002,
+          "p99": 194004405233.40002,
+          "max": 198113160858.0
+        },
+        "queue_wait_ns": {
+          "mean": 69723753434.7557,
+          "median": 63968519717.0,
+          "p95": 144492947838.0,
+          "p99": 146527257034.84,
+          "max": 147221901891.0
+        }
+      },
+      "classified_per_second": 80.30125919466832,
+      "flows": 97622,
+      "classified": 97554,
+      "explanations": {
+        "eligible": 97554,
+        "selected": 97554,
+        "completed": 92235,
+        "selected_share": 1.0,
+        "completed_share": 0.9454763515591365
+      },
+      "queue": {
+        "requested": 97554,
+        "accepted": 92235,
+        "dropped": 5319,
+        "completed": 92235,
+        "pending": 0,
+        "drain_after_end_of_capture_ns": 0,
+        "killed_after_drain_timeout": false,
+        "max": 10001,
+        "max_at_share_of_run": 0.5012244897959184,
+        "max_in_last_tenth": 5615
+      },
+      "resources": {
+        "classifier": {
+          "cpu_seconds": 882.201834,
+          "max_rss_mib": 371.6328125
+        },
+        "explainer": {
+          "cpu_seconds": 1169.1098339999999,
+          "max_rss_mib": 201.6484375
+        },
+        "extractor": {
+          "cpu_seconds": 384.92,
+          "max_rss_mib": 4937.5546875
+        }
+      },
+      "machine": {
+        "mains_online_in_every_sample": true,
+        "frequency_mhz": {
+          "0": 1700.017,
+          "2": 1699.982
+        },
+        "throttle_events": {
+          "0": {
+            "core": 0,
+            "package": 247
+          },
+          "1": {
+            "core": 0,
+            "package": 247
+          },
+          "2": {
+            "core": 247,
+            "package": 247
+          },
+          "3": {
+            "core": 247,
+            "package": 247
+          },
+          "4": {
+            "core": 0,
+            "package": 247
+          },
+          "5": {
+            "core": 0,
+            "package": 247
+          },
+          "6": {
+            "core": 0,
+            "package": 247
+          },
+          "7": {
+            "core": 0,
+            "package": 247
+          },
+          "8": {
+            "core": 0,
+            "package": 247
+          },
+          "9": {
+            "core": 0,
+            "package": 247
+          },
+          "10": {
+            "core": 0,
+            "package": 247
+          },
+          "11": {
+            "core": 0,
+            "package": 247
+          }
+        },
+        "busy_share_sibling_cpus": {
+          "1": 0.78125,
+          "3": 0.9
+        },
+        "memory_available_mib_min": 4274.62890625
+      }
+    },
+    {
+      "cell": {
+        "block": "carga-maxima",
+        "model": "random-forest",
+        "configuration": "sem-xai",
+        "load": 4,
+        "repetition": 1,
+        "id": "carga-maxima/random-forest/sem-xai/carga-4/rep-1",
+        "strategy": "sem-xai",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "run_dir": "/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261117T233220969507Z",
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261118T100525316233Z",
+        "report": "relatorios/nids-validacao-20261118T100525316233Z.md",
+        "file_run": "training-runs/nids/arquivo/20261115T193902561523Z",
+        "copies": 4,
+        "checks": {
+          "tcpreplay_sent_whole_segment": true,
+          "h1_sent_equals_tcpreplay_successful": true,
+          "h2_received_equals_h1_sent": true,
+          "no_capture_drops": true,
+          "extractor_read_equals_h2_received": true,
+          "replay_run_flow_chain": true
+        },
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 11,
+        "predictions_compared": 88720,
+        "without_copy": 10
+      },
+      "copies": 4,
+      "load": {
+        "flows_emitted": 97622,
+        "flows_per_second": 81.33769490703058,
+        "packets_per_second": 12353.9,
+        "mbps": 121.88
+      },
+      "drops": {
+        "h2_interface": 0,
+        "libpcap": 0,
+        "libpcap_interface": 0,
+        "packets_received": 14824604,
+        "extractor_queue_flows": 0,
+        "extractor_queue_share": 0.0,
+        "extractor_queue_max": 6216
+      },
+      "timings": {
+        "inference_ns": {
+          "mean": 6573916.027020932,
+          "median": 6557318.5,
+          "p95": 9473375.149999997,
+          "p99": 12403365.150000002,
+          "max": 34201483.0
+        },
+        "classification_latency_ns": {
+          "mean": 12308298992.855453,
+          "median": 7925779618.0,
+          "p95": 42638362042.649994,
+          "p99": 46322891585.75,
+          "max": 47408608424.0
+        },
+        "wait_before_inference_ns": {
+          "mean": 12301616317.404966,
+          "median": 7918820712.0,
+          "p95": 42631847894.049995,
+          "p99": 46315779927.22,
+          "max": 47401365524.0
+        }
+      },
+      "classified_per_second": 80.3007908373798,
+      "flows": 97622,
+      "classified": 97554,
+      "explanations": {
+        "eligible": 97554,
+        "selected": 0,
+        "completed": 0,
+        "selected_share": 0.0,
+        "completed_share": 0.0
+      },
+      "queue": {
+        "requested": null,
+        "accepted": null,
+        "dropped": null,
+        "completed": null,
+        "pending": null,
+        "drain_after_end_of_capture_ns": null,
+        "killed_after_drain_timeout": null,
+        "max": null
+      },
+      "resources": {
+        "classifier": {
+          "cpu_seconds": 712.133171,
+          "max_rss_mib": 290.671875
+        },
+        "explainer": null,
+        "extractor": {
+          "cpu_seconds": 327.36,
+          "max_rss_mib": 4923.26171875
+        }
+      },
+      "machine": {
+        "mains_online_in_every_sample": true,
+        "frequency_mhz": {
+          "0": 1917.0925,
+          "2": 1799.981
+        },
+        "throttle_events": {
+          "0": {
+            "core": 0,
+            "package": 1855
+          },
+          "1": {
+            "core": 0,
+            "package": 1855
+          },
+          "2": {
+            "core": 1855,
+            "package": 1855
+          },
+          "3": {
+            "core": 1855,
+            "package": 1855
+          },
+          "4": {
+            "core": 0,
+            "package": 1855
+          },
+          "5": {
+            "core": 0,
+            "package": 1855
+          },
+          "6": {
+            "core": 0,
+            "package": 1855
+          },
+          "7": {
+            "core": 0,
+            "package": 1855
+          },
+          "8": {
+            "core": 0,
+            "package": 1855
+          },
+          "9": {
+            "core": 0,
+            "package": 1855
+          },
+          "10": {
+            "core": 0,
+            "package": 1855
+          },
+          "11": {
+            "core": 0,
+            "package": 1855
+          }
+        },
+        "busy_share_sibling_cpus": {
+          "1": 0.8686868686868687,
+          "3": 0.8
+        },
+        "memory_available_mib_min": 4564.25390625
+      }
+    },
+    {
+      "cell": {
+        "block": "carga-maxima",
+        "model": "random-forest",
+        "configuration": "sincrono-total",
+        "load": 4,
+        "repetition": 1,
+        "id": "carga-maxima/random-forest/sincrono-total/carga-4/rep-1",
+        "strategy": "sincrono-total",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "run_dir": "/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261117T235507312082Z",
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261118T100555777727Z",
+        "report": "relatorios/nids-validacao-20261118T100555777727Z.md",
+        "file_run": "training-runs/nids/arquivo/20261115T194303133777Z",
+        "copies": 4,
+        "checks": {
+          "tcpreplay_sent_whole_segment": true,
+          "h1_sent_equals_tcpreplay_successful": true,
+          "h2_received_equals_h1_sent": true,
+          "no_capture_drops": true,
+          "extractor_read_equals_h2_received": true,
+          "replay_run_flow_chain": true
+        },
+        "file_only_inside": 22263,
+        "replay_only_inside": 0,
+        "predictions_differing": 13,
+        "predictions_compared": 66462,
+        "without_copy": 10
+      },
+      "copies": 4,
+      "load": {
+        "flows_emitted": 97622,
+        "flows_per_second": 81.3375402369218,
+        "packets_per_second": 12353.92,
+        "mbps": 121.88
+      },
+      "drops": {
+        "h2_interface": 0,
+        "libpcap": 0,
+        "libpcap_interface": 0,
+        "packets_received": 14824604,
+        "extractor_queue_flows": 23204,
+        "extractor_queue_share": 0.23769232345168098,
+        "extractor_queue_max": 10000
+      },
+      "timings": {
+        "inference_ns": {
+          "mean": 6418381.1779839955,
+          "median": 6470293.0,
+          "p95": 8846313.900000002,
+          "p99": 11967453.080000017,
+          "max": 21534380.0
+        },
+        "classification_latency_ns": {
+          "mean": 139854507290.2461,
+          "median": 158192115838.0,
+          "p95": 200167801301.2,
+          "p99": 207295308102.32004,
+          "max": 211155043094.0
+        },
+        "wait_before_inference_ns": {
+          "mean": 139837511406.01697,
+          "median": 158180991990.0,
+          "p95": 200149450031.3,
+          "p99": 207275995391.00003,
+          "max": 211133748996.0
+        },
+        "explanation_ns": {
+          "mean": 10330947.459848026,
+          "median": 10493604.0,
+          "p95": 14049904.000000004,
+          "p99": 18038410.64000001,
+          "max": 33218729.0
+        },
+        "explanation_latency_ns": {
+          "mean": 139854507290.2461,
+          "median": 158192115838.0,
+          "p95": 200167801301.2,
+          "p99": 207295308102.32004,
+          "max": 211155043094.0
+        }
+      },
+      "classified_per_second": 56.77781621921744,
+      "flows": 74418,
+      "classified": 74355,
+      "explanations": {
+        "eligible": 74355,
+        "selected": 74355,
+        "completed": 74355,
+        "selected_share": 1.0,
+        "completed_share": 1.0
+      },
+      "queue": {
+        "requested": null,
+        "accepted": null,
+        "dropped": null,
+        "completed": null,
+        "pending": null,
+        "drain_after_end_of_capture_ns": null,
+        "killed_after_drain_timeout": null,
+        "max": null
+      },
+      "resources": {
+        "classifier": {
+          "cpu_seconds": 1307.4399,
+          "max_rss_mib": 335.80078125
+        },
+        "explainer": null,
+        "extractor": {
+          "cpu_seconds": 341.11,
+          "max_rss_mib": 4921.03125
+        }
+      },
+      "machine": {
+        "mains_online_in_every_sample": true,
+        "frequency_mhz": {
+          "0": 1961.812,
+          "2": 2099.978
+        },
+        "throttle_events": {
+          "0": {
+            "core": 0,
+            "package": 0
+          },
+          "1": {
+            "core": 0,
+            "package": 0
+          },
+          "2": {
+            "core": 0,
+            "package": 0
+          },
+          "3": {
+            "core": 0,
+            "package": 0
+          },
+          "4": {
+            "core": 0,
+            "package": 0
+          },
+          "5": {
+            "core": 0,
+            "package": 0
+          },
+          "6": {
+            "core": 0,
+            "package": 0
+          },
+          "7": {
+            "core": 0,
+            "package": 0
+          },
+          "8": {
+            "core": 0,
+            "package": 0
+          },
+          "9": {
+            "core": 0,
+            "package": 0
+          },
+          "10": {
+            "core": 0,
+            "package": 0
+          },
+          "11": {
+            "core": 0,
+            "package": 0
+          }
+        },
+        "busy_share_sibling_cpus": {
+          "1": 0.81,
+          "3": 0.86
+        },
+        "memory_available_mib_min": 4580.1015625
+      }
+    },
+    {
+      "cell": {
+        "block": "carga-maxima",
+        "model": "random-forest",
+        "configuration": "sincrono-condicional-incerteza",
+        "load": 4,
+        "repetition": 1,
+        "id": "carga-maxima/random-forest/sincrono-condicional-incerteza/carga-4/rep-1",
+        "strategy": "sincrono-condicional",
+        "criterion": "incerteza"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "run_dir": "/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261118T001915024484Z",
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261118T100654750142Z",
+        "report": "relatorios/nids-validacao-20261118T100654750142Z.md",
+        "file_run": "training-runs/nids/arquivo/20261115T195534482072Z",
+        "copies": 4,
+        "checks": {
+          "tcpreplay_sent_whole_segment": true,
+          "h1_sent_equals_tcpreplay_successful": true,
+          "h2_received_equals_h1_sent": true,
+          "no_capture_drops": true,
+          "extractor_read_equals_h2_received": true,
+          "replay_run_flow_chain": true
+        },
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 19,
+        "predictions_compared": 88720,
+        "without_copy": 10
+      },
+      "copies": 4,
+      "load": {
+        "flows_emitted": 97622,
+        "flows_per_second": 81.33853144915783,
+        "packets_per_second": 12353.92,
+        "mbps": 121.88
+      },
+      "drops": {
+        "h2_interface": 0,
+        "libpcap": 0,
+        "libpcap_interface": 0,
+        "packets_received": 14824604,
+        "extractor_queue_flows": 0,
+        "extractor_queue_share": 0.0,
+        "extractor_queue_max": 6148
+      },
+      "timings": {
+        "inference_ns": {
+          "mean": 6475003.683252352,
+          "median": 6453960.0,
+          "p95": 9335914.499999998,
+          "p99": 12349093.490000004,
+          "max": 55939553.0
+        },
+        "classification_latency_ns": {
+          "mean": 11867758308.89655,
+          "median": 7510440875.0,
+          "p95": 41944680453.0,
+          "p99": 45146506910.28,
+          "max": 46105466181.0
+        },
+        "wait_before_inference_ns": {
+          "mean": 11861160124.78617,
+          "median": 7503289488.5,
+          "p95": 41937592588.049995,
+          "p99": 45139910543.21,
+          "max": 46098776953.0
+        },
+        "explanation_ns": {
+          "mean": 10319147.07518797,
+          "median": 10964369.0,
+          "p95": 14413099.599999998,
+          "p99": 16874659.240000013,
+          "max": 18515471.0
+        },
+        "explanation_latency_ns": {
+          "mean": 7478960279.977444,
+          "median": 1119173238.0,
+          "p95": 43181178539.6,
+          "p99": 43633151186.16,
+          "max": 43676373228.0
+        }
+      },
+      "classified_per_second": 80.30064824276387,
+      "flows": 97622,
+      "classified": 97554,
+      "explanations": {
+        "eligible": 97554,
+        "selected": 133,
+        "completed": 133,
+        "selected_share": 0.001363347479344773,
+        "completed_share": 0.001363347479344773
+      },
+      "queue": {
+        "requested": null,
+        "accepted": null,
+        "dropped": null,
+        "completed": null,
+        "pending": null,
+        "drain_after_end_of_capture_ns": null,
+        "killed_after_drain_timeout": null,
+        "max": null
+      },
+      "resources": {
+        "classifier": {
+          "cpu_seconds": 703.885216,
+          "max_rss_mib": 294.49609375
+        },
+        "explainer": null,
+        "extractor": {
+          "cpu_seconds": 321.68,
+          "max_rss_mib": 4990.03515625
+        }
+      },
+      "machine": {
+        "mains_online_in_every_sample": true,
+        "frequency_mhz": {
+          "0": 1950.39,
+          "2": 1800.0
+        },
+        "throttle_events": {
+          "0": {
+            "core": 0,
+            "package": 1694
+          },
+          "1": {
+            "core": 0,
+            "package": 1694
+          },
+          "2": {
+            "core": 1694,
+            "package": 1694
+          },
+          "3": {
+            "core": 1694,
+            "package": 1694
+          },
+          "4": {
+            "core": 0,
+            "package": 1694
+          },
+          "5": {
+            "core": 0,
+            "package": 1694
+          },
+          "6": {
+            "core": 0,
+            "package": 1694
+          },
+          "7": {
+            "core": 0,
+            "package": 1694
+          },
+          "8": {
+            "core": 0,
+            "package": 1694
+          },
+          "9": {
+            "core": 0,
+            "package": 1694
+          },
+          "10": {
+            "core": 0,
+            "package": 1694
+          },
+          "11": {
+            "core": 0,
+            "package": 1694
+          }
+        },
+        "busy_share_sibling_cpus": {
+          "1": 0.7777777777777778,
+          "3": 0.76
+        },
+        "memory_available_mib_min": 4560.39453125
+      }
+    },
+    {
+      "cell": {
+        "block": "carga-maxima",
+        "model": "random-forest",
+        "configuration": "sincrono-condicional-probabilidade",
+        "load": 4,
+        "repetition": 1,
+        "id": "carga-maxima/random-forest/sincrono-condicional-probabilidade/carga-4/rep-1",
+        "strategy": "sincrono-condicional",
+        "criterion": "probabilidade"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "run_dir": "/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261118T004159624753Z",
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261118T100741200447Z",
+        "report": "relatorios/nids-validacao-20261118T100741200447Z.md",
+        "file_run": "training-runs/nids/arquivo/20261115T195136840304Z",
+        "copies": 4,
+        "checks": {
+          "tcpreplay_sent_whole_segment": true,
+          "h1_sent_equals_tcpreplay_successful": true,
+          "h2_received_equals_h1_sent": true,
+          "no_capture_drops": true,
+          "extractor_read_equals_h2_received": true,
+          "replay_run_flow_chain": true
+        },
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 16,
+        "predictions_compared": 88720,
+        "without_copy": 10
+      },
+      "copies": 4,
+      "load": {
+        "flows_emitted": 97622,
+        "flows_per_second": 81.33877502630014,
+        "packets_per_second": 12353.92,
+        "mbps": 121.88
+      },
+      "drops": {
+        "h2_interface": 0,
+        "libpcap": 0,
+        "libpcap_interface": 0,
+        "packets_received": 14824604,
+        "extractor_queue_flows": 0,
+        "extractor_queue_share": 0.0,
+        "extractor_queue_max": 6225
+      },
+      "timings": {
+        "inference_ns": {
+          "mean": 6511536.769840294,
+          "median": 6539711.0,
+          "p95": 9184386.449999992,
+          "p99": 12262582.830000004,
+          "max": 33136736.0
+        },
+        "classification_latency_ns": {
+          "mean": 12368375107.324005,
+          "median": 8039783323.0,
+          "p95": 43201490553.7,
+          "p99": 46699925488.39,
+          "max": 47582779492.0
+        },
+        "wait_before_inference_ns": {
+          "mean": 12361463967.356941,
+          "median": 8032847167.5,
+          "p95": 43193361246.249985,
+          "p99": 46693081441.19,
+          "max": 47575734983.0
+        },
+        "explanation_ns": {
+          "mean": 10276265.158957416,
+          "median": 10664986.5,
+          "p95": 14513561.699999997,
+          "p99": 19216228.929999996,
+          "max": 29210418.0
+        },
+        "explanation_latency_ns": {
+          "mean": 5426863745.717694,
+          "median": 102344621.0,
+          "p95": 27139655326.499996,
+          "p99": 40060260733.75,
+          "max": 40728193007.0
+        }
+      },
+      "classified_per_second": 80.30447226510763,
+      "flows": 97622,
+      "classified": 97554,
+      "explanations": {
+        "eligible": 97554,
+        "selected": 2724,
+        "completed": 2724,
+        "selected_share": 0.027922996494249338,
+        "completed_share": 0.027922996494249338
+      },
+      "queue": {
+        "requested": null,
+        "accepted": null,
+        "dropped": null,
+        "completed": null,
+        "pending": null,
+        "drain_after_end_of_capture_ns": null,
+        "killed_after_drain_timeout": null,
+        "max": null
+      },
+      "resources": {
+        "classifier": {
+          "cpu_seconds": 733.033661,
+          "max_rss_mib": 297.046875
+        },
+        "explainer": null,
+        "extractor": {
+          "cpu_seconds": 319.07,
+          "max_rss_mib": 4985.02734375
+        }
+      },
+      "machine": {
+        "mains_online_in_every_sample": true,
+        "frequency_mhz": {
+          "0": 1963.688,
+          "2": 1884.8895
+        },
+        "throttle_events": {
+          "0": {
+            "core": 0,
+            "package": 1710
+          },
+          "1": {
+            "core": 0,
+            "package": 1710
+          },
+          "2": {
+            "core": 1710,
+            "package": 1710
+          },
+          "3": {
+            "core": 1710,
+            "package": 1710
+          },
+          "4": {
+            "core": 0,
+            "package": 1710
+          },
+          "5": {
+            "core": 0,
+            "package": 1710
+          },
+          "6": {
+            "core": 0,
+            "package": 1710
+          },
+          "7": {
+            "core": 0,
+            "package": 1710
+          },
+          "8": {
+            "core": 0,
+            "package": 1710
+          },
+          "9": {
+            "core": 0,
+            "package": 1710
+          },
+          "10": {
+            "core": 0,
+            "package": 1710
+          },
+          "11": {
+            "core": 0,
+            "package": 1710
+          }
+        },
+        "busy_share_sibling_cpus": {
+          "1": 0.8181818181818182,
+          "3": 0.9
+        },
+        "memory_available_mib_min": 4551.25390625
+      }
+    },
+    {
+      "cell": {
+        "block": "carga-maxima",
+        "model": "xgboost",
+        "configuration": "sincrono-total",
+        "load": 4,
+        "repetition": 1,
+        "id": "carga-maxima/xgboost/sincrono-total/carga-4/rep-1",
+        "strategy": "sincrono-total",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "run_dir": "/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261118T010441426610Z",
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261118T100825959121Z",
+        "report": "relatorios/nids-validacao-20261118T100825959121Z.md",
+        "file_run": "training-runs/nids/arquivo/20261115T200416040050Z",
+        "copies": 4,
+        "checks": {
+          "tcpreplay_sent_whole_segment": true,
+          "h1_sent_equals_tcpreplay_successful": true,
+          "h2_received_equals_h1_sent": true,
+          "no_capture_drops": true,
+          "extractor_read_equals_h2_received": true,
+          "replay_run_flow_chain": true
+        },
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 8,
+        "predictions_compared": 88720,
+        "without_copy": 10
+      },
+      "copies": 4,
+      "load": {
+        "flows_emitted": 97622,
+        "flows_per_second": 81.3377579786453,
+        "packets_per_second": 12353.92,
+        "mbps": 121.88
+      },
+      "drops": {
+        "h2_interface": 0,
+        "libpcap": 0,
+        "libpcap_interface": 0,
+        "packets_received": 14824604,
+        "extractor_queue_flows": 0,
+        "extractor_queue_share": 0.0,
+        "extractor_queue_max": 769
+      },
+      "timings": {
+        "inference_ns": {
+          "mean": 368056.3957192939,
+          "median": 310094.5,
+          "p95": 701202.8499999997,
+          "p99": 1148744.1900000004,
+          "max": 64987839.0
+        },
+        "classification_latency_ns": {
+          "mean": 109822479.4210591,
+          "median": 12145459.5,
+          "p95": 714366859.7999994,
+          "p99": 1311532008.0900002,
+          "max": 1499069573.0
+        },
+        "wait_before_inference_ns": {
+          "mean": 108679208.9083482,
+          "median": 11088275.5,
+          "p95": 713115876.9499992,
+          "p99": 1310327302.7300003,
+          "max": 1497905282.0
+        },
+        "explanation_ns": {
+          "mean": 629860.3325337762,
+          "median": 560871.5,
+          "p95": 1093547.8499999996,
+          "p99": 1647333.4000000004,
+          "max": 28249134.0
+        },
+        "explanation_latency_ns": {
+          "mean": 109822479.4210591,
+          "median": 12145459.5,
+          "p95": 714366859.7999994,
+          "p99": 1311532008.0900002,
+          "max": 1499069573.0
+        }
+      },
+      "classified_per_second": 80.30257639930511,
+      "flows": 97622,
+      "classified": 97554,
+      "explanations": {
+        "eligible": 97554,
+        "selected": 97554,
+        "completed": 97554,
+        "selected_share": 1.0,
+        "completed_share": 1.0
+      },
+      "queue": {
+        "requested": null,
+        "accepted": null,
+        "dropped": null,
+        "completed": null,
+        "pending": null,
+        "drain_after_end_of_capture_ns": null,
+        "killed_after_drain_timeout": null,
+        "max": null
+      },
+      "resources": {
+        "classifier": {
+          "cpu_seconds": 162.554859,
+          "max_rss_mib": 384.90625
+        },
+        "explainer": null,
+        "extractor": {
+          "cpu_seconds": 274.17,
+          "max_rss_mib": 4982.7734375
+        }
+      },
+      "machine": {
+        "mains_online_in_every_sample": true,
+        "frequency_mhz": {
+          "0": 2518.373,
+          "2": 605.573
+        },
+        "throttle_events": {
+          "0": {
+            "core": 0,
+            "package": 20
+          },
+          "1": {
+            "core": 0,
+            "package": 20
+          },
+          "2": {
+            "core": 20,
+            "package": 20
+          },
+          "3": {
+            "core": 20,
+            "package": 20
+          },
+          "4": {
+            "core": 0,
+            "package": 20
+          },
+          "5": {
+            "core": 0,
+            "package": 20
+          },
+          "6": {
+            "core": 0,
+            "package": 20
+          },
+          "7": {
+            "core": 0,
+            "package": 20
+          },
+          "8": {
+            "core": 0,
+            "package": 20
+          },
+          "9": {
+            "core": 0,
+            "package": 20
+          },
+          "10": {
+            "core": 0,
+            "package": 20
+          },
+          "11": {
+            "core": 0,
+            "package": 20
+          }
+        },
+        "busy_share_sibling_cpus": {
+          "1": 0.7474747474747475,
+          "3": 0.7171717171717171
+        },
+        "memory_available_mib_min": 4451.43359375
+      }
+    },
+    {
+      "cell": {
+        "block": "variabilidade-sem-xai",
+        "model": "random-forest",
+        "configuration": "sem-xai",
+        "load": 1,
+        "repetition": 1,
+        "id": "variabilidade-sem-xai/random-forest/sem-xai/carga-1/rep-1",
+        "strategy": "sem-xai",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "run_dir": "/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261118T012727680723Z",
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261118T100842717952Z",
+        "report": "relatorios/nids-validacao-20261118T100842717952Z.md",
+        "file_run": "training-runs/nids/arquivo/20261115T193902561523Z",
+        "copies": 1,
+        "checks": {
+          "tcpreplay_sent_whole_segment": true,
+          "h1_sent_equals_tcpreplay_successful": true,
+          "h2_received_equals_h1_sent": true,
+          "no_capture_drops": true,
+          "extractor_read_equals_h2_received": true,
+          "replay_run_flow_chain": true
+        },
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 4,
+        "predictions_compared": 22189,
+        "without_copy": 0
+      },
+      "copies": 1,
+      "load": {
+        "flows_emitted": 24413,
+        "flows_per_second": 20.34240820589103,
+        "packets_per_second": 3088.48,
+        "mbps": 30.47
+      },
+      "drops": {
+        "h2_interface": 0,
+        "libpcap": 0,
+        "libpcap_interface": 0,
+        "packets_received": 3706151,
+        "extractor_queue_flows": 0,
+        "extractor_queue_share": 0.0,
+        "extractor_queue_max": 50
+      },
+      "timings": {
+        "inference_ns": {
+          "mean": 3985050.619117888,
+          "median": 3411231.5,
+          "p95": 7802129.25,
+          "p99": 12485269.199999992,
+          "max": 26758067.0
+        },
+        "classification_latency_ns": {
+          "mean": 35763294.57726677,
+          "median": 15685765.0,
+          "p95": 138674357.0,
+          "p99": 307163869.6999995,
+          "max": 496808029.0
+        },
+        "wait_before_inference_ns": {
+          "mean": 31714398.04676996,
+          "median": 11733909.0,
+          "p95": 134276962.0,
+          "p99": 301761487.29999954,
+          "max": 491313951.0
+        }
+      },
+      "classified_per_second": 20.082409804911272,
+      "flows": 24413,
+      "classified": 24396,
+      "explanations": {
+        "eligible": 24396,
+        "selected": 0,
+        "completed": 0,
+        "selected_share": 0.0,
+        "completed_share": 0.0
+      },
+      "queue": {
+        "requested": null,
+        "accepted": null,
+        "dropped": null,
+        "completed": null,
+        "pending": null,
+        "drain_after_end_of_capture_ns": null,
+        "killed_after_drain_timeout": null,
+        "max": null
+      },
+      "resources": {
+        "classifier": {
+          "cpu_seconds": 108.66188899999999,
+          "max_rss_mib": 221.35546875
+        },
+        "explainer": null,
+        "extractor": {
+          "cpu_seconds": 75.66,
+          "max_rss_mib": 1782.953125
+        }
+      },
+      "machine": {
+        "mains_online_in_every_sample": true,
+        "frequency_mhz": {
+          "0": 3089.602,
+          "2": 400.0
+        },
+        "throttle_events": {
+          "0": {
+            "core": 0,
+            "package": 244
+          },
+          "1": {
+            "core": 0,
+            "package": 244
+          },
+          "2": {
+            "core": 244,
+            "package": 244
+          },
+          "3": {
+            "core": 243,
+            "package": 243
+          },
+          "4": {
+            "core": 0,
+            "package": 244
+          },
+          "5": {
+            "core": 0,
+            "package": 244
+          },
+          "6": {
+            "core": 0,
+            "package": 244
+          },
+          "7": {
+            "core": 0,
+            "package": 244
+          },
+          "8": {
+            "core": 0,
+            "package": 244
+          },
+          "9": {
+            "core": 0,
+            "package": 244
+          },
+          "10": {
+            "core": 0,
+            "package": 244
+          },
+          "11": {
+            "core": 0,
+            "package": 244
+          }
+        },
+        "busy_share_sibling_cpus": {
+          "1": 0.7029702970297029,
+          "3": 0.6161616161616161
+        },
+        "memory_available_mib_min": 7912.0
+      }
+    },
+    {
+      "cell": {
+        "block": "variabilidade-sem-xai",
+        "model": "random-forest",
+        "configuration": "sem-xai",
+        "load": 1,
+        "repetition": 2,
+        "id": "variabilidade-sem-xai/random-forest/sem-xai/carga-1/rep-2",
+        "strategy": "sem-xai",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "run_dir": "/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261118T015001431312Z",
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261118T100855414987Z",
+        "report": "relatorios/nids-validacao-20261118T100855414987Z.md",
+        "file_run": "training-runs/nids/arquivo/20261115T193902561523Z",
+        "copies": 1,
+        "checks": {
+          "tcpreplay_sent_whole_segment": true,
+          "h1_sent_equals_tcpreplay_successful": true,
+          "h2_received_equals_h1_sent": true,
+          "no_capture_drops": true,
+          "extractor_read_equals_h2_received": true,
+          "replay_run_flow_chain": true
+        },
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 3,
+        "predictions_compared": 22189,
+        "without_copy": 0
+      },
+      "copies": 1,
+      "load": {
+        "flows_emitted": 24413,
+        "flows_per_second": 20.342391360303818,
+        "packets_per_second": 3088.48,
+        "mbps": 30.47
+      },
+      "drops": {
+        "h2_interface": 0,
+        "libpcap": 0,
+        "libpcap_interface": 0,
+        "packets_received": 3706151,
+        "extractor_queue_flows": 0,
+        "extractor_queue_share": 0.0,
+        "extractor_queue_max": 14
+      },
+      "timings": {
+        "inference_ns": {
+          "mean": 3855574.957534022,
+          "median": 3309557.0,
+          "p95": 7597725.0,
+          "p99": 12284346.399999965,
+          "max": 30806742.0
+        },
+        "classification_latency_ns": {
+          "mean": 32329190.71200197,
+          "median": 14927246.0,
+          "p95": 123520223.0,
+          "p99": 245014952.84999955,
+          "max": 407790634.0
+        },
+        "wait_before_inference_ns": {
+          "mean": 28409062.932652894,
+          "median": 11134251.0,
+          "p95": 119282151.25,
+          "p99": 240447585.8999991,
+          "max": 403104514.0
+        }
+      },
+      "classified_per_second": 20.083047569186153,
+      "flows": 24413,
+      "classified": 24396,
+      "explanations": {
+        "eligible": 24396,
+        "selected": 0,
+        "completed": 0,
+        "selected_share": 0.0,
+        "completed_share": 0.0
+      },
+      "queue": {
+        "requested": null,
+        "accepted": null,
+        "dropped": null,
+        "completed": null,
+        "pending": null,
+        "drain_after_end_of_capture_ns": null,
+        "killed_after_drain_timeout": null,
+        "max": null
+      },
+      "resources": {
+        "classifier": {
+          "cpu_seconds": 105.43145499999999,
+          "max_rss_mib": 221.28515625
+        },
+        "explainer": null,
+        "extractor": {
+          "cpu_seconds": 74.3,
+          "max_rss_mib": 1732.3984375
+        }
+      },
+      "machine": {
+        "mains_online_in_every_sample": true,
+        "frequency_mhz": {
+          "0": 3251.9325,
+          "2": 400.0
+        },
+        "throttle_events": {
+          "0": {
+            "core": 0,
+            "package": 220
+          },
+          "1": {
+            "core": 0,
+            "package": 220
+          },
+          "2": {
+            "core": 220,
+            "package": 220
+          },
+          "3": {
+            "core": 220,
+            "package": 220
+          },
+          "4": {
+            "core": 0,
+            "package": 220
+          },
+          "5": {
+            "core": 0,
+            "package": 220
+          },
+          "6": {
+            "core": 0,
+            "package": 220
+          },
+          "7": {
+            "core": 0,
+            "package": 220
+          },
+          "8": {
+            "core": 0,
+            "package": 220
+          },
+          "9": {
+            "core": 0,
+            "package": 220
+          },
+          "10": {
+            "core": 0,
+            "package": 220
+          },
+          "11": {
+            "core": 0,
+            "package": 220
+          }
+        },
+        "busy_share_sibling_cpus": {
+          "1": 0.6060606060606061,
+          "3": 0.6237623762376238
+        },
+        "memory_available_mib_min": 7939.35546875
+      }
+    },
+    {
+      "cell": {
+        "block": "variabilidade-sem-xai",
+        "model": "random-forest",
+        "configuration": "sem-xai",
+        "load": 1,
+        "repetition": 3,
+        "id": "variabilidade-sem-xai/random-forest/sem-xai/carga-1/rep-3",
+        "strategy": "sem-xai",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "run_dir": "/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261118T021234156135Z",
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261118T100906712293Z",
+        "report": "relatorios/nids-validacao-20261118T100906712293Z.md",
+        "file_run": "training-runs/nids/arquivo/20261115T193902561523Z",
+        "copies": 1,
+        "checks": {
+          "tcpreplay_sent_whole_segment": true,
+          "h1_sent_equals_tcpreplay_successful": true,
+          "h2_received_equals_h1_sent": true,
+          "no_capture_drops": true,
+          "extractor_read_equals_h2_received": true,
+          "replay_run_flow_chain": true
+        },
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 4,
+        "predictions_compared": 22189,
+        "without_copy": 0
+      },
+      "copies": 1,
+      "load": {
+        "flows_emitted": 24413,
+        "flows_per_second": 20.342325865594795,
+        "packets_per_second": 3088.48,
+        "mbps": 30.47
+      },
+      "drops": {
+        "h2_interface": 0,
+        "libpcap": 0,
+        "libpcap_interface": 0,
+        "packets_received": 3706151,
+        "extractor_queue_flows": 0,
+        "extractor_queue_share": 0.0,
+        "extractor_queue_max": 31
+      },
+      "timings": {
+        "inference_ns": {
+          "mean": 3939401.545704214,
+          "median": 3411718.5,
+          "p95": 7559644.25,
+          "p99": 12400762.44999999,
+          "max": 29000410.0
+        },
+        "classification_latency_ns": {
+          "mean": 33250950.934907362,
+          "median": 15537118.0,
+          "p95": 127013050.75,
+          "p99": 242946834.8999996,
+          "max": 442196661.0
+        },
+        "wait_before_inference_ns": {
+          "mean": 29247373.941219874,
+          "median": 11574371.0,
+          "p95": 122790776.75,
+          "p99": 238397700.49999964,
+          "max": 437442158.0
+        }
+      },
+      "classified_per_second": 20.082265495833173,
+      "flows": 24413,
+      "classified": 24396,
+      "explanations": {
+        "eligible": 24396,
+        "selected": 0,
+        "completed": 0,
+        "selected_share": 0.0,
+        "completed_share": 0.0
+      },
+      "queue": {
+        "requested": null,
+        "accepted": null,
+        "dropped": null,
+        "completed": null,
+        "pending": null,
+        "drain_after_end_of_capture_ns": null,
+        "killed_after_drain_timeout": null,
+        "max": null
+      },
+      "resources": {
+        "classifier": {
+          "cpu_seconds": 107.56912,
+          "max_rss_mib": 221.27734375
+        },
+        "explainer": null,
+        "extractor": {
+          "cpu_seconds": 75.37,
+          "max_rss_mib": 1852.171875
+        }
+      },
+      "machine": {
+        "mains_online_in_every_sample": true,
+        "frequency_mhz": {
+          "0": 4168.899,
+          "2": 516.726
+        },
+        "throttle_events": {
+          "0": {
+            "core": 0,
+            "package": 244
+          },
+          "1": {
+            "core": 0,
+            "package": 244
+          },
+          "2": {
+            "core": 244,
+            "package": 244
+          },
+          "3": {
+            "core": 244,
+            "package": 244
+          },
+          "4": {
+            "core": 0,
+            "package": 244
+          },
+          "5": {
+            "core": 0,
+            "package": 244
+          },
+          "6": {
+            "core": 0,
+            "package": 244
+          },
+          "7": {
+            "core": 0,
+            "package": 244
+          },
+          "8": {
+            "core": 0,
+            "package": 244
+          },
+          "9": {
+            "core": 0,
+            "package": 244
+          },
+          "10": {
+            "core": 0,
+            "package": 244
+          },
+          "11": {
+            "core": 0,
+            "package": 244
+          }
+        },
+        "busy_share_sibling_cpus": {
+          "1": 0.7920792079207921,
+          "3": 0.6464646464646465
+        },
+        "memory_available_mib_min": 7865.7421875
+      }
+    },
+    {
+      "cell": {
+        "block": "variabilidade-sincrono-total",
+        "model": "random-forest",
+        "configuration": "sincrono-total",
+        "load": 2,
+        "repetition": 1,
+        "id": "variabilidade-sincrono-total/random-forest/sincrono-total/carga-2/rep-1",
+        "strategy": "sincrono-total",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "run_dir": "/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261118T023507713190Z",
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261118T100926208187Z",
+        "report": "relatorios/nids-validacao-20261118T100926208187Z.md",
+        "file_run": "training-runs/nids/arquivo/20261115T194303133777Z",
+        "copies": 2,
+        "checks": {
+          "tcpreplay_sent_whole_segment": true,
+          "h1_sent_equals_tcpreplay_successful": true,
+          "h2_received_equals_h1_sent": true,
+          "no_capture_drops": true,
+          "extractor_read_equals_h2_received": true,
+          "replay_run_flow_chain": true
+        },
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 5,
+        "predictions_compared": 44360,
+        "without_copy": 10
+      },
+      "copies": 2,
+      "load": {
+        "flows_emitted": 48816,
+        "flows_per_second": 40.67515755643005,
+        "packets_per_second": 6176.96,
+        "mbps": 60.94
+      },
+      "drops": {
+        "h2_interface": 0,
+        "libpcap": 0,
+        "libpcap_interface": 0,
+        "packets_received": 7412302,
+        "extractor_queue_flows": 0,
+        "extractor_queue_share": 0.0,
+        "extractor_queue_max": 3005
+      },
+      "timings": {
+        "inference_ns": {
+          "mean": 4571389.765938256,
+          "median": 4450761.0,
+          "p95": 6042952.249999999,
+          "p99": 8632147.680000003,
+          "max": 20866221.0
+        },
+        "classification_latency_ns": {
+          "mean": 8628863958.04514,
+          "median": 4082086067.0,
+          "p95": 34542974923.85,
+          "p99": 38601794041.19,
+          "max": 40066230932.0
+        },
+        "wait_before_inference_ns": {
+          "mean": 8616631142.911095,
+          "median": 4067957951.0,
+          "p95": 34531097074.7,
+          "p99": 38589790155.91,
+          "max": 40054697081.0
+        },
+        "explanation_ns": {
+          "mean": 7509248.332725186,
+          "median": 7364961.5,
+          "p95": 9855900.299999995,
+          "p99": 12927897.340000032,
+          "max": 32411751.0
+        },
+        "explanation_latency_ns": {
+          "mean": 8628863958.04514,
+          "median": 4082086067.0,
+          "p95": 34542974923.85,
+          "p99": 38601794041.19,
+          "max": 40066230932.0
+        }
+      },
+      "classified_per_second": 40.154476213925335,
+      "flows": 48816,
+      "classified": 48782,
+      "explanations": {
+        "eligible": 48782,
+        "selected": 48782,
+        "completed": 48782,
+        "selected_share": 1.0,
+        "completed_share": 1.0
+      },
+      "queue": {
+        "requested": null,
+        "accepted": null,
+        "dropped": null,
+        "completed": null,
+        "pending": null,
+        "drain_after_end_of_capture_ns": null,
+        "killed_after_drain_timeout": null,
+        "max": null
+      },
+      "resources": {
+        "classifier": {
+          "cpu_seconds": 617.421652,
+          "max_rss_mib": 289.7890625
+        },
+        "explainer": null,
+        "extractor": {
+          "cpu_seconds": 123.58,
+          "max_rss_mib": 3522.01171875
+        }
+      },
+      "machine": {
+        "mains_online_in_every_sample": true,
+        "frequency_mhz": {
+          "0": 2597.325,
+          "2": 2400.0
+        },
+        "throttle_events": {
+          "0": {
+            "core": 0,
+            "package": 147
+          },
+          "1": {
+            "core": 0,
+            "package": 147
+          },
+          "2": {
+            "core": 147,
+            "package": 147
+          },
+          "3": {
+            "core": 147,
+            "package": 147
+          },
+          "4": {
+            "core": 0,
+            "package": 147
+          },
+          "5": {
+            "core": 0,
+            "package": 147
+          },
+          "6": {
+            "core": 0,
+            "package": 147
+          },
+          "7": {
+            "core": 0,
+            "package": 147
+          },
+          "8": {
+            "core": 0,
+            "package": 147
+          },
+          "9": {
+            "core": 0,
+            "package": 147
+          },
+          "10": {
+            "core": 0,
+            "package": 147
+          },
+          "11": {
+            "core": 0,
+            "package": 147
+          }
+        },
+        "busy_share_sibling_cpus": {
+          "1": 0.63,
+          "3": 0.65
+        },
+        "memory_available_mib_min": 6067.25
+      }
+    },
+    {
+      "cell": {
+        "block": "variabilidade-sincrono-total",
+        "model": "random-forest",
+        "configuration": "sincrono-total",
+        "load": 2,
+        "repetition": 2,
+        "id": "variabilidade-sincrono-total/random-forest/sincrono-total/carga-2/rep-2",
+        "strategy": "sincrono-total",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "run_dir": "/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261118T025743290452Z",
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261118T100946852455Z",
+        "report": "relatorios/nids-validacao-20261118T100946852455Z.md",
+        "file_run": "training-runs/nids/arquivo/20261115T194303133777Z",
+        "copies": 2,
+        "checks": {
+          "tcpreplay_sent_whole_segment": true,
+          "h1_sent_equals_tcpreplay_successful": true,
+          "h2_received_equals_h1_sent": true,
+          "no_capture_drops": true,
+          "extractor_read_equals_h2_received": true,
+          "replay_run_flow_chain": true
+        },
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 9,
+        "predictions_compared": 44360,
+        "without_copy": 10
+      },
+      "copies": 2,
+      "load": {
+        "flows_emitted": 48816,
+        "flows_per_second": 40.675612589993,
+        "packets_per_second": 6176.96,
+        "mbps": 60.94
+      },
+      "drops": {
+        "h2_interface": 0,
+        "libpcap": 0,
+        "libpcap_interface": 0,
+        "packets_received": 7412302,
+        "extractor_queue_flows": 0,
+        "extractor_queue_share": 0.0,
+        "extractor_queue_max": 2697
+      },
+      "timings": {
+        "inference_ns": {
+          "mean": 4422937.487413391,
+          "median": 4394908.0,
+          "p95": 5776396.149999999,
+          "p99": 7803189.570000004,
+          "max": 24731426.0
+        },
+        "classification_latency_ns": {
+          "mean": 7506889844.6577425,
+          "median": 3160564243.0,
+          "p95": 29497320420.799995,
+          "p99": 33403886273.330017,
+          "max": 35130555809.0
+        },
+        "wait_before_inference_ns": {
+          "mean": 7495108591.859661,
+          "median": 3148245197.5,
+          "p95": 29484134005.64999,
+          "p99": 33391819783.59002,
+          "max": 35117588399.0
+        },
+        "explanation_ns": {
+          "mean": 7218119.988971342,
+          "median": 7270303.0,
+          "p95": 9302915.549999999,
+          "p99": 12295200.580000004,
+          "max": 31701542.0
+        },
+        "explanation_latency_ns": {
+          "mean": 7506889844.6577425,
+          "median": 3160564243.0,
+          "p95": 29497320420.799995,
+          "p99": 33403886273.330017,
+          "max": 35130555809.0
+        }
+      },
+      "classified_per_second": 40.15606996467108,
+      "flows": 48816,
+      "classified": 48782,
+      "explanations": {
+        "eligible": 48782,
+        "selected": 48782,
+        "completed": 48782,
+        "selected_share": 1.0,
+        "completed_share": 1.0
+      },
+      "queue": {
+        "requested": null,
+        "accepted": null,
+        "dropped": null,
+        "completed": null,
+        "pending": null,
+        "drain_after_end_of_capture_ns": null,
+        "killed_after_drain_timeout": null,
+        "max": null
+      },
+      "resources": {
+        "classifier": {
+          "cpu_seconds": 594.356392,
+          "max_rss_mib": 289.671875
+        },
+        "explainer": null,
+        "extractor": {
+          "cpu_seconds": 123.29,
+          "max_rss_mib": 3458.625
+        }
+      },
+      "machine": {
+        "mains_online_in_every_sample": true,
+        "frequency_mhz": {
+          "0": 2700.027,
+          "2": 2500.0
+        },
+        "throttle_events": {
+          "0": {
+            "core": 0,
+            "package": 150
+          },
+          "1": {
+            "core": 0,
+            "package": 150
+          },
+          "2": {
+            "core": 150,
+            "package": 150
+          },
+          "3": {
+            "core": 150,
+            "package": 150
+          },
+          "4": {
+            "core": 0,
+            "package": 150
+          },
+          "5": {
+            "core": 0,
+            "package": 150
+          },
+          "6": {
+            "core": 0,
+            "package": 150
+          },
+          "7": {
+            "core": 0,
+            "package": 150
+          },
+          "8": {
+            "core": 0,
+            "package": 150
+          },
+          "9": {
+            "core": 0,
+            "package": 150
+          },
+          "10": {
+            "core": 0,
+            "package": 150
+          },
+          "11": {
+            "core": 0,
+            "package": 150
+          }
+        },
+        "busy_share_sibling_cpus": {
+          "1": 0.55,
+          "3": 0.6
+        },
+        "memory_available_mib_min": 6132.484375
+      }
+    },
+    {
+      "cell": {
+        "block": "variabilidade-sincrono-total",
+        "model": "random-forest",
+        "configuration": "sincrono-total",
+        "load": 2,
+        "repetition": 3,
+        "id": "variabilidade-sincrono-total/random-forest/sincrono-total/carga-2/rep-3",
+        "strategy": "sincrono-total",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "run_dir": "/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261118T032018379332Z",
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261118T101010286693Z",
+        "report": "relatorios/nids-validacao-20261118T101010286693Z.md",
+        "file_run": "training-runs/nids/arquivo/20261115T194303133777Z",
+        "copies": 2,
+        "checks": {
+          "tcpreplay_sent_whole_segment": true,
+          "h1_sent_equals_tcpreplay_successful": true,
+          "h2_received_equals_h1_sent": true,
+          "no_capture_drops": true,
+          "extractor_read_equals_h2_received": true,
+          "replay_run_flow_chain": true
+        },
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 12,
+        "predictions_compared": 44360,
+        "without_copy": 10
+      },
+      "copies": 2,
+      "load": {
+        "flows_emitted": 48816,
+        "flows_per_second": 40.67477676484555,
+        "packets_per_second": 6176.96,
+        "mbps": 60.94
+      },
+      "drops": {
+        "h2_interface": 0,
+        "libpcap": 0,
+        "libpcap_interface": 0,
+        "packets_received": 7412302,
+        "extractor_queue_flows": 0,
+        "extractor_queue_share": 0.0,
+        "extractor_queue_max": 2739
+      },
+      "timings": {
+        "inference_ns": {
+          "mean": 4389099.531835513,
+          "median": 4372751.5,
+          "p95": 5684655.05,
+          "p99": 7711303.510000019,
+          "max": 21682339.0
+        },
+        "classification_latency_ns": {
+          "mean": 7482604352.607703,
+          "median": 3133443347.5,
+          "p95": 29857263711.199997,
+          "p99": 33878373358.58001,
+          "max": 35515557070.0
+        },
+        "wait_before_inference_ns": {
+          "mean": 7470901793.779037,
+          "median": 3121564295.5,
+          "p95": 29845507057.249996,
+          "p99": 33866249305.62001,
+          "max": 35503023986.0
+        },
+        "explanation_ns": {
+          "mean": 7174229.7633143375,
+          "median": 7251805.5,
+          "p95": 9117205.1,
+          "p99": 12198556.980000008,
+          "max": 33190495.0
+        },
+        "explanation_latency_ns": {
+          "mean": 7482604352.607703,
+          "median": 3133443347.5,
+          "p95": 29857263711.199997,
+          "p99": 33878373358.58001,
+          "max": 35515557070.0
+        }
+      },
+      "classified_per_second": 40.15738281140585,
+      "flows": 48816,
+      "classified": 48782,
+      "explanations": {
+        "eligible": 48782,
+        "selected": 48782,
+        "completed": 48782,
+        "selected_share": 1.0,
+        "completed_share": 1.0
+      },
+      "queue": {
+        "requested": null,
+        "accepted": null,
+        "dropped": null,
+        "completed": null,
+        "pending": null,
+        "drain_after_end_of_capture_ns": null,
+        "killed_after_drain_timeout": null,
+        "max": null
+      },
+      "resources": {
+        "classifier": {
+          "cpu_seconds": 590.474656,
+          "max_rss_mib": 289.59765625
+        },
+        "explainer": null,
+        "extractor": {
+          "cpu_seconds": 121.36,
+          "max_rss_mib": 3539.671875
+        }
+      },
+      "machine": {
+        "mains_online_in_every_sample": true,
+        "frequency_mhz": {
+          "0": 2761.891,
+          "2": 2348.086
+        },
+        "throttle_events": {
+          "0": {
+            "core": 0,
+            "package": 130
+          },
+          "1": {
+            "core": 0,
+            "package": 130
+          },
+          "2": {
+            "core": 130,
+            "package": 130
+          },
+          "3": {
+            "core": 130,
+            "package": 130
+          },
+          "4": {
+            "core": 0,
+            "package": 130
+          },
+          "5": {
+            "core": 0,
+            "package": 130
+          },
+          "6": {
+            "core": 0,
+            "package": 130
+          },
+          "7": {
+            "core": 0,
+            "package": 130
+          },
+          "8": {
+            "core": 0,
+            "package": 130
+          },
+          "9": {
+            "core": 0,
+            "package": 130
+          },
+          "10": {
+            "core": 0,
+            "package": 130
+          },
+          "11": {
+            "core": 0,
+            "package": 130
+          }
+        },
+        "busy_share_sibling_cpus": {
+          "1": 0.693069306930693,
+          "3": 0.5959595959595959
+        },
+        "memory_available_mib_min": 6045.375
+      }
+    }
+  ],
+  "variability": [
+    {
+      "model": "random-forest",
+      "configuration": "sem-xai",
+      "load": 1,
+      "trials": 3,
+      "inference_ns_mean": {
+        "min": 3.855574957534022,
+        "median": 3.939401545704214,
+        "max": 3.9850506191178883,
+        "relative_range": 0.03286683524939341
+      },
+      "classification_latency_ns_p95": {
+        "min": 123.520223,
+        "median": 127.01305075,
+        "max": 138.674357,
+        "relative_range": 0.11931162908469849
+      },
+      "classification_latency_ns_p99": {
+        "min": 242.9468348999996,
+        "median": 245.01495284999956,
+        "max": 307.1638696999995,
+        "relative_range": 0.262094349969384
+      }
+    },
+    {
+      "model": "random-forest",
+      "configuration": "sincrono-total",
+      "load": 2,
+      "trials": 3,
+      "inference_ns_mean": {
+        "min": 4.389099531835513,
+        "median": 4.422937487413391,
+        "max": 4.571389765938256,
+        "relative_range": 0.04121474350960113
+      },
+      "classification_latency_ns_p95": {
+        "min": 29497.320420799995,
+        "median": 29857.263711199997,
+        "max": 34542.97492385,
+        "relative_range": 0.168992528982396
+      },
+      "classification_latency_ns_p99": {
+        "min": 33403.88627333002,
+        "median": 33878.37335858001,
+        "max": 38601.794041190005,
+        "relative_range": 0.15342849294573846
+      }
+    }
+  ],
+  "acceleration_run": "training-runs/nids/aceleracao/20261116T102343628819Z",
+  "environment": {
+    "python": "3.12.3",
+    "libraries": {
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "scipy": "1.18.1",
+      "joblib": "1.6.0",
+      "xgboost-cpu": "3.4.1",
+      "shap": "0.54.1",
+      "matplotlib": "3.11.2",
+      "threadpoolctl": "3.8.0",
+      "pandas": "3.1.1"
+    },
+    "platform": "Linux-7.0.0-43-generic-x86_64-desconhecido-with-glibc2.43",
+    "cpu": "13th Gen Intel(R) Core(TM) i5-1334U",
+    "logical_cpus": 12
+  }
+}

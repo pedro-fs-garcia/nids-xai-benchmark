@@ -26,6 +26,21 @@ class PreparationConfig:
 
 
 @dataclass(frozen=True)
+class DerivedSegmentConfig:
+    """Trecho cortado de um trecho já preparado, entre dois instantes em UTC."""
+    path: Path
+    sha256: str
+    base_manifest: Path
+    base_segment: str
+    flows_csv: Path
+    output_dir: Path
+    name: str
+    start: datetime
+    stop: datetime
+    border_seconds: int
+
+
+@dataclass(frozen=True)
 class CommandResult:
     path: Path
     report_path: Path | None

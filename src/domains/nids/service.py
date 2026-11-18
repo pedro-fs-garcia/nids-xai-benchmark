@@ -3,6 +3,7 @@
 import json
 import os
 import signal
+import subprocess
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
@@ -13,20 +14,24 @@ from threadpoolctl import threadpool_limits
 
 from core.explanation_worker import EXPLANATION_TIMING, ExplanationWorker, explanation_record, read_explanations
 from core.flow_extractor import ExtractorBuild, NidsExtractorProcess, parse_timestamp_us
+from core.pcap_tools import write_time_scaled
 from core.frozen_prediction import FrozenPredictor
 from core.instrumentation import monotonic_ns, verify_shared_clock
-from core.process_resources import children_usage, memory_available_kib, pin_all_threads, self_usage, thread_affinities
+from core.process_resources import (children_usage, memory_available_kib, phase_usage, pin_all_threads, self_usage,
+                                    start_phase, thread_affinities)
+from core.traffic_copies import argument_digest, copy_address, pnat_argument
 from core.tree_explainer import TreeShapExplainer, explained_output
 from domains.explanations.service import summarize
 from domains.model_artifacts.service import prepare_flow
 from domains.nids import reporting
 from domains.nids.comparison import compare
+from domains.nids.copies import assign_copy, in_segment, split_copies
 from domains.nids.exceptions import NidsError
 from domains.nids.repository import NidsRepository
 from domains.nids.schemas import CRITERIA, MODELS, CommandResult
 from domains.nids.strategies import (COMPLETED, DROPPED, NOT_SELECTED, REQUESTED, Strategy, build_strategy,
-                                     explanation_checks, pending_series, selection_table)
-from domains.traffic_preparation.service import compare_attributes, has_nan, match_rows
+                                     explanation_checks, pending_series, selection_rule, selection_table)
+from domains.traffic_preparation.service import compare_attributes, connection_key, has_nan, match_rows
 
 TIMING = ["seq", "cause", "first_packet_us", "last_packet_us", "capture_clock_us",
           "t0_ns", "t1_ns", "t2_ns", "t3_ns", "prediction", "attack_probability", "error",
@@ -54,6 +59,8 @@ class Pipeline:
     worker: ExplanationWorker | None = None
     # Na leitura de arquivo, a solicitação espera vaga na fila em vez de ser descartada.
     block_on_full_queue: bool = False
+    # Na leitura de arquivo, as colunas de cada fluxo ficam na memória para a conferência com a tabela de referência.
+    keep_values: bool = False
 
 
 def load_explainer(root: str, data_dir: str, runs_dir: str, reports_dir: str, frozen_run: str, model_name: str,
@@ -141,7 +148,7 @@ class NidsService:
                                 f"{config.path}.")
         strategy = build_strategy(strategy_key, criterion, threshold)
         tree_shap = self.repo.tree_shap(config.tree_shap_config, config.frozen_run)
-        info = self.repo.segment(config.preparation_manifest, segment) if segment else None
+        info = self.repo.segment(config.preparation_manifests, segment) if segment else None
         if interface is not None:
             source, kind = {"iface": interface}, "interface"
         else:
@@ -159,10 +166,11 @@ class NidsService:
         run_dir = self.repo.create_run(kind)
         flows: list[dict[str, Any]] = []
         clock_difference = worker_clock_difference = worker_end = extractor_cpus = None
+        capture_phase = capture_usage = None
         with threadpool_limits(limits=config.classifier_threads):
             explainer, warmup = warm_up(estimator, strategy, len(manifest["inputs"]))
             pipeline = Pipeline(manifest, estimator, strategy, explainer, self.repo.open_channel(run_dir), None, None,
-                                block_on_full_queue=kind == "arquivo")
+                                block_on_full_queue=kind == "arquivo", keep_values=kind == "arquivo")
             streams = [pipeline.channel]
             process = None
             previous: dict[Any, Any] = {}
@@ -185,11 +193,15 @@ class NidsService:
                     warmup["explainer_process"] = {key: value for key, value in pipeline.worker.ready.items()
                                                    if key != "monotonic_ns"}
                 process = NidsExtractorProcess(build, source, config.extractor, cpus["extractor"],
-                                               config.resources["extractor_max_heap_mib"])
+                                               config.resources["extractor_max_heap_mib"],
+                                               config.resources["extractor_jvm_options"])
                 previous = {sig: signal.signal(sig, lambda *_: process.request_stop())
                             for sig in (signal.SIGTERM, signal.SIGINT)}
                 for event, payload in process.events():
                     if event == "start":
+                        # O uso de recursos do classificador cobre a captura, sem a carga do modelo nem as
+                        # verificações feitas depois dela.
+                        capture_phase = start_phase()
                         clock_difference = verify_shared_clock(payload["monotonic_ns"],
                                                                config.shared_clock_tolerance_ns)
                         extractor_cpus = sorted(os.sched_getaffinity(process.process.pid))
@@ -199,6 +211,7 @@ class NidsService:
                             self.repo.signal_ready(ready_file, run_dir)
                     elif event == "flow":
                         flows.append(self._classify(payload, pipeline))
+                capture_usage = phase_usage(capture_phase) if capture_phase is not None else None
                 if pipeline.worker is not None:
                     worker_end = pipeline.worker.finish(config.explanation_queue["drain_timeout_s"])
             except BaseException:
@@ -221,7 +234,8 @@ class NidsService:
         summary["shared_clock_difference_explainer_ns"] = worker_clock_difference
         explainer_usage = ((worker_end or {}).get("worker") or {}).get("process")
         summary["resources"] = {
-            "classifier_process": self_usage(), "explainer_process": explainer_usage,
+            "classifier_process": capture_usage, "classifier_process_total": self_usage(),
+            "explainer_process": explainer_usage,
             "extractor_process": end.get("process"), "children_total": children_usage(),
             "memory_available_kib_at_start": memory_at_start,
             "cpus": {"configured": cpus, "classifier": thread_affinities(),
@@ -295,7 +309,12 @@ class NidsService:
                            "delivery_start_ns": delivery_start, "explanation": status,
                            "explanation_requested_ns": requested})
         pipeline.table.writerow({**record, **values})
-        return {**record, "values": values}
+        # A tabela por fluxo guarda todas as colunas. Na memória fica só o que as verificações feitas depois da
+        # captura usam: o Flow ID e, nos fluxos selecionados, o vetor de entradas. As colunas inteiras só ficam na
+        # leitura de arquivo, que as compara com a tabela de referência.
+        selected_vector = vector if record["selected"] else None
+        return {**record, "flow_id": values["Flow ID"], "vector": selected_vector,
+                "values": values if pipeline.keep_values else None}
 
     def _summary(self, model_name: str, kind: str, source: dict[str, str], info: dict[str, Any] | None,
                  config: Any, loaded: Any, build: ExtractorBuild, run_dir: Path, flows: list[dict[str, Any]],
@@ -322,12 +341,14 @@ class NidsService:
             "stage": "nids run", "run_id": run_dir.name,
             "passed": all(checks.values()), "checks": checks, "model": model_name, "source": {"kind": kind, **source},
             "segment": None if info is None else {key: info[key] for key in (
-                "name", "stop", "stop_us", "pcap", "reference", "border_seconds", "manifest", "manifest_sha256")},
+                "name", "start", "start_us", "stop", "stop_us", "pcap", "reference", "carried_over", "addresses",
+                "border_seconds", "manifest", "manifest_sha256") if key in info},
             "config": self.repo.relative(config.path), "config_sha256": config.sha256,
             "selection_calibration_run": config.selection["calibration_run"],
             "frozen_run": self.repo.relative(config.frozen_run),
             "model_manifest_sha256": loaded.manifest["files"]["model"]["sha256"],
             "classifier_threads": config.classifier_threads, "extractor_options": config.extractor,
+            "extractor_jvm_options": config.resources["extractor_jvm_options"],
             "extractor_build": build.record, "extractor_start": {key: value for key, value in start.items()
                                                                  if key not in ("header", "type")},
             "extractor_end": {key: value for key, value in end.items() if key != "type"},
@@ -335,7 +356,7 @@ class NidsService:
             "flows": {"received": len(flows), "classified": len(classified), "errors": len(errors),
                       "by_cause": dict(Counter(flow["cause"] for flow in flows)),
                       "predictions": dict(Counter(str(flow["prediction"]) for flow in classified)),
-                      "error_examples": [{"seq": flow["seq"], "flow_id": flow["values"]["Flow ID"],
+                      "error_examples": [{"seq": flow["seq"], "flow_id": flow["flow_id"],
                                           "error": flow["error"]} for flow in errors[:5]]},
             "timings": timings, "artifacts": artifacts,
             "cpu_state": self.repo.cpu_state(), "environment": self.repo.environment(),
@@ -352,7 +373,7 @@ class NidsService:
         logistic = hasattr(pipeline.estimator, "get_booster")
         residual = probability_difference = None
         if known:
-            inputs = np.vstack([input_vector(classified[item["seq"]]["values"], pipeline.manifest) for item in known])
+            inputs = np.vstack([classified[item["seq"]]["vector"] for item in known])
             output = explained_output(pipeline.estimator, inputs)
             explained = np.array([item["reference_value"] + float(np.sum(item["contributions"])) for item in known])
             residual = float(np.max(np.abs(explained - output)))
@@ -496,9 +517,13 @@ class NidsService:
         """Compara os fluxos e as previsões do NIDS com o modelo aplicado à tabela de referência do trecho."""
         reference = self.repo.read_rows(info["reference"])
         border_start = info["stop_us"] - info["border_seconds"] * 1_000_000
+        # Num trecho que começa no meio da captura, os fluxos de conexões com pacotes antes do início ficam fora.
+        carried = self.repo.carried_over(info)
         nids_rows = [{**flow["values"], "_flow": flow} for flow in flows]
         pairs, only_reference, only_nids = match_rows(reference, nids_rows)
-        inside = [pair for pair in pairs if parse_timestamp_us(pair[0]["Timestamp"]) < border_start]
+        compared = lambda row: (parse_timestamp_us(row["Timestamp"]) < border_start  # noqa: E731
+                                and connection_key(row) not in carried)
+        inside = [pair for pair in pairs if compared(pair[0])]
         attributes = compare_attributes(inside, manifest["inputs"])
         classified = [(row, nids) for row, nids in inside if nids["_flow"]["error"] is None]
         expected_probability = estimator.predict_proba(
@@ -509,15 +534,19 @@ class NidsService:
         mismatched_attributes = sum(item["mismatches"] for item in attributes.values())
         differing_predictions = int(np.count_nonzero(predictions != expected)) if classified else 0
         largest = float(np.max(np.abs(observed - expected_probability))) if classified else 0.0
-        inside_reference_only = sum(1 for row in only_reference if parse_timestamp_us(row["Timestamp"]) < border_start)
-        nids_only = [row for row in only_nids if parse_timestamp_us(row["Timestamp"]) < border_start]
+        inside_reference_only = sum(1 for row in only_reference if compared(row))
+        nids_only = [row for row in only_nids if compared(row)]
         inside_nids_only = len(nids_only)
         nids_only_with_nan = sum(1 for row in nids_only if has_nan(row))
         passed = (mismatched_attributes == 0 and differing_predictions == 0 and largest <= PROBABILITY_ATOL
                   and inside_reference_only == 0 and inside_nids_only == nids_only_with_nan)
         return {
             "passed": passed, "reference_flows": len(reference), "matched_inside": len(inside),
-            "matched_border": len(pairs) - len(inside), "reference_only_inside": inside_reference_only,
+            "matched_border": sum(1 for row, _ in pairs if parse_timestamp_us(row["Timestamp"]) >= border_start
+                                  and connection_key(row) not in carried),
+            "carried_over": {"connections": len(carried),
+                             "flows": sum(1 for flow in flows if connection_key(flow["values"]) in carried)},
+            "reference_only_inside": inside_reference_only,
             "nids_only_inside": inside_nids_only, "nids_only_inside_with_nan": nids_only_with_nan,
             "attribute_mismatches": {name: item for name, item in attributes.items() if item["mismatches"]},
             "rounding_differences": sum(item["rounding_differences"] for item in attributes.values()),
@@ -526,6 +555,118 @@ class NidsService:
             "max_probability_difference": largest, "probability_atol": PROBABILITY_ATOL,
             "labels_of_matched": dict(Counter(row["Label"] for row, _ in inside)),
         }
+
+    def check_copy(self, model_name: str, segment: str, copy: int, original_dir: Path) -> CommandResult:
+        """Confere, sem rede, que uma cópia do trecho produz os mesmos fluxos e previsões que o trecho original.
+
+        O tcprewrite grava a cópia com a mesma troca de endereços que o tcpreplay-edit aplica na rede emulada, e
+        com a mesma biblioteca de edição. O NIDS lê essa cópia do arquivo, e cada fluxo, com os endereços de volta
+        aos originais, é comparado com o fluxo da execução por arquivo do trecho original."""
+        config = self.repo.read_config(self.config_path)
+        info = self.repo.segment(config.preparation_manifests, segment)
+        original = self.repo.read_json(original_dir / "report.json")
+        if (original["source"]["kind"] != "arquivo" or (original["segment"] or {}).get("name") != segment
+                or original["model"] != model_name or original.get("strategy_key") != "sem-xai"):
+            raise NidsError("A execução original deve ser a leitura do mesmo trecho, com o mesmo modelo, sem XAI.")
+        addresses = [address for address, _ in self.repo.read_json(self.repo.checked(info["addresses"]))]
+        rewrite = self.repo.rewrite_tool()
+        work = self.repo.create_run("copia")
+        copy_pcap = work / f"segment-{segment}-copia-{copy}.pcap"
+        argument = pnat_argument(addresses, copy)
+        try:
+            rewrite_command = [str(rewrite["path"]), *([argument] if argument else []),
+                               f"--infile={self.repo.root / info['pcap']['file']}", f"--outfile={copy_pcap}"]
+            completed = subprocess.run(rewrite_command, capture_output=True, text=True)
+            if completed.returncode != 0:
+                raise NidsError(f"O tcprewrite falhou: {completed.stderr[-2000:]}")
+            copy_pcap_info = self.repo.artifact(copy_pcap)
+            result = self.run(model_name, pcap=copy_pcap)
+        finally:
+            copy_pcap.unlink(missing_ok=True)
+        copy_report = result.summary
+        original_rows = self.repo.read_rows(original["artifacts"]["flows.csv"])
+        copy_rows = self.repo.read_rows(copy_report["artifacts"]["flows.csv"])
+        groups, unassigned = split_copies(copy_rows, addresses)
+        mapped = groups.get(copy, [])
+        known = set(addresses)
+        key = lambda row: (*(row[name] for name in FIVE_TUPLE), row["Timestamp"])  # noqa: E731
+        pairs, only_original, only_copy = match_rows(original_rows, [*mapped, *unassigned], key=key)
+        inputs = self.repo.data_manifest()["inputs"]
+        attributes = compare_attributes(pairs, inputs)
+        mismatches = sum(item["mismatches"] for item in attributes.values())
+        differing_probability = sum(1 for left, right in pairs if left["attack_probability"] != right["attack_probability"]
+                                    or left["prediction"] != right["prediction"] or left["error"] != right["error"])
+        exact_values = sum(1 for left, right in pairs if all(left[name] == right[name] for name in inputs))
+        checks = {
+            "every_flow_in_one_copy": len(mapped) == sum(1 for row in original_rows if in_segment(row, known))
+            and set(groups) <= {copy},
+            "same_flows": not only_original and not only_copy and len(pairs) == len(original_rows),
+            "same_inputs": mismatches == 0 and exact_values == len(pairs),
+            "same_predictions": differing_probability == 0,
+        }
+        summary = {
+            "stage": "copy check", "run_id": work.name, "passed": all(checks.values()), "checks": checks,
+            "model": model_name, "segment": segment, "copy": copy, "original_run": self.repo.relative(original_dir),
+            "copy_run": self.repo.relative(result.run_dir), "copy_pcap": copy_pcap_info,
+            "rewrite": {"tool": rewrite["record"], "command": [part if not part.startswith("--pnat=") else
+                                                               "--pnat=<pares da cópia>" for part in rewrite_command],
+                        "pnat_pairs": len(addresses) if argument else 0, "pnat_sha256": argument_digest(argument),
+                        "output": completed.stdout.strip().splitlines()[-10:]},
+            "flows": {"original": len(original_rows), "copy": len(copy_rows), "mapped": len(mapped),
+                      "without_copy": len(unassigned), "matched": len(pairs), "only_original": len(only_original),
+                      "only_copy": len(only_copy), "exact_values": exact_values,
+                      "differing_predictions": differing_probability},
+            "attribute_mismatches": {name: item for name, item in attributes.items() if item["mismatches"]},
+            "addresses": {"count": len(addresses), "first_copy_address": copy_address(0, copy) if copy > 1 else None},
+            "environment": self.repo.environment(),
+        }
+        self.repo.write_json(work / "report.json", summary)
+        report = self.repo.write_report(f"nids-copia-{work.name}.md", reporting.render_copy_check(summary))
+        if not summary["passed"]:
+            raise NidsError(f"A cópia não reproduz os fluxos do trecho. Ver {report}.")
+        return CommandResult(work, report, summary)
+
+    def acceleration_effect(self, segment: str, factors: list[float], original_dirs: list[Path]) -> CommandResult:
+        """Mede, sem rede, como a reprodução acelerada muda os fluxos, as previsões e a seleção do Síncrono
+        condicional.
+
+        O NIDS lê o trecho com os intervalos entre pacotes divididos por cada fator, com cada classificador das
+        leituras originais. Cada fluxo é casado com o da leitura original pela quíntupla e pela ordem de ocorrência.
+        Assim, o efeito da aceleração sobre os atributos fica separado do custo de processamento do NIDS."""
+        config = self.repo.read_config(self.config_path)
+        info = self.repo.segment(config.preparation_manifests, segment)
+        originals = {}
+        for directory in original_dirs:
+            report = self.repo.read_json(directory / "report.json")
+            if (report["source"]["kind"] != "arquivo" or (report["segment"] or {}).get("name") != segment
+                    or report.get("strategy_key") != "sem-xai" or not report["passed"]):
+                raise NidsError(f"{directory} deve ser uma leitura aprovada do trecho {segment}, sem XAI.")
+            originals[report["model"]] = (directory, report)
+        inputs = self.repo.data_manifest()["inputs"]
+        thresholds = config.selection["thresholds"]
+        work = self.repo.create_run("aceleracao")
+        rows = []
+        for factor in factors:
+            scaled = work / f"segment-{segment}-x{factor:g}.pcap"
+            try:
+                write_time_scaled(self.repo.root / info["pcap"]["file"], scaled, factor)
+                for model, (directory, report) in originals.items():
+                    result = self.run(model, pcap=scaled)
+                    rows.append({"factor": factor, "model": model, "run": self.repo.relative(result.run_dir),
+                                 **_acceleration_row(self.repo.read_rows(report["artifacts"]["flows.csv"]),
+                                                     self.repo.read_rows(result.summary["artifacts"]["flows.csv"]),
+                                                     inputs, {name: values[model]
+                                                              for name, values in thresholds.items()})})
+            finally:
+                scaled.unlink(missing_ok=True)
+        summary = {
+            "stage": "acceleration effect", "run_id": work.name, "segment": segment, "factors": factors,
+            "original_runs": {model: self.repo.relative(directory) for model, (directory, _) in originals.items()},
+            "thresholds": thresholds, "rows": rows, "environment": self.repo.environment(),
+        }
+        self.repo.write_json(work / "report.json", summary)
+        report_path = self.repo.write_report(f"nids-aceleracao-{work.name}.md", reporting.render_acceleration(summary))
+        return CommandResult(work, report_path, summary)
 
     def validate(self, replay_dir: Path, file_dir: Path) -> CommandResult:
         """Compara a execução que capturou o trecho reproduzido na rede emulada com a execução do mesmo arquivo."""
@@ -541,37 +682,60 @@ class NidsService:
             raise NidsError("As duas execuções devem usar a mesma estratégia de explicação e o mesmo critério.")
         if not original["passed"]:
             raise NidsError("A execução por arquivo precisa ter passado na conferência com a tabela de referência.")
-        info = self.repo.segment(config.preparation_manifest, original["segment"]["name"])
+        info = self.repo.segment(config.preparation_manifests, original["segment"]["name"])
         inputs = self.repo.data_manifest()["inputs"]
-        file_rows = _with_ordinal(self.repo.read_rows(original["artifacts"]["flows.csv"]))
-        replay_rows = _with_ordinal(self.repo.read_rows(replay["artifacts"]["flows.csv"]))
-        pairs, only_file, only_replay = match_rows(file_rows, replay_rows, key=_ordinal_key)
-        offset = int(np.median([int(r["first_packet_us"]) - int(f["first_packet_us"]) for f, r in pairs])) if pairs else 0
-        border_start = info["stop_us"] - info["border_seconds"] * 1_000_000
-        inside_file = lambda row: int(row["first_packet_us"]) < border_start  # noqa: E731
-        inside_replay = lambda row: int(row["first_packet_us"]) - offset < border_start  # noqa: E731
-        inside = [(f, r) for f, r in pairs if inside_file(f)]
-        swapped, _, _ = match_rows([row for row in only_file if inside_file(row)],
-                                   [row for row in only_replay if inside_replay(row)], key=_endpoints_key)
-
-        exact_names = [name for name in inputs if not _temporal(name)]
-        temporal_names = [name for name in inputs if _temporal(name)]
-        exact = compare_attributes(inside, exact_names)
-        temporal = _temporal_differences(inside, temporal_names)
-        exact_equal = [(f, r) for f, r in inside if all(f[name] == r[name] or float(f[name]) == float(r[name])
-                                                         for name in exact_names)]
-        classified = [(f, r) for f, r in inside if not f["error"] and not r["error"]]
-        differing = [(f, r) for f, r in classified if f["prediction"] != r["prediction"]]
-        exact_keys = {id(f) for f, _ in exact_equal}
+        file_rows = self.repo.read_rows(original["artifacts"]["flows.csv"])
+        replay_path = self.repo.checked(replay["artifacts"]["flows.csv"])
         reference = self.repo.read_rows(info["reference"])
         labelled, _, _ = match_rows(file_rows, reference)
         labels = {id(row): ref["Label"] for row, ref in labelled}
+        border_start = info["stop_us"] - info["border_seconds"] * 1_000_000
+        copies = int(emulation.get("copies", 1))
+        seconds: Counter[int] = Counter()
+        replay_count = 0
+        unassigned: list[dict[str, str]] = []
+        if copies == 1:
+            replay_rows = self.repo.stream_rows(replay_path)
+            groups = {1: list(replay_rows)}
+            replay_count = len(groups[1])
+            seconds.update(int(row["t0_ns"]) // 1_000_000_000 for row in groups[1])
+            compared_file = file_rows
+            compare_copy = lambda copy: groups[copy]  # noqa: E731
+        else:
+            # Cada cópia é comparada com a execução por arquivo, com os endereços originais. Os fluxos sem cópia,
+            # formados de quadros que não são IPv4, juntam pacotes de todas as cópias e ficam fora da comparação.
+            # A tabela da reprodução é lida uma vez por cópia, para que só os fluxos de uma cópia fiquem na memória.
+            addresses = [address for address, _ in self.repo.read_json(self.repo.checked(info["addresses"]))]
+            positions = {address: index for index, address in enumerate(addresses)}
+            for row in self.repo.stream_rows(replay_path):
+                replay_count += 1
+                seconds[int(row["t0_ns"]) // 1_000_000_000] += 1
+                if assign_copy(row, positions, addresses) is None:
+                    unassigned.append({key: row[key] for key in _BRIEF})
+            known = set(addresses)
+            compared_file = [row for row in file_rows if in_segment(row, known)]
+
+            def compare_copy(copy: int) -> list[dict[str, str]]:
+                rows = []
+                for row in self.repo.stream_rows(replay_path):
+                    assigned = assign_copy(row, positions, addresses)
+                    if assigned is not None and assigned[0] == copy:
+                        rows.append(assigned[1])
+                return rows
+        compared_file = _with_ordinal(compared_file)
+        copy_rows: dict[str, dict[str, Any]] = {}
+        main: dict[str, Any] = {}
+        for copy in range(1, copies + 1):
+            result = _compare_flows(compared_file, _with_ordinal(compare_copy(copy)), border_start, inputs, labels)
+            copy_rows[str(copy)] = _copy_row(result)
+            if copy == 1:
+                main = result
 
         emitted, received = replay["extractor_end"], replay["flows"]
         tcpreplay, interfaces = emulation["tcpreplay"], emulation["interface_counters"]
         stats = emitted.get("pcap_stats") or {}
         counters = {
-            "segment_packets": info["summary"]["packets"],
+            "copies": copies, "segment_packets": info["summary"]["packets"] * copies,
             "tcpreplay_attempted": tcpreplay.get("attempted_packets"), "tcpreplay_successful": tcpreplay.get("successful"),
             "tcpreplay_failed": tcpreplay.get("failed"), "tcpreplay_truncated": tcpreplay.get("truncated"),
             "h1_sent": interfaces["h1-eth0"]["tx_packets"], "h2_received": interfaces["h2-eth0"]["rx_packets"],
@@ -588,7 +752,6 @@ class NidsService:
             "flows_classified": received["classified"], "flows_with_error": received["errors"],
         }
         checks = replay_checks(counters, replay["checks"])
-        seconds = Counter(int(row["t0_ns"]) // 1_000_000_000 for row in replay_rows)
         emission = {"flows": emitted["flows_emitted"],
                     "per_second": emitted["flows_emitted"] / emulation["replay_seconds"],
                     "peak_per_second": max(seconds.values(), default=0)}
@@ -601,28 +764,19 @@ class NidsService:
             "replay_run": self.repo.relative(replay_dir), "file_run": self.repo.relative(file_dir),
             "replay": {key: emulation.get(key) for key in ("topology", "replay_command", "replay_seconds",
                                                            "wait_after_replay_s", "replay_started_utc",
-                                                           "tcpreplay_build")},
-            "tcpreplay": {key: value for key, value in tcpreplay.items() if key not in ("output", "errors")},
-            "flows": {
-                "file": len(file_rows), "replay": len(replay_rows), "matched_inside": len(inside),
-                "matched_border": len(pairs) - len(inside), "file_only_inside": sum(1 for row in only_file if inside_file(row)),
-                "replay_only_inside": sum(1 for row in only_replay if inside_replay(row)),
-                "swapped_direction_inside": len(swapped), "replay_offset_us": offset,
-                "file_only_examples": [_brief(row) for row in only_file if inside_file(row)][:5],
-                "replay_only_examples": [_brief(row) for row in only_replay if inside_replay(row)][:5],
-            },
-            "emission": emission, "packet_shifts": _packet_shifts(pairs, inside),
-            "exact_attributes": {name: item for name, item in exact.items() if item["mismatches"]},
-            "temporal_attributes": temporal, "flows_with_equal_exact_attributes": len(exact_equal),
-            "predictions": {
-                "compared": len(classified), "differing": len(differing),
-                "differing_with_equal_exact_attributes": sum(1 for f, _ in differing if id(f) in exact_keys),
-                "examples": [{**_brief(f), "file_probability": f["attack_probability"],
-                              "replay_probability": r["attack_probability"]} for f, r in differing[:10]],
-            },
-            "labels": {"matched_inside": dict(Counter(labels.get(id(f), "sem rótulo") for f, _ in inside)),
-                       "file_only_inside": dict(Counter(labels.get(id(row), "sem rótulo")
-                                                        for row in only_file if inside_file(row)))},
+                                                           "tcpreplay_build", "copies")},
+            "tcpreplay": {key: value for key, value in tcpreplay.items() if key not in ("output", "errors", "copies")},
+            "tcpreplay_copies": [{key: value for key, value in item.items() if key != "output"}
+                                 for item in tcpreplay.get("copies", [])],
+            # A comparação principal é a da cópia 1, o trecho sem alteração.
+            "flows": {**main["flows"], "file": len(file_rows), "replay": replay_count,
+                      "compared_file": len(compared_file), "without_copy": len(unassigned)},
+            "emission": emission, "packet_shifts": main["packet_shifts"],
+            "exact_attributes": main["exact_attributes"], "temporal_attributes": main["temporal_attributes"],
+            "flows_with_equal_exact_attributes": main["flows_with_equal_exact_attributes"],
+            "predictions": main["predictions"], "labels": main["labels"],
+            "copies": copy_rows if copies > 1 else None,
+            "without_copy_examples": unassigned[:5],
             "replay_timings": replay["timings"], "environment": self.repo.environment(),
         }
         self.repo.write_json(run_dir / "report.json", summary)
@@ -661,6 +815,94 @@ def replay_checks(counters: dict[str, Any], replay_run_checks: dict[str, bool]) 
         and counters["pcap_interface_dropped"] == 0,
         "extractor_read_equals_h2_received": counters["extractor_read"] == counters["h2_received"],
         "replay_run_flow_chain": all(replay_run_checks.values()),
+    }
+
+
+def _compare_flows(file_rows: list[dict[str, str]], replay_rows: list[dict[str, str]], border_start: int,
+                   inputs: list[str], labels: dict[int, str]) -> dict[str, Any]:
+    """Casa os fluxos reproduzidos com os da execução por arquivo e mede as diferenças de atributos e previsões.
+
+    As duas listas já têm o número de ordem de cada fluxo na sua quíntupla. A borda é contada à parte, porque o
+    corte do trecho pode ter retirado pacotes dos fluxos que começam nos últimos segundos."""
+    pairs, only_file, only_replay = match_rows(file_rows, replay_rows, key=_ordinal_key)
+    offset = int(np.median([int(r["first_packet_us"]) - int(f["first_packet_us"]) for f, r in pairs])) if pairs else 0
+    inside_file = lambda row: int(row["first_packet_us"]) < border_start  # noqa: E731
+    inside_replay = lambda row: int(row["first_packet_us"]) - offset < border_start  # noqa: E731
+    inside = [(f, r) for f, r in pairs if inside_file(f)]
+    swapped, _, _ = match_rows([row for row in only_file if inside_file(row)],
+                               [row for row in only_replay if inside_replay(row)], key=_endpoints_key)
+    exact_names = [name for name in inputs if not _temporal(name)]
+    temporal_names = [name for name in inputs if _temporal(name)]
+    exact = compare_attributes(inside, exact_names)
+    exact_equal = [(f, r) for f, r in inside if all(f[name] == r[name] or float(f[name]) == float(r[name])
+                                                     for name in exact_names)]
+    classified = [(f, r) for f, r in inside if not f["error"] and not r["error"]]
+    differing = [(f, r) for f, r in classified if f["prediction"] != r["prediction"]]
+    exact_keys = {id(f) for f, _ in exact_equal}
+    return {
+        "flows": {
+            "matched_inside": len(inside), "matched_border": len(pairs) - len(inside),
+            "file_only_inside": sum(1 for row in only_file if inside_file(row)),
+            "replay_only_inside": sum(1 for row in only_replay if inside_replay(row)),
+            "swapped_direction_inside": len(swapped), "replay_offset_us": offset, "replay_flows": len(replay_rows),
+            "file_only_examples": [_brief(row) for row in only_file if inside_file(row)][:5],
+            "replay_only_examples": [_brief(row) for row in only_replay if inside_replay(row)][:5],
+        },
+        "packet_shifts": _packet_shifts(pairs, inside),
+        "exact_attributes": {name: item for name, item in exact.items() if item["mismatches"]},
+        "temporal_attributes": _temporal_differences(inside, temporal_names),
+        "flows_with_equal_exact_attributes": len(exact_equal),
+        "predictions": {
+            "compared": len(classified), "differing": len(differing),
+            "differing_with_equal_exact_attributes": sum(1 for f, _ in differing if id(f) in exact_keys),
+            "examples": [{**_brief(f), "file_probability": f["attack_probability"],
+                          "replay_probability": r["attack_probability"]} for f, r in differing[:10]],
+        },
+        "labels": {"matched_inside": dict(Counter(labels.get(id(f), "sem rótulo") for f, _ in inside)),
+                   "file_only_inside": dict(Counter(labels.get(id(row), "sem rótulo")
+                                                    for row in only_file if inside_file(row)))},
+    }
+
+
+def _acceleration_row(original: list[dict[str, str]], scaled: list[dict[str, str]], inputs: list[str],
+                      thresholds: dict[str, float]) -> dict[str, Any]:
+    """Fluxos, atributos, previsões e seleção da leitura acelerada, comparados com os da leitura original."""
+    pairs, only_original, only_scaled = match_rows(_with_ordinal(original), _with_ordinal(scaled), key=_ordinal_key)
+    exact_names = [name for name in inputs if not _temporal(name)]
+    temporal_names = [name for name in inputs if _temporal(name)]
+    equal = lambda left, right, names: all(  # noqa: E731
+        left[name] == right[name] or float(left[name]) == float(right[name]) for name in names)
+    classified = [(left, right) for left, right in pairs if not left["error"] and not right["error"]]
+    rules = {criterion: selection_rule(criterion, threshold) for criterion, threshold in thresholds.items()}
+    probability = lambda row: float(row["attack_probability"])  # noqa: E731
+    attacks = lambda rows: sum(1 for row in rows if not row["error"] and row["prediction"] == "1")  # noqa: E731
+    return {
+        "flows": {"original": len(original), "scaled": len(scaled), "matched": len(pairs),
+                  "only_original": len(only_original), "only_scaled": len(only_scaled)},
+        "matched_with_equal_exact_attributes": sum(1 for left, right in pairs if equal(left, right, exact_names)),
+        "matched_with_equal_temporal_attributes": sum(1 for left, right in pairs
+                                                      if equal(left, right, temporal_names)),
+        "predictions": {"compared": len(classified),
+                        "differing": sum(1 for left, right in classified if left["prediction"] != right["prediction"]),
+                        "attacks_original": attacks(original), "attacks_scaled": attacks(scaled)},
+        "selection": {criterion: {
+            "selected_original": sum(1 for row in original if not row["error"] and rule(probability(row))),
+            "selected_scaled": sum(1 for row in scaled if not row["error"] and rule(probability(row))),
+            "differing_in_matched": sum(1 for left, right in classified
+                                        if rule(probability(left)) != rule(probability(right)))}
+            for criterion, rule in rules.items()},
+    }
+
+
+def _copy_row(result: dict[str, Any]) -> dict[str, Any]:
+    """Números principais da comparação de uma cópia com a execução por arquivo."""
+    flows = result["flows"]
+    return {key: flows[key] for key in ("replay_flows", "matched_inside", "matched_border", "file_only_inside",
+                                        "replay_only_inside", "replay_offset_us")} | {
+        "flows_with_equal_exact_attributes": result["flows_with_equal_exact_attributes"],
+        "exact_attribute_mismatches": sum(item["mismatches"] for item in result["exact_attributes"].values()),
+        "predictions_compared": result["predictions"]["compared"],
+        "predictions_differing": result["predictions"]["differing"],
     }
 
 
@@ -730,6 +972,8 @@ def _temporal_differences(pairs: list[tuple[dict[str, str], dict[str, str]]], na
     return result
 
 
+_BRIEF = ("seq", "cause", *FIVE_TUPLE, "Timestamp", "Total Fwd Packet", "Total Bwd packets")
+
+
 def _brief(row: dict[str, str]) -> dict[str, str]:
-    return {key: row[key] for key in ("seq", "cause", *FIVE_TUPLE, "Timestamp", "Total Fwd Packet",
-                                      "Total Bwd packets")}
+    return {key: row[key] for key in _BRIEF}

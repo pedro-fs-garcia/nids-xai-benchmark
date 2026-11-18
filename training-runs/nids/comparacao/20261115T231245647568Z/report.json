@@ -1,0 +1,289 @@
+{
+  "stage": "strategy comparison",
+  "run_id": "20261115T231245647568Z",
+  "model": "xgboost",
+  "source_kind": "arquivo",
+  "segment": "campanha",
+  "compared_runs": [
+    "training-runs/nids/arquivo/20261115T231006523112Z",
+    "training-runs/nids/arquivo/20261115T200416040050Z",
+    "training-runs/nids/arquivo/20261115T200638015105Z",
+    "training-runs/nids/arquivo/20261115T200826973250Z",
+    "training-runs/nids/arquivo/20261115T201018001853Z"
+  ],
+  "passed": true,
+  "checks": {
+    "four_strategies_once_each": true,
+    "same_fixed_inputs": true,
+    "every_run_passed": true,
+    "measurement_points_present": true,
+    "processes_on_configured_cpus": true,
+    "identical_classifications": true,
+    "same_flows": true,
+    "async_explanations_equal_total": true,
+    "conditional_probabilidade_explains_the_selected_subset_of_total": true,
+    "conditional_incerteza_explains_the_selected_subset_of_total": true
+  },
+  "file_mode": true,
+  "differences": {
+    "total_vs_async": {
+      "common": 24396,
+      "max_abs_difference": 0.0,
+      "equal": true
+    },
+    "total_vs_conditional_probabilidade": {
+      "common": 696,
+      "max_abs_difference": 0.0,
+      "equal": true
+    },
+    "total_vs_conditional_incerteza": {
+      "common": 29,
+      "max_abs_difference": 0.0,
+      "equal": true
+    }
+  },
+  "runs": [
+    {
+      "run_id": "20261115T231006523112Z",
+      "source_kind": "arquivo",
+      "strategy": "Sem XAI",
+      "criterion": null,
+      "threshold": null,
+      "classified": 24396,
+      "selected": 0,
+      "completed": 0,
+      "dropped": 0,
+      "pending": 0,
+      "queue_max": null,
+      "flows_dropped_in_extractor": 0,
+      "timings": {
+        "inference_ns": {
+          "mean": 356766.7372110182,
+          "p95": 850856.0,
+          "p99": 1278443.5499999996
+        },
+        "classification_latency_ns": {
+          "mean": 35545544.81316609,
+          "p95": 88377606.5,
+          "p99": 119179630.24999997
+        }
+      },
+      "cpu_seconds": {
+        "classifier": 23.02664,
+        "explainer": null,
+        "extractor": 252.94
+      },
+      "max_rss_mib": {
+        "classifier": 327.0,
+        "explainer": null,
+        "extractor": 1665.19921875
+      }
+    },
+    {
+      "run_id": "20261115T200416040050Z",
+      "source_kind": "arquivo",
+      "strategy": "Síncrono total",
+      "criterion": null,
+      "threshold": null,
+      "classified": 24396,
+      "selected": 24396,
+      "completed": 24396,
+      "dropped": 0,
+      "pending": 0,
+      "queue_max": null,
+      "flows_dropped_in_extractor": 0,
+      "timings": {
+        "inference_ns": {
+          "mean": 313496.3941219872,
+          "p95": 612454.75,
+          "p99": 897949.1999999996
+        },
+        "explanation_ns": {
+          "mean": 569372.6772421709,
+          "p95": 978965.25,
+          "p99": 1433054.7999999989
+        },
+        "classification_latency_ns": {
+          "mean": 82473554.44986883,
+          "p95": 157875725.5,
+          "p99": 192909636.05
+        },
+        "explanation_latency_ns": {
+          "mean": 82473554.44986883,
+          "p95": 157875725.5,
+          "p99": 192909636.05
+        }
+      },
+      "cpu_seconds": {
+        "classifier": 36.175853,
+        "explainer": null,
+        "extractor": 134.28
+      },
+      "max_rss_mib": {
+        "classifier": 393.05078125,
+        "explainer": null,
+        "extractor": 1674.6953125
+      }
+    },
+    {
+      "run_id": "20261115T200638015105Z",
+      "source_kind": "arquivo",
+      "strategy": "Síncrono condicional",
+      "criterion": "probabilidade",
+      "threshold": 0.5,
+      "classified": 24396,
+      "selected": 696,
+      "completed": 696,
+      "dropped": 0,
+      "pending": 0,
+      "queue_max": null,
+      "flows_dropped_in_extractor": 0,
+      "timings": {
+        "inference_ns": {
+          "mean": 278217.6542056075,
+          "p95": 635258.75,
+          "p99": 1011638.1499999996
+        },
+        "explanation_ns": {
+          "mean": 602445.341954023,
+          "p95": 1363576.25,
+          "p99": 1881983.9999999942
+        },
+        "classification_latency_ns": {
+          "mean": 31596439.73102148,
+          "p95": 65428254.75,
+          "p99": 95963583.24999988
+        },
+        "explanation_latency_ns": {
+          "mean": 15779876.168103449,
+          "p95": 57853645.25,
+          "p99": 97310408.79999964
+        }
+      },
+      "cpu_seconds": {
+        "classifier": 18.98555,
+        "explainer": null,
+        "extractor": 165.75
+      },
+      "max_rss_mib": {
+        "classifier": 373.3359375,
+        "explainer": null,
+        "extractor": 1690.3046875
+      }
+    },
+    {
+      "run_id": "20261115T200826973250Z",
+      "source_kind": "arquivo",
+      "strategy": "Síncrono condicional",
+      "criterion": "incerteza",
+      "threshold": 0.4,
+      "classified": 24396,
+      "selected": 29,
+      "completed": 29,
+      "dropped": 0,
+      "pending": 0,
+      "queue_max": null,
+      "flows_dropped_in_extractor": 0,
+      "timings": {
+        "inference_ns": {
+          "mean": 286101.68986719137,
+          "p95": 648682.5,
+          "p99": 949446.3999999998
+        },
+        "explanation_ns": {
+          "mean": 601244.7586206896,
+          "p95": 901029.1999999998,
+          "p99": 1447339.6799999992
+        },
+        "classification_latency_ns": {
+          "mean": 31663513.667650435,
+          "p95": 68892368.5,
+          "p99": 114240878.19999994
+        },
+        "explanation_latency_ns": {
+          "mean": 30244042.413793102,
+          "p95": 70638368.99999996,
+          "p99": 81772645.55999999
+        }
+      },
+      "cpu_seconds": {
+        "classifier": 19.002820999999997,
+        "explainer": null,
+        "extractor": 166.84
+      },
+      "max_rss_mib": {
+        "classifier": 373.33984375,
+        "explainer": null,
+        "extractor": 1705.55859375
+      }
+    },
+    {
+      "run_id": "20261115T201018001853Z",
+      "source_kind": "arquivo",
+      "strategy": "Assíncrono",
+      "criterion": null,
+      "threshold": null,
+      "classified": 24396,
+      "selected": 24396,
+      "completed": 24396,
+      "dropped": 0,
+      "pending": 0,
+      "queue_max": 19,
+      "flows_dropped_in_extractor": 0,
+      "timings": {
+        "inference_ns": {
+          "mean": 464683.49836038693,
+          "p95": 888696.0,
+          "p99": 1265414.0999999994
+        },
+        "explanation_ns": {
+          "mean": 803349.0930890309,
+          "p95": 1520757.5,
+          "p99": 2284318.1999999974
+        },
+        "classification_latency_ns": {
+          "mean": 58420587.48032464,
+          "p95": 128618539.5,
+          "p99": 160012238.45
+        },
+        "explanation_latency_ns": {
+          "mean": 60699044.35411543,
+          "p95": 132712313.5,
+          "p99": 163425667.0499999
+        },
+        "queue_wait_ns": {
+          "mean": 1357393.6367027382,
+          "p95": 4265898.5,
+          "p99": 11509006.549999986
+        }
+      },
+      "cpu_seconds": {
+        "classifier": 27.773755000000005,
+        "explainer": 23.784336999999997,
+        "extractor": 132.68
+      },
+      "max_rss_mib": {
+        "classifier": 393.55859375,
+        "explainer": 203.56640625,
+        "extractor": 1675.140625
+      }
+    }
+  ],
+  "environment": {
+    "python": "3.12.3",
+    "libraries": {
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "scipy": "1.18.1",
+      "joblib": "1.6.0",
+      "xgboost-cpu": "3.4.1",
+      "shap": "0.54.1",
+      "matplotlib": "3.11.2",
+      "threadpoolctl": "3.8.0",
+      "pandas": "3.1.1"
+    },
+    "platform": "Linux-7.0.0-43-generic-x86_64-desconhecido-with-glibc2.43",
+    "cpu": "13th Gen Intel(R) Core(TM) i5-1334U",
+    "logical_cpus": 12
+  }
+}

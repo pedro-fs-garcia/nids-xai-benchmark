@@ -5,6 +5,7 @@ import json
 import os
 import subprocess
 import threading
+import time
 from collections.abc import Iterator
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
@@ -14,7 +15,10 @@ from typing import Any
 from core.process_resources import pin_before_exec
 
 EXTRACTOR_COMMIT = "13a061520b862d605eea746c79ca4033b30d98fc"
-# Tempo que o extrator tem para parar depois do pedido de parada. Passado esse tempo, o processo é encerrado.
+# Tempo que o extrator pode ficar sem entregar uma linha depois do pedido de parada. Antes de sair, ele entrega os
+# fluxos que restam na fila de saída, no ritmo do classificador, o que leva minutos com o classificador saturado. Por
+# isso, o prazo conta desde a última linha lida ou desde o pedido, o que vier depois. Passado esse tempo, o processo é
+# encerrado.
 STOP_TIMEOUT_S = 30.0
 _EPOCH = datetime(1970, 1, 1, tzinfo=timezone.utc)
 METADATA = ("Flow ID", "Src IP", "Src Port", "Dst IP", "Dst Port", "Protocol", "Timestamp")
@@ -46,13 +50,14 @@ class ExtractorBuild:
             if _sha256(build_dir / name) != expected:
                 raise ValueError(f"O jar {name} mudou depois do build.")
 
-    def command(self, jar: str, main_class: str, arguments: list[str],
-                max_heap_mib: int | None = None) -> tuple[list[str], dict[str, str]]:
+    def command(self, jar: str, main_class: str, arguments: list[str], max_heap_mib: int | None = None,
+                jvm_options: list[str] | tuple[str, ...] = ()) -> tuple[list[str], dict[str, str]]:
         native = self.build_dir / "native"
         environment = {**os.environ, "LD_LIBRARY_PATH": str(native)}
         classpath = f"{self.build_dir / jar}:{self.build_dir / 'lib'}/*"
         heap = [] if max_heap_mib is None else [f"-Xmx{max_heap_mib}m"]
-        return ["java", *heap, f"-Djava.library.path={native}", "-cp", classpath, main_class, *arguments], environment
+        return (["java", *heap, *jvm_options, f"-Djava.library.path={native}", "-cp", classpath, main_class,
+                 *arguments], environment)
 
     def run_reference(self, pcap: Path, output_csv: Path) -> dict[str, Any]:
         command, environment = self.command("reference-extractor.jar", "nids.extractor.ReferenceExtractor",
@@ -67,7 +72,8 @@ class NidsExtractorProcess:
     """Processo do extrator do NIDS, lido linha a linha. A captura ao vivo para quando a entrada é fechada."""
 
     def __init__(self, build: ExtractorBuild, source: dict[str, str], options: dict[str, int | str],
-                 cpus: list[int] | None = None, max_heap_mib: int | None = None) -> None:
+                 cpus: list[int] | None = None, max_heap_mib: int | None = None,
+                 jvm_options: list[str] | tuple[str, ...] = ()) -> None:
         if len(source) != 1 or next(iter(source)) not in ("pcap", "iface"):
             raise ValueError("A fonte do extrator deve ser um arquivo (pcap) ou uma interface (iface).")
         (kind, location), = source.items()
@@ -75,7 +81,7 @@ class NidsExtractorProcess:
         for key, value in options.items():
             arguments += [f"--{key}", str(value)]
         command, environment = build.command("nids-extractor.jar", "nids.extractor.NidsExtractor", arguments,
-                                             max_heap_mib)
+                                             max_heap_mib, jvm_options)
         # A afinidade é aplicada antes de a JVM iniciar, e todas as suas threads a herdam.
         self.process = subprocess.Popen(command, env=environment, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                         stderr=subprocess.PIPE, text=True, bufsize=1,
@@ -84,12 +90,15 @@ class NidsExtractorProcess:
         self.end: dict[str, Any] | None = None
         self.header: list[str] = []
         self.killed_after_stop_timeout = False
-        self._watchdog: threading.Timer | None = None
+        self._watchdog: threading.Thread | None = None
+        self._last_progress_s = time.monotonic()
+        self._finished = threading.Event()
 
     def events(self) -> Iterator[tuple[str, Any]]:
         """Devolve ("start", dict), ("flow", ExtractedFlow) e ("end", dict), na ordem do extrator."""
         assert self.process.stdout is not None
         for line in self.process.stdout:
+            self._last_progress_s = time.monotonic()
             event = json.loads(line)
             if event["type"] == "start":
                 self.start = event
@@ -103,27 +112,30 @@ class NidsExtractorProcess:
                 self.end = event
                 yield "end", event
         code = self.process.wait()
-        if self._watchdog is not None:
-            self._watchdog.cancel()
+        self._finished.set()
         if self.killed_after_stop_timeout:
-            raise RuntimeError(f"O extrator não parou em {STOP_TIMEOUT_S:.0f} s depois do pedido de parada e foi encerrado.")
+            raise RuntimeError(f"O extrator ficou {STOP_TIMEOUT_S:.0f} s sem entregar uma linha depois do pedido de "
+                               "parada e foi encerrado.")
         if code != 0 or self.end is None:
             stderr = self.process.stderr.read() if self.process.stderr else ""
             raise RuntimeError(f"O extrator terminou com código {code}: {stderr.strip()}")
 
     def request_stop(self) -> None:
-        """Pede a parada fechando a entrada do extrator e encerra o processo se ele não parar a tempo."""
+        """Pede a parada fechando a entrada do extrator e encerra o processo se ele ficar sem entregar linhas."""
         if self.process.stdin and not self.process.stdin.closed:
             self.process.stdin.close()
         if self._watchdog is None:
-            self._watchdog = threading.Timer(STOP_TIMEOUT_S, self._kill_after_stop_timeout)
-            self._watchdog.daemon = True
+            self._last_progress_s = time.monotonic()
+            self._watchdog = threading.Thread(target=self._kill_after_stop_timeout, daemon=True)
             self._watchdog.start()
 
     def _kill_after_stop_timeout(self) -> None:
-        if self.process.poll() is None:
-            self.killed_after_stop_timeout = True
-            self.process.kill()
+        while not self._finished.wait(min(1.0, STOP_TIMEOUT_S / 10)):
+            if time.monotonic() - self._last_progress_s > STOP_TIMEOUT_S:
+                if self.process.poll() is None:
+                    self.killed_after_stop_timeout = True
+                    self.process.kill()
+                return
 
     def kill(self) -> None:
         if self.process.poll() is None:

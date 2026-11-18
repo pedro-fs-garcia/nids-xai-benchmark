@@ -19,13 +19,12 @@ def render_extraction(summary: dict[str, Any]) -> str:
         "",
         "## Trecho",
         "",
-        f"O trecho contém os pacotes do início da captura de terça-feira até `{summary['stop']}` (UTC). "
-        f"A tabela de referência reúne os {_integer(flows['reference'])} fluxos de `tuesday.csv` cujo primeiro "
-        "pacote é anterior a esse instante.",
+        *_segment_text(summary, flows),
         "",
         f"Um fluxo pode durar até 120 s. Por isso, os fluxos que começam nos últimos {summary['border_seconds']} s "
         "do trecho formam a borda: o corte pode ter retirado parte dos seus pacotes, e eles são contados à parte.",
         "",
+        *_carried_text(flows),
         "## Colunas",
         "",
         f"O extrator produz {header['extractor_columns']} colunas. "
@@ -133,6 +132,27 @@ def render_extraction(summary: dict[str, Any]) -> str:
         "",
     ]
     return "\n".join(lines)
+
+
+def _segment_text(summary: dict[str, Any], flows: dict[str, Any]) -> list[str]:
+    if summary.get("start") is None:
+        return [f"O trecho contém os pacotes do início da captura de terça-feira até `{summary['stop']}` (UTC). "
+                f"A tabela de referência reúne os {_integer(flows['reference'])} fluxos de `tuesday.csv` cujo "
+                "primeiro pacote é anterior a esse instante."]
+    return [f"O trecho contém os pacotes da captura de terça-feira de `{summary['start']}` até `{summary['stop']}` "
+            f"(UTC). A tabela de referência reúne os {_integer(flows['reference'])} fluxos de `tuesday.csv` cujo "
+            "primeiro pacote está nesse intervalo."]
+
+
+def _carried_text(flows: dict[str, Any]) -> list[str]:
+    carried = flows.get("carried_over")
+    if not carried or not carried["connections"]:
+        return []
+    return [f"O trecho começa no meio da captura. {_integer(carried['connections'])} conexões já tinham pacotes "
+            "antes do início, e os fluxos delas no trecho não correspondem aos do CSV: o primeiro fluxo começa no "
+            "meio da conexão, e os seguintes herdam um sentido e uma duração acumulada diferentes. Esses fluxos ficam "
+            f"fora da comparação: {_integer(carried['matched'])} casados, {_integer(carried['reference_only'])} só no "
+            f"CSV e {_integer(carried['extracted_only'])} só na extração.", ""]
 
 
 def _nan_text(flows: dict[str, Any]) -> str:

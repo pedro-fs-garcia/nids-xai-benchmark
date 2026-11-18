@@ -50,7 +50,7 @@ def clock(monkeypatch):
 
 def _flow(seq, selected, t3=60):
     return {"seq": seq, "error": None, "attack_probability": 0.9, "selected": selected, "t2_ns": 30,
-            "selection_start_ns": 35, "selection_end_ns": 40, "t3_ns": t3, "values": {"Flow ID": f"flow-{seq}"}}
+            "selection_start_ns": 35, "selection_end_ns": 40, "t3_ns": t3, "flow_id": f"flow-{seq}"}
 
 
 def _explanation(seq, t4=60, flow_id=None):
@@ -178,7 +178,7 @@ def test_pending_size_is_rebuilt_from_request_and_dequeue_instants():
 
 
 RESOURCES = {"cpus": {"classifier": [2], "explainer": [0], "extractor": [4, 5], "replay": [8]},
-             "extractor_max_heap_mib": 4096}
+             "extractor_max_heap_mib": 4096, "extractor_jvm_options": []}
 
 
 def test_each_process_needs_its_own_cpus():
@@ -187,6 +187,13 @@ def test_each_process_needs_its_own_cpus():
                  {**RESOURCES["cpus"], "replay": [4096]}):
         with pytest.raises(ValueError):
             _checked_resources({**RESOURCES, "cpus": cpus})
+
+
+def test_extractor_jvm_options_are_jvm_flags_without_the_heap_limit():
+    _checked_resources({**RESOURCES, "extractor_jvm_options": ["-Dnio.mx=1073741824", "-XX:+ExplicitGCInvokesConcurrent"]})
+    for options in ("-Dnio.mx=1073741824", ["nio.mx=1073741824"], ["-Xmx8g"], [1]):
+        with pytest.raises(ValueError):
+            _checked_resources({**RESOURCES, "extractor_jvm_options": options})
 
 
 def test_processes_are_on_the_configured_cpus_only_when_every_thread_is():

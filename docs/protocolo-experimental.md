@@ -22,7 +22,7 @@ O experimento cruza três fatores.
 
 - **Estratégia de explicação**, com quatro níveis: Sem XAI, Síncrono total, Síncrono condicional e Assíncrono. XAI é a sigla de inteligência artificial explicável, o conjunto de técnicas que explicam as decisões de um modelo.
 - **Classificador**, com dois níveis: Random Forest e XGBoost, ambos congelados antes da campanha.
-- **Carga**, com níveis definidos pelo piloto (seção 9). O ambiente é emulado em Linux. O Mininet emula a rede e o tcpreplay reproduz capturas de tráfego (PCAP) em taxa controlada.
+- **Carga**, com três níveis. O ambiente é emulado em Linux. O Mininet emula a rede, e o `tcpreplay-edit` reproduz o trecho de captura de tráfego (PCAP) da [decisão 16](decisoes.md) na velocidade original. O nível de carga é o número de cópias do trecho reproduzidas ao mesmo tempo, e os três níveis são 1, 2 e 4 cópias ([decisão 15](decisoes.md)).
 
 ## 5. Medições
 
@@ -54,11 +54,12 @@ Cada latência é resumida pela média e pelos percentis 95 e 99 (p95 e p99). O 
 
 Cada execução também registra:
 
-- a vazão;
-- o uso de CPU e de memória pelo processo do NIDS;
+- a carga efetiva e a vazão;
+- o tempo de CPU e o pico de memória de cada processo do NIDS ([decisão 14](decisoes.md));
 - a cobertura explicativa;
 - o tamanho da fila de explicações pendentes ao longo da execução, no modo assíncrono;
-- os descartes.
+- os descartes;
+- o estado da máquina a cada segundo ([decisão 17](decisoes.md)).
 
 ## 6. Controles
 
@@ -67,11 +68,15 @@ Os itens abaixo ficam fixos durante a campanha. O piloto pode variá-los para ca
 - Os conjuntos de treino, validação e teste, e o dicionário de atributos, que lista os atributos recebidos pelo classificador com o significado e a unidade de cada um. O conjunto de teste não é usado para escolher estratégia, limiar nem hiperparâmetro.
 - Os classificadores congelados.
 - A configuração do TreeSHAP, que inclui o tipo de cálculo e o conjunto de referência, quando houver.
-- O hardware, as versões de software e as sementes de aleatoriedade, registrados em cada execução.
+- O trecho de tráfego e a troca de endereços de cada cópia ([decisões 15 e 16](decisoes.md)).
+- O hardware, as versões de software, o commit do repositório e as sementes de aleatoriedade, registrados em cada execução.
+- O estado da máquina. Antes de cada execução, a máquina precisa estar na tomada, ociosa e com memória disponível ([decisão 17](decisoes.md)).
 
 ## 7. Repetições
 
-O piloto define o número de repetições por combinação, a partir da variabilidade observada nos resultados. Esse número ainda não foi fixado.
+Cada combinação tem 3 repetições ([decisão 18](decisoes.md)).
+
+Cada repetição reúne uma execução de cada combinação, em ordem sorteada com semente fixa. Assim, uma variação lenta da máquina não recai sempre sobre as mesmas combinações.
 
 ## 8. Viabilidade operacional
 
@@ -80,21 +85,42 @@ Os resultados valem para as condições do experimento. Eles não implicam equiv
 Uma estratégia é viável sob uma carga quando, ao longo de uma execução, atende aos três critérios abaixo.
 
 - O tamanho da fila de explicações pendentes não aumenta de forma contínua até o fim da execução, ou seja, a fila se estabiliza ou esvazia. Este critério só se aplica ao modo assíncrono.
-- A proporção de fluxos descartados não ultrapassa um limiar.
-- A latência de classificação, no p95 e no p99, não ultrapassa um limite.
+- A proporção de fluxos descartados é 0% ([decisão 20](decisoes.md)).
+- A latência de classificação não ultrapassa 1 s no p95 nem 2 s no p99 ([decisão 19](decisoes.md)).
 
-O piloto define os valores do limiar e do limite.
+A viabilidade é julgada para cada configuração de explicação, e cada resultado de viabilidade é reportado com a cobertura explicativa da execução ([decisão 21](decisoes.md)).
 
 ## 9. Piloto
 
-O piloto define os níveis de carga, o número de repetições e os valores dos critérios de viabilidade da seção 8, e confirma ou ajusta os limites das filas da [decisão 13](decisoes.md). Para isso, ele realiza três verificações.
+O piloto define o número de repetições e os valores dos critérios de viabilidade da seção 8, e confirma ou ajusta os limites das filas da [decisão 13](decisoes.md). Para isso, ele realiza três verificações.
 
 1. Verifica se os atributos que o NIDS extrai em tempo real correspondem aos usados no treinamento dos classificadores, incluindo as regras que definem quando um fluxo termina.
 2. Verifica se a velocidade de reprodução do tráfego altera os atributos temporais do fluxo, como o tempo entre pacotes. Isso separa esse efeito do custo de processamento do NIDS.
 3. Mede, no modo assíncrono, o tempo médio que uma explicação espera na fila antes de ser processada e o tempo que a fila leva para esvaziar depois que o tráfego termina.
 
-## 10. Decisões em aberto
+A primeira verificação compara cada execução com a leitura do mesmo trecho do arquivo, cópia por cópia (`nids-validar`). A segunda é feita sem rede: o NIDS lê o trecho com os intervalos entre pacotes divididos por 2, 4 e 8, e os fluxos, as previsões e a seleção são comparados com os da leitura original (`nids-efeito-aceleracao`).
 
-As decisões já tomadas estão em [docs/decisoes.md](decisoes.md). As decisões abaixo ainda não foram tomadas.
+As execuções do piloto estão em [configs/piloto-2.json](../configs/piloto-2.json). Elas cobrem as cinco configurações de explicação nos dois classificadores com 4 cópias, a maior carga. Duas combinações do Random Forest, o Sem XAI com 1 cópia e o Síncrono total com 2 cópias, têm três repetições cada, para estimar a variabilidade.
 
-- Níveis de carga, número de repetições e valores dos critérios de viabilidade, todos definidos pelo piloto.
+## 10. Matriz e critérios de comparação
+
+A matriz da campanha, em [configs/campanha.json](../configs/campanha.json), cruza os dois classificadores, as configurações de explicação e os três níveis de carga, com 3 repetições ([decisão 18](decisoes.md)). As configurações de explicação são Sem XAI, Síncrono total, Síncrono condicional pelo critério de probabilidade, Síncrono condicional pelo critério de incerteza e Assíncrono ([decisões 12 e 21](decisoes.md)). A matriz tem 90 execuções.
+
+Cada execução fica numa pasta própria. O registro da matriz liga cada combinação de classificador, configuração de explicação, nível de carga e repetição à pasta da execução e ao número da tentativa, e nunca é reescrito.
+
+As métricas principais são:
+
+- a latência de classificação, na média, no p95 e no p99;
+- a sobrecarga de latência de cada estratégia, contra a Sem XAI do mesmo classificador e da mesma carga;
+- a latência de explicação, na média, no p95 e no p99;
+- a cobertura explicativa;
+- a proporção de fluxos descartados;
+- a viabilidade de cada configuração de explicação sob cada carga, com a cobertura explicativa ao lado (seção 8).
+
+As métricas secundárias são o tempo de inferência, o tempo de explicação, a vazão, a carga efetiva, o tempo de CPU e o pico de memória de cada processo, o tamanho da fila de explicações pendentes, o tempo de esvaziamento da fila e os pacotes descartados na captura.
+
+Um fluxo descartado na fila de saída do extrator entra na proporção de descartes e não tem latência. Uma solicitação de explicação descartada ou pendente deixa o fluxo sem explicação. Esse fluxo entra na latência de classificação e reduz a cobertura explicativa. Descartes e pendências são resultados e não invalidam uma execução.
+
+Cada execução produz as próprias estatísticas. As repetições de uma combinação são resumidas pela mediana, com o mínimo e o máximo.
+
+No piloto e na campanha, uma execução é válida quando termina sem erro, o NIDS passa nas próprias verificações, o `tcpreplay-edit` envia todos os pacotes e a máquina fica na tomada do início ao fim. Uma execução inválida fica registrada com o motivo, e a nova tentativa é outra execução. Cada combinação tem no máximo 2 tentativas ([decisão 22](decisoes.md)).

@@ -1,0 +1,3453 @@
+{
+  "stage": "matrix analysis",
+  "run_id": "20261117T134009423440Z",
+  "matrix": "piloto",
+  "matrix_config": "configs/piloto.json",
+  "segment": "campanha",
+  "cells": 20,
+  "done": 20,
+  "exhausted": [],
+  "pending": [],
+  "registry": "training-runs/matrizes/piloto/registro.jsonl",
+  "attempts": 23,
+  "trials": [
+    {
+      "cell": {
+        "block": "baixa-carga",
+        "model": "random-forest",
+        "configuration": "sem-xai",
+        "load": 1,
+        "repetition": 1,
+        "id": "baixa-carga/random-forest/sem-xai/carga-1/rep-1",
+        "strategy": "sem-xai",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "run_dir": "/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261117T024453854741Z",
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261117T133116462217Z",
+        "report": "relatorios/nids-validacao-20261117T133116462217Z.md",
+        "file_run": "training-runs/nids/arquivo/20261115T193902561523Z",
+        "copies": 1,
+        "checks": {
+          "tcpreplay_sent_whole_segment": true,
+          "h1_sent_equals_tcpreplay_successful": true,
+          "h2_received_equals_h1_sent": true,
+          "no_capture_drops": true,
+          "extractor_read_equals_h2_received": true,
+          "replay_run_flow_chain": true
+        },
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 4,
+        "predictions_compared": 22189,
+        "without_copy": 0
+      },
+      "copies": 1,
+      "load": {
+        "flows_emitted": 24413,
+        "flows_per_second": 20.342200722749936,
+        "packets_per_second": 3088.48,
+        "mbps": 30.47
+      },
+      "drops": {
+        "h2_interface": 0,
+        "libpcap": 0,
+        "libpcap_interface": 0,
+        "packets_received": 3706151,
+        "extractor_queue_flows": 0,
+        "extractor_queue_share": 0.0,
+        "extractor_queue_max": 25
+      },
+      "timings": {
+        "inference_ns": {
+          "mean": 3990185.434948352,
+          "median": 3417001.0,
+          "p95": 7806665.0,
+          "p99": 12022553.649999999,
+          "max": 25851894.0
+        },
+        "classification_latency_ns": {
+          "mean": 41282544.0373012,
+          "median": 15870845.5,
+          "p95": 166997189.25,
+          "p99": 415405135.599998,
+          "max": 690040313.0
+        },
+        "wait_before_inference_ns": {
+          "mean": 37225525.485858336,
+          "median": 11978378.5,
+          "p95": 162878066.25,
+          "p99": 410311149.14999795,
+          "max": 684384657.0
+        }
+      },
+      "classified_per_second": 20.083509465334235,
+      "flows": 24413,
+      "classified": 24396,
+      "explanations": {
+        "eligible": 24396,
+        "selected": 0,
+        "completed": 0,
+        "selected_share": 0.0,
+        "completed_share": 0.0
+      },
+      "queue": {
+        "requested": null,
+        "accepted": null,
+        "dropped": null,
+        "completed": null,
+        "pending": null,
+        "drain_after_end_of_capture_ns": null,
+        "killed_after_drain_timeout": null,
+        "max": null
+      },
+      "resources": {
+        "classifier": {
+          "cpu_seconds": 108.99532400000001,
+          "max_rss_mib": 218.3828125
+        },
+        "explainer": null,
+        "extractor": {
+          "cpu_seconds": 112.12,
+          "max_rss_mib": 1984.44921875
+        }
+      },
+      "machine": {
+        "mains_online_in_every_sample": true,
+        "frequency_mhz": {
+          "0": 2770.002,
+          "2": 400.134
+        },
+        "throttle_events": {
+          "0": {
+            "core": 0,
+            "package": 75
+          },
+          "1": {
+            "core": 0,
+            "package": 75
+          },
+          "2": {
+            "core": 75,
+            "package": 75
+          },
+          "3": {
+            "core": 75,
+            "package": 75
+          },
+          "4": {
+            "core": 0,
+            "package": 75
+          },
+          "5": {
+            "core": 0,
+            "package": 75
+          },
+          "6": {
+            "core": 0,
+            "package": 75
+          },
+          "7": {
+            "core": 0,
+            "package": 75
+          },
+          "8": {
+            "core": 0,
+            "package": 75
+          },
+          "9": {
+            "core": 0,
+            "package": 75
+          },
+          "10": {
+            "core": 0,
+            "package": 75
+          },
+          "11": {
+            "core": 0,
+            "package": 75
+          }
+        },
+        "busy_share_sibling_cpus": {
+          "1": 0.69,
+          "3": 0.77
+        },
+        "memory_available_mib_min": 7695.68359375
+      }
+    },
+    {
+      "cell": {
+        "block": "baixa-carga",
+        "model": "xgboost",
+        "configuration": "sem-xai",
+        "load": 1,
+        "repetition": 1,
+        "id": "baixa-carga/xgboost/sem-xai/carga-1/rep-1",
+        "strategy": "sem-xai",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "run_dir": "/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261117T030730972140Z",
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261117T133122579109Z",
+        "report": "relatorios/nids-validacao-20261117T133122579109Z.md",
+        "file_run": "training-runs/nids/arquivo/20261115T231006523112Z",
+        "copies": 1,
+        "checks": {
+          "tcpreplay_sent_whole_segment": true,
+          "h1_sent_equals_tcpreplay_successful": true,
+          "h2_received_equals_h1_sent": true,
+          "no_capture_drops": true,
+          "extractor_read_equals_h2_received": true,
+          "replay_run_flow_chain": true
+        },
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 2,
+        "predictions_compared": 22189,
+        "without_copy": 0
+      },
+      "copies": 1,
+      "load": {
+        "flows_emitted": 24413,
+        "flows_per_second": 20.342170028042943,
+        "packets_per_second": 3088.48,
+        "mbps": 30.47
+      },
+      "drops": {
+        "h2_interface": 0,
+        "libpcap": 0,
+        "libpcap_interface": 0,
+        "packets_received": 3706151,
+        "extractor_queue_flows": 0,
+        "extractor_queue_share": 0.0,
+        "extractor_queue_max": 24
+      },
+      "timings": {
+        "inference_ns": {
+          "mean": 276363.9836038695,
+          "median": 181052.0,
+          "p95": 693185.5,
+          "p99": 1281136.8499999996,
+          "max": 4425877.0
+        },
+        "classification_latency_ns": {
+          "mean": 3270968.5595589443,
+          "median": 2153713.0,
+          "p95": 9382476.25,
+          "p99": 17308035.15,
+          "max": 35766543.0
+        },
+        "wait_before_inference_ns": {
+          "mean": 2947997.4592556157,
+          "median": 1840584.0,
+          "p95": 9132393.0,
+          "p99": 16987835.399999995,
+          "max": 34239595.0
+        }
+      },
+      "classified_per_second": 20.083338235939543,
+      "flows": 24413,
+      "classified": 24396,
+      "explanations": {
+        "eligible": 24396,
+        "selected": 0,
+        "completed": 0,
+        "selected_share": 0.0,
+        "completed_share": 0.0
+      },
+      "queue": {
+        "requested": null,
+        "accepted": null,
+        "dropped": null,
+        "completed": null,
+        "pending": null,
+        "drain_after_end_of_capture_ns": null,
+        "killed_after_drain_timeout": null,
+        "max": null
+      },
+      "resources": {
+        "classifier": {
+          "cpu_seconds": 17.511981,
+          "max_rss_mib": 223.62109375
+        },
+        "explainer": null,
+        "extractor": {
+          "cpu_seconds": 145.82,
+          "max_rss_mib": 1959.67578125
+        }
+      },
+      "machine": {
+        "mains_online_in_every_sample": true,
+        "frequency_mhz": {
+          "0": 3540.5895,
+          "2": 400.253
+        },
+        "throttle_events": {
+          "0": {
+            "core": 0,
+            "package": 0
+          },
+          "1": {
+            "core": 0,
+            "package": 0
+          },
+          "2": {
+            "core": 0,
+            "package": 0
+          },
+          "3": {
+            "core": 0,
+            "package": 0
+          },
+          "4": {
+            "core": 0,
+            "package": 0
+          },
+          "5": {
+            "core": 0,
+            "package": 0
+          },
+          "6": {
+            "core": 0,
+            "package": 0
+          },
+          "7": {
+            "core": 0,
+            "package": 0
+          },
+          "8": {
+            "core": 0,
+            "package": 0
+          },
+          "9": {
+            "core": 0,
+            "package": 0
+          },
+          "10": {
+            "core": 0,
+            "package": 0
+          },
+          "11": {
+            "core": 0,
+            "package": 0
+          }
+        },
+        "busy_share_sibling_cpus": {
+          "1": 0.6161616161616161,
+          "3": 0.5510204081632653
+        },
+        "memory_available_mib_min": 7732.3203125
+      }
+    },
+    {
+      "cell": {
+        "block": "teto-da-captura",
+        "model": "xgboost",
+        "configuration": "sem-xai",
+        "load": 4,
+        "repetition": 1,
+        "id": "teto-da-captura/xgboost/sem-xai/carga-4/rep-1",
+        "strategy": "sem-xai",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "run_dir": "/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261117T033006079596Z",
+      "validation": {
+        "status": "reprovada",
+        "error": "Algum contador da reprodução não fechou. Ver /home/pedro/projects/explicabilidade-ia/relatorios/nids-validacao-20261117T133142417253Z.md.",
+        "file_run": "training-runs/nids/arquivo/20261115T231006523112Z"
+      },
+      "copies": 4,
+      "load": {
+        "flows_emitted": 96102,
+        "flows_per_second": 80.07052311316956,
+        "packets_per_second": 12353.92,
+        "mbps": 121.88
+      },
+      "drops": {
+        "h2_interface": 0,
+        "libpcap": 1035607,
+        "libpcap_interface": 0,
+        "packets_received": 14824604,
+        "extractor_queue_flows": 0,
+        "extractor_queue_share": 0.0,
+        "extractor_queue_max": 577
+      },
+      "timings": {
+        "inference_ns": {
+          "mean": 349641.75306686125,
+          "median": 289831.0,
+          "p95": 720866.6000000002,
+          "p99": 1217874.5599999996,
+          "max": 9662761.0
+        },
+        "classification_latency_ns": {
+          "mean": 93063618.76285371,
+          "median": 7095259.0,
+          "p95": 276341260.6000001,
+          "p99": 2325502841.7999997,
+          "max": 2645335257.0
+        },
+        "wait_before_inference_ns": {
+          "mean": 92651658.48398562,
+          "median": 6724264.0,
+          "p95": 275821980.6000001,
+          "p99": 2325028367.7599998,
+          "max": 2644799990.0
+        }
+      },
+      "classified_per_second": 78.973390101495,
+      "flows": 96102,
+      "classified": 95945,
+      "explanations": {
+        "eligible": 95945,
+        "selected": 0,
+        "completed": 0,
+        "selected_share": 0.0,
+        "completed_share": 0.0
+      },
+      "queue": {
+        "requested": null,
+        "accepted": null,
+        "dropped": null,
+        "completed": null,
+        "pending": null,
+        "drain_after_end_of_capture_ns": null,
+        "killed_after_drain_timeout": null,
+        "max": null
+      },
+      "resources": {
+        "classifier": {
+          "cpu_seconds": 91.511917,
+          "max_rss_mib": 271.39453125
+        },
+        "explainer": null,
+        "extractor": {
+          "cpu_seconds": 1411.58,
+          "max_rss_mib": 4666.26953125
+        }
+      },
+      "machine": {
+        "mains_online_in_every_sample": true,
+        "frequency_mhz": {
+          "0": 1999.8845,
+          "2": 678.325
+        },
+        "throttle_events": {
+          "0": {
+            "core": 0,
+            "package": 0
+          },
+          "1": {
+            "core": 0,
+            "package": 0
+          },
+          "2": {
+            "core": 0,
+            "package": 0
+          },
+          "3": {
+            "core": 0,
+            "package": 0
+          },
+          "4": {
+            "core": 0,
+            "package": 0
+          },
+          "5": {
+            "core": 0,
+            "package": 0
+          },
+          "6": {
+            "core": 0,
+            "package": 0
+          },
+          "7": {
+            "core": 0,
+            "package": 0
+          },
+          "8": {
+            "core": 0,
+            "package": 0
+          },
+          "9": {
+            "core": 0,
+            "package": 0
+          },
+          "10": {
+            "core": 0,
+            "package": 0
+          },
+          "11": {
+            "core": 0,
+            "package": 0
+          }
+        },
+        "busy_share_sibling_cpus": {
+          "1": 0.797979797979798,
+          "3": 0.86
+        },
+        "memory_available_mib_min": 4852.78515625
+      }
+    },
+    {
+      "cell": {
+        "block": "teto-da-captura",
+        "model": "xgboost",
+        "configuration": "sem-xai",
+        "load": 16,
+        "repetition": 1,
+        "id": "teto-da-captura/xgboost/sem-xai/carga-16/rep-1",
+        "strategy": "sem-xai",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "run_dir": "/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261117T035250106127Z",
+      "validation": {
+        "status": "reprovada",
+        "error": "Algum contador da reprodução não fechou. Ver /home/pedro/projects/explicabilidade-ia/relatorios/nids-validacao-20261117T133337287234Z.md.",
+        "file_run": "training-runs/nids/arquivo/20261115T231006523112Z"
+      },
+      "copies": 16,
+      "load": {
+        "flows_emitted": 277940,
+        "flows_per_second": 231.5360132846461,
+        "packets_per_second": 49415.68,
+        "mbps": 487.52
+      },
+      "drops": {
+        "h2_interface": 0,
+        "libpcap": 45022324,
+        "libpcap_interface": 0,
+        "packets_received": 59298416,
+        "extractor_queue_flows": 21639,
+        "extractor_queue_share": 0.07785493271929193,
+        "extractor_queue_max": 10000
+      },
+      "timings": {
+        "inference_ns": {
+          "mean": 320619.2579870833,
+          "median": 291123.0,
+          "p95": 564172.6,
+          "p99": 809871.28,
+          "max": 84384826.0
+        },
+        "classification_latency_ns": {
+          "mean": 5987842526.810191,
+          "median": 808604525.0,
+          "p95": 30672982305.8,
+          "p99": 38666133151.04,
+          "max": 44161210796.0
+        },
+        "wait_before_inference_ns": {
+          "mean": 5987464778.837287,
+          "median": 808272053.0,
+          "p95": 30672271186.6,
+          "p99": 38665031806.88,
+          "max": 44160767221.0
+        }
+      },
+      "classified_per_second": 206.1879106017578,
+      "flows": 256301,
+      "classified": 250373,
+      "explanations": {
+        "eligible": 250373,
+        "selected": 0,
+        "completed": 0,
+        "selected_share": 0.0,
+        "completed_share": 0.0
+      },
+      "queue": {
+        "requested": null,
+        "accepted": null,
+        "dropped": null,
+        "completed": null,
+        "pending": null,
+        "drain_after_end_of_capture_ns": null,
+        "killed_after_drain_timeout": null,
+        "max": null
+      },
+      "resources": {
+        "classifier": {
+          "cpu_seconds": 229.45848599999997,
+          "max_rss_mib": 438.97265625
+        },
+        "explainer": null,
+        "extractor": {
+          "cpu_seconds": 2633.53,
+          "max_rss_mib": 4703.37890625
+        }
+      },
+      "machine": {
+        "mains_online_in_every_sample": true,
+        "frequency_mhz": {
+          "0": 1900.0,
+          "2": 985.4615
+        },
+        "throttle_events": {
+          "0": {
+            "core": 0,
+            "package": 0
+          },
+          "1": {
+            "core": 0,
+            "package": 0
+          },
+          "2": {
+            "core": 0,
+            "package": 0
+          },
+          "3": {
+            "core": 0,
+            "package": 0
+          },
+          "4": {
+            "core": 0,
+            "package": 0
+          },
+          "5": {
+            "core": 0,
+            "package": 0
+          },
+          "6": {
+            "core": 0,
+            "package": 0
+          },
+          "7": {
+            "core": 0,
+            "package": 0
+          },
+          "8": {
+            "core": 0,
+            "package": 0
+          },
+          "9": {
+            "core": 0,
+            "package": 0
+          },
+          "10": {
+            "core": 0,
+            "package": 0
+          },
+          "11": {
+            "core": 0,
+            "package": 0
+          }
+        },
+        "busy_share_sibling_cpus": {
+          "1": 0.95,
+          "3": 0.9603960396039604
+        },
+        "memory_available_mib_min": 4617.4609375
+      }
+    },
+    {
+      "cell": {
+        "block": "teto-da-captura",
+        "model": "xgboost",
+        "configuration": "sem-xai",
+        "load": 8,
+        "repetition": 1,
+        "id": "teto-da-captura/xgboost/sem-xai/carga-8/rep-1",
+        "strategy": "sem-xai",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "run_dir": "/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261117T041532473104Z",
+      "validation": {
+        "status": "reprovada",
+        "error": "Algum contador da reprodução não fechou. Ver /home/pedro/projects/explicabilidade-ia/relatorios/nids-validacao-20261117T133426755471Z.md.",
+        "file_run": "training-runs/nids/arquivo/20261115T231006523112Z"
+      },
+      "copies": 8,
+      "load": {
+        "flows_emitted": 171915,
+        "flows_per_second": 143.22975929766784,
+        "packets_per_second": 24707.84,
+        "mbps": 243.76
+      },
+      "drops": {
+        "h2_interface": 0,
+        "libpcap": 13857151,
+        "libpcap_interface": 0,
+        "packets_received": 29649208,
+        "extractor_queue_flows": 1241,
+        "extractor_queue_share": 0.007218683651804671,
+        "extractor_queue_max": 10000
+      },
+      "timings": {
+        "inference_ns": {
+          "mean": 306612.44853544625,
+          "median": 279360.0,
+          "p95": 566513.0,
+          "p99": 832568.7600000001,
+          "max": 68725012.0
+        },
+        "classification_latency_ns": {
+          "mean": 2751061269.5737767,
+          "median": 41120131.0,
+          "p95": 21860703712.2,
+          "p99": 31748555181.760002,
+          "max": 33180483839.0
+        },
+        "wait_before_inference_ns": {
+          "mean": 2750700705.6695676,
+          "median": 40818062.0,
+          "p95": 21860231456.600002,
+          "p99": 31748145829.64,
+          "max": 33180141281.0
+        }
+      },
+      "classified_per_second": 139.47556920410014,
+      "flows": 170674,
+      "classified": 169369,
+      "explanations": {
+        "eligible": 169369,
+        "selected": 0,
+        "completed": 0,
+        "selected_share": 0.0,
+        "completed_share": 0.0
+      },
+      "queue": {
+        "requested": null,
+        "accepted": null,
+        "dropped": null,
+        "completed": null,
+        "pending": null,
+        "drain_after_end_of_capture_ns": null,
+        "killed_after_drain_timeout": null,
+        "max": null
+      },
+      "resources": {
+        "classifier": {
+          "cpu_seconds": 145.921549,
+          "max_rss_mib": 360.46875
+        },
+        "explainer": null,
+        "extractor": {
+          "cpu_seconds": 2213.3,
+          "max_rss_mib": 4675.34765625
+        }
+      },
+      "machine": {
+        "mains_online_in_every_sample": true,
+        "frequency_mhz": {
+          "0": 2100.023,
+          "2": 823.9945
+        },
+        "throttle_events": {
+          "0": {
+            "core": 0,
+            "package": 2
+          },
+          "1": {
+            "core": 0,
+            "package": 2
+          },
+          "2": {
+            "core": 0,
+            "package": 2
+          },
+          "3": {
+            "core": 0,
+            "package": 2
+          },
+          "4": {
+            "core": 2,
+            "package": 2
+          },
+          "5": {
+            "core": 2,
+            "package": 2
+          },
+          "6": {
+            "core": 2,
+            "package": 2
+          },
+          "7": {
+            "core": 2,
+            "package": 2
+          },
+          "8": {
+            "core": 0,
+            "package": 2
+          },
+          "9": {
+            "core": 0,
+            "package": 2
+          },
+          "10": {
+            "core": 0,
+            "package": 2
+          },
+          "11": {
+            "core": 0,
+            "package": 2
+          }
+        },
+        "busy_share_sibling_cpus": {
+          "1": 0.9292929292929293,
+          "3": 0.9797979797979798
+        },
+        "memory_available_mib_min": 5195.34375
+      }
+    },
+    {
+      "cell": {
+        "block": "teto-da-captura",
+        "model": "xgboost",
+        "configuration": "sem-xai",
+        "load": 2,
+        "repetition": 1,
+        "id": "teto-da-captura/xgboost/sem-xai/carga-2/rep-1",
+        "strategy": "sem-xai",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "run_dir": "/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261117T043811973086Z",
+      "validation": {
+        "status": "reprovada",
+        "error": "Algum contador da reprodução não fechou. Ver /home/pedro/projects/explicabilidade-ia/relatorios/nids-validacao-20261117T133437731632Z.md.",
+        "file_run": "training-runs/nids/arquivo/20261115T231006523112Z"
+      },
+      "copies": 2,
+      "load": {
+        "flows_emitted": 48778,
+        "flows_per_second": 40.643255129543945,
+        "packets_per_second": 6176.96,
+        "mbps": 60.94
+      },
+      "drops": {
+        "h2_interface": 0,
+        "libpcap": 39327,
+        "libpcap_interface": 0,
+        "packets_received": 7412302,
+        "extractor_queue_flows": 0,
+        "extractor_queue_share": 0.0,
+        "extractor_queue_max": 826
+      },
+      "timings": {
+        "inference_ns": {
+          "mean": 287458.59519901517,
+          "median": 203502.0,
+          "p95": 687990.7999999992,
+          "p99": 1229442.15,
+          "max": 3696053.0
+        },
+        "classification_latency_ns": {
+          "mean": 35195064.35422651,
+          "median": 3229184.5,
+          "p95": 108544605.3499997,
+          "p99": 865096659.0300001,
+          "max": 1051007751.0
+        },
+        "wait_before_inference_ns": {
+          "mean": 34859339.808042675,
+          "median": 2886181.5,
+          "p95": 108213786.04999946,
+          "p99": 864720229.8400002,
+          "max": 1050579674.0
+        }
+      },
+      "classified_per_second": 40.12302056151723,
+      "flows": 48778,
+      "classified": 48740,
+      "explanations": {
+        "eligible": 48740,
+        "selected": 0,
+        "completed": 0,
+        "selected_share": 0.0,
+        "completed_share": 0.0
+      },
+      "queue": {
+        "requested": null,
+        "accepted": null,
+        "dropped": null,
+        "completed": null,
+        "pending": null,
+        "drain_after_end_of_capture_ns": null,
+        "killed_after_drain_timeout": null,
+        "max": null
+      },
+      "resources": {
+        "classifier": {
+          "cpu_seconds": 37.551013000000005,
+          "max_rss_mib": 245.98046875
+        },
+        "explainer": null,
+        "extractor": {
+          "cpu_seconds": 451.98,
+          "max_rss_mib": 3496.39453125
+        }
+      },
+      "machine": {
+        "mains_online_in_every_sample": true,
+        "frequency_mhz": {
+          "0": 2660.416,
+          "2": 400.333
+        },
+        "throttle_events": {
+          "0": {
+            "core": 0,
+            "package": 0
+          },
+          "1": {
+            "core": 0,
+            "package": 0
+          },
+          "2": {
+            "core": 0,
+            "package": 0
+          },
+          "3": {
+            "core": 0,
+            "package": 0
+          },
+          "4": {
+            "core": 0,
+            "package": 0
+          },
+          "5": {
+            "core": 0,
+            "package": 0
+          },
+          "6": {
+            "core": 0,
+            "package": 0
+          },
+          "7": {
+            "core": 0,
+            "package": 0
+          },
+          "8": {
+            "core": 0,
+            "package": 0
+          },
+          "9": {
+            "core": 0,
+            "package": 0
+          },
+          "10": {
+            "core": 0,
+            "package": 0
+          },
+          "11": {
+            "core": 0,
+            "package": 0
+          }
+        },
+        "busy_share_sibling_cpus": {
+          "1": 0.9900990099009901,
+          "3": 1.0
+        },
+        "memory_available_mib_min": 6968.52734375
+      }
+    },
+    {
+      "cell": {
+        "block": "rf-sincrono-total",
+        "model": "random-forest",
+        "configuration": "sincrono-total",
+        "load": 2,
+        "repetition": 1,
+        "id": "rf-sincrono-total/random-forest/sincrono-total/carga-2/rep-1",
+        "strategy": "sincrono-total",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "run_dir": "/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261117T050047616888Z",
+      "validation": {
+        "status": "reprovada",
+        "error": "Algum contador da reprodução não fechou. Ver /home/pedro/projects/explicabilidade-ia/relatorios/nids-validacao-20261117T133448853254Z.md.",
+        "file_run": "training-runs/nids/arquivo/20261115T194303133777Z"
+      },
+      "copies": 2,
+      "load": {
+        "flows_emitted": 48690,
+        "flows_per_second": 40.569624846863995,
+        "packets_per_second": 6176.96,
+        "mbps": 60.94
+      },
+      "drops": {
+        "h2_interface": 0,
+        "libpcap": 80963,
+        "libpcap_interface": 0,
+        "packets_received": 7412302,
+        "extractor_queue_flows": 0,
+        "extractor_queue_share": 0.0,
+        "extractor_queue_max": 2993
+      },
+      "timings": {
+        "inference_ns": {
+          "mean": 5228009.37826784,
+          "median": 5115092.0,
+          "p95": 7585069.75,
+          "p99": 9701951.149999993,
+          "max": 23922370.0
+        },
+        "classification_latency_ns": {
+          "mean": 11581982403.115627,
+          "median": 7306249725.5,
+          "p95": 40527768656.0,
+          "p99": 43178614842.0,
+          "max": 44348198260.0
+        },
+        "wait_before_inference_ns": {
+          "mean": 11568028309.03381,
+          "median": 7291965738.5,
+          "p95": 40514371276.5,
+          "p99": 43164712487.35,
+          "max": 44334944015.0
+        },
+        "explanation_ns": {
+          "mean": 8534365.93439658,
+          "median": 8407366.5,
+          "p95": 12365750.75,
+          "p99": 14663576.95,
+          "max": 35962857.0
+        },
+        "explanation_latency_ns": {
+          "mean": 11581982403.115627,
+          "median": 7306249725.5,
+          "p95": 40527768656.0,
+          "p99": 43178614842.0,
+          "max": 44348198260.0
+        }
+      },
+      "classified_per_second": 40.05288955679263,
+      "flows": 48690,
+      "classified": 48656,
+      "explanations": {
+        "eligible": 48656,
+        "selected": 48656,
+        "completed": 48656,
+        "selected_share": 1.0,
+        "completed_share": 1.0
+      },
+      "queue": {
+        "requested": null,
+        "accepted": null,
+        "dropped": null,
+        "completed": null,
+        "pending": null,
+        "drain_after_end_of_capture_ns": null,
+        "killed_after_drain_timeout": null,
+        "max": null
+      },
+      "resources": {
+        "classifier": {
+          "cpu_seconds": 703.2544039999999,
+          "max_rss_mib": 288.859375
+        },
+        "explainer": null,
+        "extractor": {
+          "cpu_seconds": 570.96,
+          "max_rss_mib": 3480.34765625
+        }
+      },
+      "machine": {
+        "mains_online_in_every_sample": true,
+        "frequency_mhz": {
+          "0": 2468.197,
+          "2": 2499.974
+        },
+        "throttle_events": {
+          "0": {
+            "core": 0,
+            "package": 51
+          },
+          "1": {
+            "core": 0,
+            "package": 51
+          },
+          "2": {
+            "core": 51,
+            "package": 51
+          },
+          "3": {
+            "core": 51,
+            "package": 51
+          },
+          "4": {
+            "core": 0,
+            "package": 51
+          },
+          "5": {
+            "core": 0,
+            "package": 51
+          },
+          "6": {
+            "core": 0,
+            "package": 51
+          },
+          "7": {
+            "core": 0,
+            "package": 51
+          },
+          "8": {
+            "core": 0,
+            "package": 51
+          },
+          "9": {
+            "core": 0,
+            "package": 51
+          },
+          "10": {
+            "core": 0,
+            "package": 51
+          },
+          "11": {
+            "core": 0,
+            "package": 51
+          }
+        },
+        "busy_share_sibling_cpus": {
+          "1": 0.8181818181818182,
+          "3": 0.7
+        },
+        "memory_available_mib_min": 6864.35546875
+      }
+    },
+    {
+      "cell": {
+        "block": "rf-sincrono-total",
+        "model": "random-forest",
+        "configuration": "sincrono-total",
+        "load": 4,
+        "repetition": 1,
+        "id": "rf-sincrono-total/random-forest/sincrono-total/carga-4/rep-1",
+        "strategy": "sincrono-total",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": false,
+      "reasons": [
+        "encerrado com código 1",
+        "sem o registro da execução do NIDS"
+      ],
+      "run_dir": "/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261117T052611353091Z",
+      "validation": null
+    },
+    {
+      "cell": {
+        "block": "rf-assincrono",
+        "model": "random-forest",
+        "configuration": "assincrono",
+        "load": 4,
+        "repetition": 1,
+        "id": "rf-assincrono/random-forest/assincrono/carga-4/rep-1",
+        "strategy": "assincrono",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "run_dir": "/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261117T054917570053Z",
+      "validation": {
+        "status": "reprovada",
+        "error": "Algum contador da reprodução não fechou. Ver /home/pedro/projects/explicabilidade-ia/relatorios/nids-validacao-20261117T133509744195Z.md.",
+        "file_run": "training-runs/nids/arquivo/20261115T195845825041Z"
+      },
+      "copies": 4,
+      "load": {
+        "flows_emitted": 89307,
+        "flows_per_second": 74.4116781688198,
+        "packets_per_second": 12353.92,
+        "mbps": 121.88
+      },
+      "drops": {
+        "h2_interface": 0,
+        "libpcap": 4177654,
+        "libpcap_interface": 0,
+        "packets_received": 14824604,
+        "extractor_queue_flows": 0,
+        "extractor_queue_share": 0.0,
+        "extractor_queue_max": 8148
+      },
+      "timings": {
+        "inference_ns": {
+          "mean": 8640632.676004134,
+          "median": 7936995.5,
+          "p95": 14428046.049999999,
+          "p99": 17362672.210000023,
+          "max": 111741337.0
+        },
+        "classification_latency_ns": {
+          "mean": 46707148760.51642,
+          "median": 37763853564.5,
+          "p95": 128146857117.74997,
+          "p99": 152010233673.89,
+          "max": 163426563455.0
+        },
+        "wait_before_inference_ns": {
+          "mean": 46698335641.39606,
+          "median": 37755728548.0,
+          "p95": 128138774400.89998,
+          "p99": 152002841934.36002,
+          "max": 163419475553.0
+        },
+        "explanation_ns": {
+          "mean": 13189709.292567058,
+          "median": 13143171.0,
+          "p95": 20520536.7,
+          "p99": 23662484.879999958,
+          "max": 68316691.0
+        },
+        "explanation_latency_ns": {
+          "mean": 126525053859.99942,
+          "median": 119736350479.0,
+          "p95": 274115139353.99997,
+          "p99": 289297623729.0599,
+          "max": 298882550692.0
+        },
+        "queue_wait_ns": {
+          "mean": 79816796471.0967,
+          "median": 61738546592.0,
+          "p95": 166919250414.69998,
+          "p99": 167940684624.56,
+          "max": 168461641332.0
+        }
+      },
+      "classified_per_second": 73.28820941631076,
+      "flows": 89307,
+      "classified": 89032,
+      "explanations": {
+        "eligible": 89032,
+        "selected": 89032,
+        "completed": 88619,
+        "selected_share": 1.0,
+        "completed_share": 0.9953612184383143
+      },
+      "queue": {
+        "requested": 89032,
+        "accepted": 88619,
+        "dropped": 413,
+        "completed": 88619,
+        "pending": 0,
+        "drain_after_end_of_capture_ns": 11589470831,
+        "killed_after_drain_timeout": false,
+        "max": 10001,
+        "max_at_share_of_run": 0.5402576489533011,
+        "max_in_last_tenth": 8098
+      },
+      "resources": {
+        "classifier": {
+          "cpu_seconds": 844.29525,
+          "max_rss_mib": 356.51171875
+        },
+        "explainer": {
+          "cpu_seconds": 1178.748553,
+          "max_rss_mib": 200.81640625
+        },
+        "extractor": {
+          "cpu_seconds": 1809.46,
+          "max_rss_mib": 4675.3046875
+        }
+      },
+      "machine": {
+        "mains_online_in_every_sample": true,
+        "frequency_mhz": {
+          "0": 1800.0,
+          "2": 1736.402
+        },
+        "throttle_events": {
+          "0": {
+            "core": 0,
+            "package": 0
+          },
+          "1": {
+            "core": 0,
+            "package": 0
+          },
+          "2": {
+            "core": 0,
+            "package": 0
+          },
+          "3": {
+            "core": 0,
+            "package": 0
+          },
+          "4": {
+            "core": 0,
+            "package": 0
+          },
+          "5": {
+            "core": 0,
+            "package": 0
+          },
+          "6": {
+            "core": 0,
+            "package": 0
+          },
+          "7": {
+            "core": 0,
+            "package": 0
+          },
+          "8": {
+            "core": 0,
+            "package": 0
+          },
+          "9": {
+            "core": 0,
+            "package": 0
+          },
+          "10": {
+            "core": 0,
+            "package": 0
+          },
+          "11": {
+            "core": 0,
+            "package": 0
+          }
+        },
+        "busy_share_sibling_cpus": {
+          "1": 0.96,
+          "3": 0.9900990099009901
+        },
+        "memory_available_mib_min": 5675.58203125
+      }
+    },
+    {
+      "cell": {
+        "block": "rf-assincrono",
+        "model": "random-forest",
+        "configuration": "assincrono",
+        "load": 8,
+        "repetition": 1,
+        "id": "rf-assincrono/random-forest/assincrono/carga-8/rep-1",
+        "strategy": "assincrono",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "run_dir": "/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261117T062347024051Z",
+      "validation": {
+        "status": "reprovada",
+        "error": "Algum contador da reprodução não fechou. Ver /home/pedro/projects/explicabilidade-ia/relatorios/nids-validacao-20261117T133600680266Z.md.",
+        "file_run": "training-runs/nids/arquivo/20261115T195845825041Z"
+      },
+      "copies": 8,
+      "load": {
+        "flows_emitted": 154270,
+        "flows_per_second": 128.5268580530393,
+        "packets_per_second": 24707.84,
+        "mbps": 243.76
+      },
+      "drops": {
+        "h2_interface": 0,
+        "libpcap": 16702706,
+        "libpcap_interface": 0,
+        "packets_received": 29649208,
+        "extractor_queue_flows": 43197,
+        "extractor_queue_share": 0.28000907499837946,
+        "extractor_queue_max": 10000
+      },
+      "timings": {
+        "inference_ns": {
+          "mean": 8372062.395571748,
+          "median": 7621601.5,
+          "p95": 14025165.75,
+          "p99": 17749667.000000026,
+          "max": 114170934.0
+        },
+        "classification_latency_ns": {
+          "mean": 85424317827.84558,
+          "median": 79459354812.5,
+          "p95": 177890494173.25,
+          "p99": 186785415502.20004,
+          "max": 190711545858.0
+        },
+        "wait_before_inference_ns": {
+          "mean": 85415784242.1937,
+          "median": 79451792050.0,
+          "p95": 177881470744.75,
+          "p99": 186776897185.80005,
+          "max": 190703964407.0
+        },
+        "explanation_ns": {
+          "mean": 13214714.298853891,
+          "median": 12909464.5,
+          "p95": 20565988.699999996,
+          "p99": 23958707.79000003,
+          "max": 91802817.0
+        },
+        "explanation_latency_ns": {
+          "mean": 198428910729.8796,
+          "median": 204574470697.5,
+          "p95": 321446760620.6,
+          "p99": 327333538230.67004,
+          "max": 329698797868.0
+        },
+        "queue_wait_ns": {
+          "mean": 109589674128.58205,
+          "median": 120674464926.0,
+          "p95": 167914480102.05,
+          "p99": 168456734109.42,
+          "max": 168909302459.0
+        }
+      },
+      "classified_per_second": 88.56200572367548,
+      "flows": 111073,
+      "classified": 110066,
+      "explanations": {
+        "eligible": 110066,
+        "selected": 110066,
+        "completed": 97024,
+        "selected_share": 1.0,
+        "completed_share": 0.8815074591608671
+      },
+      "queue": {
+        "requested": 110066,
+        "accepted": 97024,
+        "dropped": 13042,
+        "completed": 97024,
+        "pending": 0,
+        "drain_after_end_of_capture_ns": 68400340077,
+        "killed_after_drain_timeout": false,
+        "max": 10001,
+        "max_at_share_of_run": 0.18993135011441648,
+        "max_in_last_tenth": 10001
+      },
+      "resources": {
+        "classifier": {
+          "cpu_seconds": 1002.175431,
+          "max_rss_mib": 394.83984375
+        },
+        "explainer": {
+          "cpu_seconds": 1291.420438,
+          "max_rss_mib": 200.76171875
+        },
+        "extractor": {
+          "cpu_seconds": 2102.26,
+          "max_rss_mib": 4674.765625
+        }
+      },
+      "machine": {
+        "mains_online_in_every_sample": true,
+        "frequency_mhz": {
+          "0": 1800.0,
+          "2": 1800.0
+        },
+        "throttle_events": {
+          "0": {
+            "core": 0,
+            "package": 0
+          },
+          "1": {
+            "core": 0,
+            "package": 0
+          },
+          "2": {
+            "core": 0,
+            "package": 0
+          },
+          "3": {
+            "core": 0,
+            "package": 0
+          },
+          "4": {
+            "core": 0,
+            "package": 0
+          },
+          "5": {
+            "core": 0,
+            "package": 0
+          },
+          "6": {
+            "core": 0,
+            "package": 0
+          },
+          "7": {
+            "core": 0,
+            "package": 0
+          },
+          "8": {
+            "core": 0,
+            "package": 0
+          },
+          "9": {
+            "core": 0,
+            "package": 0
+          },
+          "10": {
+            "core": 0,
+            "package": 0
+          },
+          "11": {
+            "core": 0,
+            "package": 0
+          }
+        },
+        "busy_share_sibling_cpus": {
+          "1": 0.9803921568627451,
+          "3": 0.9900990099009901
+        },
+        "memory_available_mib_min": 5331.1015625
+      }
+    },
+    {
+      "cell": {
+        "block": "rf-assincrono",
+        "model": "random-forest",
+        "configuration": "assincrono",
+        "load": 2,
+        "repetition": 1,
+        "id": "rf-assincrono/random-forest/assincrono/carga-2/rep-1",
+        "strategy": "assincrono",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "run_dir": "/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261117T070232719431Z",
+      "validation": {
+        "status": "reprovada",
+        "error": "Algum contador da reprodução não fechou. Ver /home/pedro/projects/explicabilidade-ia/relatorios/nids-validacao-20261117T133614029394Z.md.",
+        "file_run": "training-runs/nids/arquivo/20261115T195845825041Z"
+      },
+      "copies": 2,
+      "load": {
+        "flows_emitted": 48810,
+        "flows_per_second": 40.670296910319394,
+        "packets_per_second": 6176.96,
+        "mbps": 60.94
+      },
+      "drops": {
+        "h2_interface": 0,
+        "libpcap": 45281,
+        "libpcap_interface": 0,
+        "packets_received": 7412302,
+        "extractor_queue_flows": 0,
+        "extractor_queue_share": 0.0,
+        "extractor_queue_max": 1658
+      },
+      "timings": {
+        "inference_ns": {
+          "mean": 6145170.088178612,
+          "median": 6565826.0,
+          "p95": 9214685.25,
+          "p99": 12093517.5,
+          "max": 29014036.0
+        },
+        "classification_latency_ns": {
+          "mean": 1772311450.9538093,
+          "median": 272388392.0,
+          "p95": 10819881278.5,
+          "p99": 12578648640.25,
+          "max": 13691287876.0
+        },
+        "wait_before_inference_ns": {
+          "mean": 1766064944.8554616,
+          "median": 265545860.0,
+          "p95": 10812898664.5,
+          "p99": 12571260379.5,
+          "max": 13683958664.0
+        },
+        "explanation_ns": {
+          "mean": 9682185.961107923,
+          "median": 9598433.0,
+          "p95": 14259437.5,
+          "p99": 18518546.0,
+          "max": 35928221.0
+        },
+        "explanation_latency_ns": {
+          "mean": 5921917845.884124,
+          "median": 2140594696.5,
+          "p95": 23930261335.75,
+          "p99": 29762754916.0,
+          "max": 30490304927.0
+        },
+        "queue_wait_ns": {
+          "mean": 4139796084.8525915,
+          "median": 1393622007.0,
+          "p95": 18182150441.75,
+          "p99": 20881442723.5,
+          "max": 21441079287.0
+        }
+      },
+      "classified_per_second": 40.15268862293471,
+      "flows": 48810,
+      "classified": 48776,
+      "explanations": {
+        "eligible": 48776,
+        "selected": 48776,
+        "completed": 48776,
+        "selected_share": 1.0,
+        "completed_share": 1.0
+      },
+      "queue": {
+        "requested": 48776,
+        "accepted": 48776,
+        "dropped": 0,
+        "completed": 48776,
+        "pending": 0,
+        "drain_after_end_of_capture_ns": 0,
+        "killed_after_drain_timeout": false,
+        "max": 2116,
+        "max_at_share_of_run": 0.3212520593080725,
+        "max_in_last_tenth": 167
+      },
+      "resources": {
+        "classifier": {
+          "cpu_seconds": 333.786249,
+          "max_rss_mib": 283.23046875
+        },
+        "explainer": {
+          "cpu_seconds": 479.8407179999999,
+          "max_rss_mib": 200.6953125
+        },
+        "extractor": {
+          "cpu_seconds": 404.09,
+          "max_rss_mib": 3479.75
+        }
+      },
+      "machine": {
+        "mains_online_in_every_sample": true,
+        "frequency_mhz": {
+          "0": 2400.024,
+          "2": 1625.066
+        },
+        "throttle_events": {
+          "0": {
+            "core": 6,
+            "package": 6
+          },
+          "1": {
+            "core": 6,
+            "package": 6
+          },
+          "2": {
+            "core": 0,
+            "package": 6
+          },
+          "3": {
+            "core": 0,
+            "package": 6
+          },
+          "4": {
+            "core": 0,
+            "package": 6
+          },
+          "5": {
+            "core": 0,
+            "package": 6
+          },
+          "6": {
+            "core": 0,
+            "package": 6
+          },
+          "7": {
+            "core": 0,
+            "package": 6
+          },
+          "8": {
+            "core": 0,
+            "package": 6
+          },
+          "9": {
+            "core": 0,
+            "package": 6
+          },
+          "10": {
+            "core": 0,
+            "package": 6
+          },
+          "11": {
+            "core": 0,
+            "package": 6
+          }
+        },
+        "busy_share_sibling_cpus": {
+          "1": 0.6435643564356436,
+          "3": 0.7029702970297029
+        },
+        "memory_available_mib_min": 7022.2109375
+      }
+    },
+    {
+      "cell": {
+        "block": "rf-sem-xai",
+        "model": "random-forest",
+        "configuration": "sem-xai",
+        "load": 8,
+        "repetition": 1,
+        "id": "rf-sem-xai/random-forest/sem-xai/carga-8/rep-1",
+        "strategy": "sem-xai",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "run_dir": "/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261117T072759640318Z",
+      "validation": {
+        "status": "reprovada",
+        "error": "Algum contador da reprodução não fechou. Ver /home/pedro/projects/explicabilidade-ia/relatorios/nids-validacao-20261117T133652045871Z.md.",
+        "file_run": "training-runs/nids/arquivo/20261115T193902561523Z"
+      },
+      "copies": 8,
+      "load": {
+        "flows_emitted": 167120,
+        "flows_per_second": 139.2359054615178,
+        "packets_per_second": 24707.84,
+        "mbps": 243.76
+      },
+      "drops": {
+        "h2_interface": 0,
+        "libpcap": 15421384,
+        "libpcap_interface": 0,
+        "packets_received": 29649208,
+        "extractor_queue_flows": 41470,
+        "extractor_queue_share": 0.24814504547630445,
+        "extractor_queue_max": 10000
+      },
+      "timings": {
+        "inference_ns": {
+          "mean": 6658999.836199342,
+          "median": 6114220.0,
+          "p95": 10651917.399999999,
+          "p99": 14559926.519999988,
+          "max": 93623466.0
+        },
+        "classification_latency_ns": {
+          "mean": 64709097638.20374,
+          "median": 59057376491.0,
+          "p95": 148372421504.19998,
+          "p99": 168075811795.95996,
+          "max": 176327282090.0
+        },
+        "wait_before_inference_ns": {
+          "mean": 64702312626.488556,
+          "median": 59051605271.0,
+          "p95": 148365008776.6,
+          "p99": 168069153713.55997,
+          "max": 176322651085.0
+        }
+      },
+      "classified_per_second": 102.51747832076316,
+      "flows": 125650,
+      "classified": 124389,
+      "explanations": {
+        "eligible": 124389,
+        "selected": 0,
+        "completed": 0,
+        "selected_share": 0.0,
+        "completed_share": 0.0
+      },
+      "queue": {
+        "requested": null,
+        "accepted": null,
+        "dropped": null,
+        "completed": null,
+        "pending": null,
+        "drain_after_end_of_capture_ns": null,
+        "killed_after_drain_timeout": null,
+        "max": null
+      },
+      "resources": {
+        "classifier": {
+          "cpu_seconds": 912.1335819999999,
+          "max_rss_mib": 316.1796875
+        },
+        "explainer": null,
+        "extractor": {
+          "cpu_seconds": 2124.88,
+          "max_rss_mib": 4680.9140625
+        }
+      },
+      "machine": {
+        "mains_online_in_every_sample": true,
+        "frequency_mhz": {
+          "0": 1869.0365,
+          "2": 1800.027
+        },
+        "throttle_events": {
+          "0": {
+            "core": 0,
+            "package": 497
+          },
+          "1": {
+            "core": 0,
+            "package": 497
+          },
+          "2": {
+            "core": 497,
+            "package": 497
+          },
+          "3": {
+            "core": 497,
+            "package": 497
+          },
+          "4": {
+            "core": 0,
+            "package": 497
+          },
+          "5": {
+            "core": 0,
+            "package": 497
+          },
+          "6": {
+            "core": 0,
+            "package": 497
+          },
+          "7": {
+            "core": 0,
+            "package": 497
+          },
+          "8": {
+            "core": 0,
+            "package": 497
+          },
+          "9": {
+            "core": 0,
+            "package": 497
+          },
+          "10": {
+            "core": 0,
+            "package": 497
+          },
+          "11": {
+            "core": 0,
+            "package": 497
+          }
+        },
+        "busy_share_sibling_cpus": {
+          "1": 0.96,
+          "3": 0.99
+        },
+        "memory_available_mib_min": 5385.6796875
+      }
+    },
+    {
+      "cell": {
+        "block": "rf-sem-xai",
+        "model": "random-forest",
+        "configuration": "sem-xai",
+        "load": 4,
+        "repetition": 1,
+        "id": "rf-sem-xai/random-forest/sem-xai/carga-4/rep-1",
+        "strategy": "sem-xai",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "run_dir": "/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261117T075038644447Z",
+      "validation": {
+        "status": "reprovada",
+        "error": "Algum contador da reprodução não fechou. Ver /home/pedro/projects/explicabilidade-ia/relatorios/nids-validacao-20261117T133713546122Z.md.",
+        "file_run": "training-runs/nids/arquivo/20261115T193902561523Z"
+      },
+      "copies": 4,
+      "load": {
+        "flows_emitted": 93996,
+        "flows_per_second": 78.31747957889792,
+        "packets_per_second": 12353.92,
+        "mbps": 121.88
+      },
+      "drops": {
+        "h2_interface": 0,
+        "libpcap": 2112392,
+        "libpcap_interface": 0,
+        "packets_received": 14824604,
+        "extractor_queue_flows": 0,
+        "extractor_queue_share": 0.0,
+        "extractor_queue_max": 6055
+      },
+      "timings": {
+        "inference_ns": {
+          "mean": 6890785.528224,
+          "median": 6493524.0,
+          "p95": 10819568.600000001,
+          "p99": 14430967.909999995,
+          "max": 65993446.0
+        },
+        "classification_latency_ns": {
+          "mean": 16899237700.283371,
+          "median": 11419088762.5,
+          "p95": 48210726922.000015,
+          "p99": 57821207792.03999,
+          "max": 63574514645.0
+        },
+        "wait_before_inference_ns": {
+          "mean": 16892221498.33968,
+          "median": 11411027571.0,
+          "p95": 48202973113.950005,
+          "p99": 57812087913.08999,
+          "max": 63567109033.0
+        }
+      },
+      "classified_per_second": 77.1717943126396,
+      "flows": 93996,
+      "classified": 93750,
+      "explanations": {
+        "eligible": 93750,
+        "selected": 0,
+        "completed": 0,
+        "selected_share": 0.0,
+        "completed_share": 0.0
+      },
+      "queue": {
+        "requested": null,
+        "accepted": null,
+        "dropped": null,
+        "completed": null,
+        "pending": null,
+        "drain_after_end_of_capture_ns": null,
+        "killed_after_drain_timeout": null,
+        "max": null
+      },
+      "resources": {
+        "classifier": {
+          "cpu_seconds": 713.945814,
+          "max_rss_mib": 286.4296875
+        },
+        "explainer": null,
+        "extractor": {
+          "cpu_seconds": 1686.52,
+          "max_rss_mib": 4665.49609375
+        }
+      },
+      "machine": {
+        "mains_online_in_every_sample": true,
+        "frequency_mhz": {
+          "0": 1800.0,
+          "2": 1699.982
+        },
+        "throttle_events": {
+          "0": {
+            "core": 0,
+            "package": 1939
+          },
+          "1": {
+            "core": 0,
+            "package": 1939
+          },
+          "2": {
+            "core": 1939,
+            "package": 1939
+          },
+          "3": {
+            "core": 1939,
+            "package": 1939
+          },
+          "4": {
+            "core": 0,
+            "package": 1939
+          },
+          "5": {
+            "core": 0,
+            "package": 1939
+          },
+          "6": {
+            "core": 0,
+            "package": 1939
+          },
+          "7": {
+            "core": 0,
+            "package": 1939
+          },
+          "8": {
+            "core": 0,
+            "package": 1939
+          },
+          "9": {
+            "core": 0,
+            "package": 1939
+          },
+          "10": {
+            "core": 0,
+            "package": 1939
+          },
+          "11": {
+            "core": 0,
+            "package": 1939
+          }
+        },
+        "busy_share_sibling_cpus": {
+          "1": 0.96,
+          "3": 0.9509803921568627
+        },
+        "memory_available_mib_min": 5759.59765625
+      }
+    },
+    {
+      "cell": {
+        "block": "rf-condicional",
+        "model": "random-forest",
+        "configuration": "sincrono-condicional-probabilidade",
+        "load": 8,
+        "repetition": 1,
+        "id": "rf-condicional/random-forest/sincrono-condicional-probabilidade/carga-8/rep-1",
+        "strategy": "sincrono-condicional",
+        "criterion": "probabilidade"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "run_dir": "/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261117T081315617941Z",
+      "validation": {
+        "status": "reprovada",
+        "error": "Algum contador da reprodução não fechou. Ver /home/pedro/projects/explicabilidade-ia/relatorios/nids-validacao-20261117T133749856182Z.md.",
+        "file_run": "training-runs/nids/arquivo/20261115T195136840304Z"
+      },
+      "copies": 8,
+      "load": {
+        "flows_emitted": 165852,
+        "flows_per_second": 138.1777649316968,
+        "packets_per_second": 24707.84,
+        "mbps": 243.76
+      },
+      "drops": {
+        "h2_interface": 0,
+        "libpcap": 15092839,
+        "libpcap_interface": 0,
+        "packets_received": 29649208,
+        "extractor_queue_flows": 40234,
+        "extractor_queue_share": 0.24258977883896485,
+        "extractor_queue_max": 10000
+      },
+      "timings": {
+        "inference_ns": {
+          "mean": 6558190.103487019,
+          "median": 6050964.0,
+          "p95": 10311723.59999999,
+          "p99": 14088230.95999998,
+          "max": 102079323.0
+        },
+        "classification_latency_ns": {
+          "mean": 63898945691.974754,
+          "median": 57196036630.0,
+          "p95": 160916508701.99988,
+          "p99": 182894339441.03995,
+          "max": 192298261416.0
+        },
+        "wait_before_inference_ns": {
+          "mean": 63892114287.00416,
+          "median": 57190016666.0,
+          "p95": 160907351181.1999,
+          "p99": 182888349978.71994,
+          "max": 192290653621.0
+        },
+        "explanation_ns": {
+          "mean": 10785343.80521739,
+          "median": 10479435.0,
+          "p95": 17769349.799999997,
+          "p99": 24600636.839999996,
+          "max": 77083586.0
+        },
+        "explanation_latency_ns": {
+          "mean": 83170978317.73044,
+          "median": 119902890950.0,
+          "p95": 166648760383.8,
+          "p99": 189330712380.0,
+          "max": 189907179561.0
+        }
+      },
+      "classified_per_second": 102.5145660154655,
+      "flows": 125618,
+      "classified": 124605,
+      "explanations": {
+        "eligible": 124605,
+        "selected": 1725,
+        "completed": 1725,
+        "selected_share": 0.013843746238112435,
+        "completed_share": 0.013843746238112435
+      },
+      "queue": {
+        "requested": null,
+        "accepted": null,
+        "dropped": null,
+        "completed": null,
+        "pending": null,
+        "drain_after_end_of_capture_ns": null,
+        "killed_after_drain_timeout": null,
+        "max": null
+      },
+      "resources": {
+        "classifier": {
+          "cpu_seconds": 919.0757329999999,
+          "max_rss_mib": 321.7265625
+        },
+        "explainer": null,
+        "extractor": {
+          "cpu_seconds": 2088.92,
+          "max_rss_mib": 4670.47265625
+        }
+      },
+      "machine": {
+        "mains_online_in_every_sample": true,
+        "frequency_mhz": {
+          "0": 1819.808,
+          "2": 1896.724
+        },
+        "throttle_events": {
+          "0": {
+            "core": 0,
+            "package": 416
+          },
+          "1": {
+            "core": 0,
+            "package": 416
+          },
+          "2": {
+            "core": 416,
+            "package": 416
+          },
+          "3": {
+            "core": 416,
+            "package": 416
+          },
+          "4": {
+            "core": 0,
+            "package": 416
+          },
+          "5": {
+            "core": 0,
+            "package": 416
+          },
+          "6": {
+            "core": 0,
+            "package": 416
+          },
+          "7": {
+            "core": 0,
+            "package": 416
+          },
+          "8": {
+            "core": 0,
+            "package": 416
+          },
+          "9": {
+            "core": 0,
+            "package": 416
+          },
+          "10": {
+            "core": 0,
+            "package": 416
+          },
+          "11": {
+            "core": 0,
+            "package": 416
+          }
+        },
+        "busy_share_sibling_cpus": {
+          "1": 0.93,
+          "3": 0.99
+        },
+        "memory_available_mib_min": 5546.11328125
+      }
+    },
+    {
+      "cell": {
+        "block": "xgb-carga-alta",
+        "model": "xgboost",
+        "configuration": "assincrono",
+        "load": 8,
+        "repetition": 1,
+        "id": "xgb-carga-alta/xgboost/assincrono/carga-8/rep-1",
+        "strategy": "assincrono",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": false,
+      "reasons": [
+        "encerrado com código 1",
+        "sem o registro da execução do NIDS",
+        "o NIDS não encerrou no tempo máximo"
+      ],
+      "run_dir": "/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261117T083552883114Z",
+      "validation": null
+    },
+    {
+      "cell": {
+        "block": "xgb-carga-alta",
+        "model": "xgboost",
+        "configuration": "sincrono-total",
+        "load": 8,
+        "repetition": 1,
+        "id": "xgb-carga-alta/xgboost/sincrono-total/carga-8/rep-1",
+        "strategy": "sincrono-total",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": false,
+      "reasons": [
+        "encerrado com código 1",
+        "sem o registro da execução do NIDS",
+        "o NIDS não encerrou no tempo máximo"
+      ],
+      "run_dir": "/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261117T091459322101Z",
+      "validation": null
+    },
+    {
+      "cell": {
+        "block": "variabilidade-sem-xai",
+        "model": "random-forest",
+        "configuration": "sem-xai",
+        "load": 1,
+        "repetition": 1,
+        "id": "variabilidade-sem-xai/random-forest/sem-xai/carga-1/rep-1",
+        "strategy": "sem-xai",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "run_dir": "/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261117T095404132077Z",
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261117T133756272600Z",
+        "report": "relatorios/nids-validacao-20261117T133756272600Z.md",
+        "file_run": "training-runs/nids/arquivo/20261115T193902561523Z",
+        "copies": 1,
+        "checks": {
+          "tcpreplay_sent_whole_segment": true,
+          "h1_sent_equals_tcpreplay_successful": true,
+          "h2_received_equals_h1_sent": true,
+          "no_capture_drops": true,
+          "extractor_read_equals_h2_received": true,
+          "replay_run_flow_chain": true
+        },
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 4,
+        "predictions_compared": 22189,
+        "without_copy": 0
+      },
+      "copies": 1,
+      "load": {
+        "flows_emitted": 24413,
+        "flows_per_second": 20.34236920166754,
+        "packets_per_second": 3088.48,
+        "mbps": 30.47
+      },
+      "drops": {
+        "h2_interface": 0,
+        "libpcap": 0,
+        "libpcap_interface": 0,
+        "packets_received": 3706151,
+        "extractor_queue_flows": 0,
+        "extractor_queue_share": 0.0,
+        "extractor_queue_max": 20
+      },
+      "timings": {
+        "inference_ns": {
+          "mean": 3877183.3045991147,
+          "median": 3344798.5,
+          "p95": 7618660.0,
+          "p99": 12301278.54999999,
+          "max": 27559501.0
+        },
+        "classification_latency_ns": {
+          "mean": 34383474.568904735,
+          "median": 15338797.5,
+          "p95": 139349007.5,
+          "p99": 260686002.94999993,
+          "max": 430958674.0
+        },
+        "wait_before_inference_ns": {
+          "mean": 30443317.25360715,
+          "median": 11560350.0,
+          "p95": 135268442.25,
+          "p99": 255887368.74999997,
+          "max": 426445436.0
+        }
+      },
+      "classified_per_second": 20.081972276248866,
+      "flows": 24413,
+      "classified": 24396,
+      "explanations": {
+        "eligible": 24396,
+        "selected": 0,
+        "completed": 0,
+        "selected_share": 0.0,
+        "completed_share": 0.0
+      },
+      "queue": {
+        "requested": null,
+        "accepted": null,
+        "dropped": null,
+        "completed": null,
+        "pending": null,
+        "drain_after_end_of_capture_ns": null,
+        "killed_after_drain_timeout": null,
+        "max": null
+      },
+      "resources": {
+        "classifier": {
+          "cpu_seconds": 106.01469199999998,
+          "max_rss_mib": 220.875
+        },
+        "explainer": null,
+        "extractor": {
+          "cpu_seconds": 137.26,
+          "max_rss_mib": 1981.07421875
+        }
+      },
+      "machine": {
+        "mains_online_in_every_sample": true,
+        "frequency_mhz": {
+          "0": 3890.1675,
+          "2": 400.255
+        },
+        "throttle_events": {
+          "0": {
+            "core": 0,
+            "package": 232
+          },
+          "1": {
+            "core": 0,
+            "package": 232
+          },
+          "2": {
+            "core": 232,
+            "package": 232
+          },
+          "3": {
+            "core": 232,
+            "package": 232
+          },
+          "4": {
+            "core": 0,
+            "package": 232
+          },
+          "5": {
+            "core": 0,
+            "package": 232
+          },
+          "6": {
+            "core": 0,
+            "package": 232
+          },
+          "7": {
+            "core": 0,
+            "package": 232
+          },
+          "8": {
+            "core": 0,
+            "package": 232
+          },
+          "9": {
+            "core": 0,
+            "package": 232
+          },
+          "10": {
+            "core": 0,
+            "package": 232
+          },
+          "11": {
+            "core": 0,
+            "package": 232
+          }
+        },
+        "busy_share_sibling_cpus": {
+          "1": 0.66,
+          "3": 0.6565656565656566
+        },
+        "memory_available_mib_min": 8760.15234375
+      }
+    },
+    {
+      "cell": {
+        "block": "variabilidade-sem-xai",
+        "model": "random-forest",
+        "configuration": "sem-xai",
+        "load": 1,
+        "repetition": 2,
+        "id": "variabilidade-sem-xai/random-forest/sem-xai/carga-1/rep-2",
+        "strategy": "sem-xai",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "run_dir": "/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261117T101637290656Z",
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261117T133802694624Z",
+        "report": "relatorios/nids-validacao-20261117T133802694624Z.md",
+        "file_run": "training-runs/nids/arquivo/20261115T193902561523Z",
+        "copies": 1,
+        "checks": {
+          "tcpreplay_sent_whole_segment": true,
+          "h1_sent_equals_tcpreplay_successful": true,
+          "h2_received_equals_h1_sent": true,
+          "no_capture_drops": true,
+          "extractor_read_equals_h2_received": true,
+          "replay_run_flow_chain": true
+        },
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 2,
+        "predictions_compared": 22189,
+        "without_copy": 0
+      },
+      "copies": 1,
+      "load": {
+        "flows_emitted": 24413,
+        "flows_per_second": 20.342525986478726,
+        "packets_per_second": 3088.48,
+        "mbps": 30.47
+      },
+      "drops": {
+        "h2_interface": 0,
+        "libpcap": 0,
+        "libpcap_interface": 0,
+        "packets_received": 3706151,
+        "extractor_queue_flows": 0,
+        "extractor_queue_share": 0.0,
+        "extractor_queue_max": 339
+      },
+      "timings": {
+        "inference_ns": {
+          "mean": 3982833.794597475,
+          "median": 3391018.5,
+          "p95": 7664642.75,
+          "p99": 12279977.349999996,
+          "max": 28043145.0
+        },
+        "classification_latency_ns": {
+          "mean": 85431664.97716838,
+          "median": 17434416.0,
+          "p95": 297946108.5,
+          "p99": 1936052728.7499986,
+          "max": 2273784174.0
+        },
+        "wait_before_inference_ns": {
+          "mean": 81384967.4563863,
+          "median": 13386093.0,
+          "p95": 292849637.75,
+          "p99": 1931147676.8499985,
+          "max": 2265900425.0
+        }
+      },
+      "classified_per_second": 20.082963633484084,
+      "flows": 24413,
+      "classified": 24396,
+      "explanations": {
+        "eligible": 24396,
+        "selected": 0,
+        "completed": 0,
+        "selected_share": 0.0,
+        "completed_share": 0.0
+      },
+      "queue": {
+        "requested": null,
+        "accepted": null,
+        "dropped": null,
+        "completed": null,
+        "pending": null,
+        "drain_after_end_of_capture_ns": null,
+        "killed_after_drain_timeout": null,
+        "max": null
+      },
+      "resources": {
+        "classifier": {
+          "cpu_seconds": 108.729721,
+          "max_rss_mib": 220.578125
+        },
+        "explainer": null,
+        "extractor": {
+          "cpu_seconds": 195.94,
+          "max_rss_mib": 1982.03515625
+        }
+      },
+      "machine": {
+        "mains_online_in_every_sample": true,
+        "frequency_mhz": {
+          "0": 2981.1125,
+          "2": 400.0
+        },
+        "throttle_events": {
+          "0": {
+            "core": 0,
+            "package": 146
+          },
+          "1": {
+            "core": 0,
+            "package": 146
+          },
+          "2": {
+            "core": 146,
+            "package": 146
+          },
+          "3": {
+            "core": 146,
+            "package": 146
+          },
+          "4": {
+            "core": 0,
+            "package": 146
+          },
+          "5": {
+            "core": 0,
+            "package": 146
+          },
+          "6": {
+            "core": 0,
+            "package": 146
+          },
+          "7": {
+            "core": 0,
+            "package": 146
+          },
+          "8": {
+            "core": 0,
+            "package": 146
+          },
+          "9": {
+            "core": 0,
+            "package": 146
+          },
+          "10": {
+            "core": 0,
+            "package": 146
+          },
+          "11": {
+            "core": 0,
+            "package": 146
+          }
+        },
+        "busy_share_sibling_cpus": {
+          "1": 0.67,
+          "3": 0.7156862745098039
+        },
+        "memory_available_mib_min": 8753.734375
+      }
+    },
+    {
+      "cell": {
+        "block": "variabilidade-sincrono-total",
+        "model": "random-forest",
+        "configuration": "sincrono-total",
+        "load": 2,
+        "repetition": 1,
+        "id": "variabilidade-sincrono-total/random-forest/sincrono-total/carga-2/rep-1",
+        "strategy": "sincrono-total",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "run_dir": "/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261117T103910028596Z",
+      "validation": {
+        "status": "reprovada",
+        "error": "Algum contador da reprodução não fechou. Ver /home/pedro/projects/explicabilidade-ia/relatorios/nids-validacao-20261117T133812872685Z.md.",
+        "file_run": "training-runs/nids/arquivo/20261115T194303133777Z"
+      },
+      "copies": 2,
+      "load": {
+        "flows_emitted": 48704,
+        "flows_per_second": 40.58208194075793,
+        "packets_per_second": 6176.96,
+        "mbps": 60.94
+      },
+      "drops": {
+        "h2_interface": 0,
+        "libpcap": 39043,
+        "libpcap_interface": 0,
+        "packets_received": 7412302,
+        "extractor_queue_flows": 0,
+        "extractor_queue_share": 0.0,
+        "extractor_queue_max": 3006
+      },
+      "timings": {
+        "inference_ns": {
+          "mean": 5304418.240507109,
+          "median": 5142034.0,
+          "p95": 7844663.300000003,
+          "p99": 10059778.810000002,
+          "max": 37882397.0
+        },
+        "classification_latency_ns": {
+          "mean": 11535664243.117264,
+          "median": 6555076746.0,
+          "p95": 40868271313.55,
+          "p99": 43331148662.97,
+          "max": 44401019650.0
+        },
+        "wait_before_inference_ns": {
+          "mean": 11521623893.163393,
+          "median": 6540140768.0,
+          "p95": 40854353413.200005,
+          "p99": 43317933711.91,
+          "max": 44385235448.0
+        },
+        "explanation_ns": {
+          "mean": 8542167.151927345,
+          "median": 8317166.0,
+          "p95": 12596579.200000001,
+          "p99": 15214444.08000001,
+          "max": 33219520.0
+        },
+        "explanation_latency_ns": {
+          "mean": 11535664243.117264,
+          "median": 6555076746.0,
+          "p95": 40868271313.55,
+          "p99": 43331148662.97,
+          "max": 44401019650.0
+        }
+      },
+      "classified_per_second": 40.06340070488639,
+      "flows": 48704,
+      "classified": 48668,
+      "explanations": {
+        "eligible": 48668,
+        "selected": 48668,
+        "completed": 48668,
+        "selected_share": 1.0,
+        "completed_share": 1.0
+      },
+      "queue": {
+        "requested": null,
+        "accepted": null,
+        "dropped": null,
+        "completed": null,
+        "pending": null,
+        "drain_after_end_of_capture_ns": null,
+        "killed_after_drain_timeout": null,
+        "max": null
+      },
+      "resources": {
+        "classifier": {
+          "cpu_seconds": 707.39609,
+          "max_rss_mib": 288.87109375
+        },
+        "explainer": null,
+        "extractor": {
+          "cpu_seconds": 556.49,
+          "max_rss_mib": 3494.671875
+        }
+      },
+      "machine": {
+        "mains_online_in_every_sample": true,
+        "frequency_mhz": {
+          "0": 2452.705,
+          "2": 2499.974
+        },
+        "throttle_events": {
+          "0": {
+            "core": 0,
+            "package": 9
+          },
+          "1": {
+            "core": 0,
+            "package": 9
+          },
+          "2": {
+            "core": 9,
+            "package": 9
+          },
+          "3": {
+            "core": 9,
+            "package": 9
+          },
+          "4": {
+            "core": 0,
+            "package": 9
+          },
+          "5": {
+            "core": 0,
+            "package": 9
+          },
+          "6": {
+            "core": 0,
+            "package": 9
+          },
+          "7": {
+            "core": 0,
+            "package": 9
+          },
+          "8": {
+            "core": 0,
+            "package": 9
+          },
+          "9": {
+            "core": 0,
+            "package": 9
+          },
+          "10": {
+            "core": 0,
+            "package": 9
+          },
+          "11": {
+            "core": 0,
+            "package": 9
+          }
+        },
+        "busy_share_sibling_cpus": {
+          "1": 0.8415841584158416,
+          "3": 0.7575757575757576
+        },
+        "memory_available_mib_min": 7145.125
+      }
+    },
+    {
+      "cell": {
+        "block": "variabilidade-sincrono-total",
+        "model": "random-forest",
+        "configuration": "sincrono-total",
+        "load": 2,
+        "repetition": 2,
+        "id": "variabilidade-sincrono-total/random-forest/sincrono-total/carga-2/rep-2",
+        "strategy": "sincrono-total",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "run_dir": "/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261117T110433687723Z",
+      "validation": {
+        "status": "reprovada",
+        "error": "Algum contador da reprodução não fechou. Ver /home/pedro/projects/explicabilidade-ia/relatorios/nids-validacao-20261117T133823378445Z.md.",
+        "file_run": "training-runs/nids/arquivo/20261115T194303133777Z"
+      },
+      "copies": 2,
+      "load": {
+        "flows_emitted": 48683,
+        "flows_per_second": 40.564228807702825,
+        "packets_per_second": 6176.96,
+        "mbps": 60.94
+      },
+      "drops": {
+        "h2_interface": 0,
+        "libpcap": 43415,
+        "libpcap_interface": 0,
+        "packets_received": 7412302,
+        "extractor_queue_flows": 0,
+        "extractor_queue_share": 0.0,
+        "extractor_queue_max": 2973
+      },
+      "timings": {
+        "inference_ns": {
+          "mean": 5250666.823250077,
+          "median": 5130806.0,
+          "p95": 7623582.8,
+          "p99": 9934833.599999996,
+          "max": 21838807.0
+        },
+        "classification_latency_ns": {
+          "mean": 11282191769.041176,
+          "median": 6848694087.0,
+          "p95": 40042933051.0,
+          "p99": 42775979575.2,
+          "max": 43931444943.0
+        },
+        "wait_before_inference_ns": {
+          "mean": 11268273609.998478,
+          "median": 6834217379.0,
+          "p95": 40029420498.4,
+          "p99": 42761971038.4,
+          "max": 43917865267.0
+        },
+        "explanation_ns": {
+          "mean": 8474324.07400555,
+          "median": 8339635.0,
+          "p95": 12288160.799999999,
+          "p99": 14726506.279999996,
+          "max": 35782055.0
+        },
+        "explanation_latency_ns": {
+          "mean": 11282191769.041176,
+          "median": 6848694087.0,
+          "p95": 40042933051.0,
+          "p99": 42775979575.2,
+          "max": 43931444943.0
+        }
+      },
+      "classified_per_second": 40.04373448128504,
+      "flows": 48683,
+      "classified": 48645,
+      "explanations": {
+        "eligible": 48645,
+        "selected": 48645,
+        "completed": 48645,
+        "selected_share": 1.0,
+        "completed_share": 1.0
+      },
+      "queue": {
+        "requested": null,
+        "accepted": null,
+        "dropped": null,
+        "completed": null,
+        "pending": null,
+        "drain_after_end_of_capture_ns": null,
+        "killed_after_drain_timeout": null,
+        "max": null
+      },
+      "resources": {
+        "classifier": {
+          "cpu_seconds": 701.021586,
+          "max_rss_mib": 288.9140625
+        },
+        "explainer": null,
+        "extractor": {
+          "cpu_seconds": 492.4,
+          "max_rss_mib": 3493.58203125
+        }
+      },
+      "machine": {
+        "mains_online_in_every_sample": true,
+        "frequency_mhz": {
+          "0": 2430.598,
+          "2": 2499.987
+        },
+        "throttle_events": {
+          "0": {
+            "core": 0,
+            "package": 28
+          },
+          "1": {
+            "core": 0,
+            "package": 28
+          },
+          "2": {
+            "core": 28,
+            "package": 28
+          },
+          "3": {
+            "core": 28,
+            "package": 28
+          },
+          "4": {
+            "core": 0,
+            "package": 28
+          },
+          "5": {
+            "core": 0,
+            "package": 28
+          },
+          "6": {
+            "core": 0,
+            "package": 28
+          },
+          "7": {
+            "core": 0,
+            "package": 28
+          },
+          "8": {
+            "core": 0,
+            "package": 28
+          },
+          "9": {
+            "core": 0,
+            "package": 28
+          },
+          "10": {
+            "core": 0,
+            "package": 28
+          },
+          "11": {
+            "core": 0,
+            "package": 28
+          }
+        },
+        "busy_share_sibling_cpus": {
+          "1": 0.71,
+          "3": 0.62
+        },
+        "memory_available_mib_min": 7141.49609375
+      }
+    },
+    {
+      "cell": {
+        "block": "rf-sincrono-total",
+        "model": "random-forest",
+        "configuration": "sincrono-total",
+        "load": 4,
+        "repetition": 1,
+        "id": "rf-sincrono-total/random-forest/sincrono-total/carga-4/rep-1",
+        "strategy": "sincrono-total",
+        "criterion": null
+      },
+      "attempt": 2,
+      "valid": true,
+      "reasons": [],
+      "run_dir": "/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261117T115803226759Z",
+      "validation": {
+        "status": "reprovada",
+        "error": "Algum contador da reprodução não fechou. Ver /home/pedro/projects/explicabilidade-ia/relatorios/nids-validacao-20261117T133839546864Z.md.",
+        "file_run": "training-runs/nids/arquivo/20261115T194303133777Z"
+      },
+      "copies": 4,
+      "load": {
+        "flows_emitted": 93534,
+        "flows_per_second": 77.93227766867305,
+        "packets_per_second": 12353.92,
+        "mbps": 121.88
+      },
+      "drops": {
+        "h2_interface": 0,
+        "libpcap": 2869076,
+        "libpcap_interface": 0,
+        "packets_received": 14824604,
+        "extractor_queue_flows": 24130,
+        "extractor_queue_share": 0.2579810550174268,
+        "extractor_queue_max": 10000
+      },
+      "timings": {
+        "inference_ns": {
+          "mean": 6892770.55566632,
+          "median": 6384911.0,
+          "p95": 11129310.5,
+          "p99": 15152719.900000017,
+          "max": 63593176.0
+        },
+        "classification_latency_ns": {
+          "mean": 147987388167.12552,
+          "median": 149947805020.5,
+          "p95": 257890278558.5,
+          "p99": 265112665809.1,
+          "max": 267332016230.0
+        },
+        "wait_before_inference_ns": {
+          "mean": 147969229374.00336,
+          "median": 149933589116.5,
+          "p95": 257863330899.75,
+          "p99": 265088844857.0,
+          "max": 267311496494.0
+        },
+        "explanation_ns": {
+          "mean": 10998362.382454924,
+          "median": 10348125.0,
+          "p95": 16987977.5,
+          "p99": 21610556.05,
+          "max": 97390527.0
+        },
+        "explanation_latency_ns": {
+          "mean": 147987388167.12552,
+          "median": 149947805020.5,
+          "p95": 257890278558.5,
+          "p99": 265112665809.1,
+          "max": 267332016230.0
+        }
+      },
+      "classified_per_second": 52.834852542250026,
+      "flows": 69404,
+      "classified": 69216,
+      "explanations": {
+        "eligible": 69216,
+        "selected": 69216,
+        "completed": 69216,
+        "selected_share": 1.0,
+        "completed_share": 1.0
+      },
+      "queue": {
+        "requested": null,
+        "accepted": null,
+        "dropped": null,
+        "completed": null,
+        "pending": null,
+        "drain_after_end_of_capture_ns": null,
+        "killed_after_drain_timeout": null,
+        "max": null
+      },
+      "resources": {
+        "classifier": {
+          "cpu_seconds": 1291.509633,
+          "max_rss_mib": 326.3125
+        },
+        "explainer": null,
+        "extractor": {
+          "cpu_seconds": 1738.53,
+          "max_rss_mib": 4671.09375
+        }
+      },
+      "machine": {
+        "mains_online_in_every_sample": true,
+        "frequency_mhz": {
+          "0": 1846.993,
+          "2": 2000.0
+        },
+        "throttle_events": {
+          "0": {
+            "core": 0,
+            "package": 0
+          },
+          "1": {
+            "core": 0,
+            "package": 0
+          },
+          "2": {
+            "core": 0,
+            "package": 0
+          },
+          "3": {
+            "core": 0,
+            "package": 0
+          },
+          "4": {
+            "core": 0,
+            "package": 0
+          },
+          "5": {
+            "core": 0,
+            "package": 0
+          },
+          "6": {
+            "core": 0,
+            "package": 0
+          },
+          "7": {
+            "core": 0,
+            "package": 0
+          },
+          "8": {
+            "core": 0,
+            "package": 0
+          },
+          "9": {
+            "core": 0,
+            "package": 0
+          },
+          "10": {
+            "core": 0,
+            "package": 0
+          },
+          "11": {
+            "core": 0,
+            "package": 0
+          }
+        },
+        "busy_share_sibling_cpus": {
+          "1": 0.94,
+          "3": 0.9603960396039604
+        },
+        "memory_available_mib_min": 5634.67578125
+      }
+    },
+    {
+      "cell": {
+        "block": "xgb-carga-alta",
+        "model": "xgboost",
+        "configuration": "assincrono",
+        "load": 8,
+        "repetition": 1,
+        "id": "xgb-carga-alta/xgboost/assincrono/carga-8/rep-1",
+        "strategy": "assincrono",
+        "criterion": null
+      },
+      "attempt": 2,
+      "valid": true,
+      "reasons": [],
+      "run_dir": "/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261117T122202276702Z",
+      "validation": {
+        "status": "reprovada",
+        "error": "Algum contador da reprodução não fechou. Ver /home/pedro/projects/explicabilidade-ia/relatorios/nids-validacao-20261117T133924676022Z.md.",
+        "file_run": "training-runs/nids/arquivo/20261115T201018001853Z"
+      },
+      "copies": 8,
+      "load": {
+        "flows_emitted": 169832,
+        "flows_per_second": 141.4902793622637,
+        "packets_per_second": 24707.81,
+        "mbps": 243.76
+      },
+      "drops": {
+        "h2_interface": 0,
+        "libpcap": 14186525,
+        "libpcap_interface": 0,
+        "packets_received": 29649208,
+        "extractor_queue_flows": 0,
+        "extractor_queue_share": 0.0,
+        "extractor_queue_max": 9992
+      },
+      "timings": {
+        "inference_ns": {
+          "mean": 492356.5741137001,
+          "median": 464066.0,
+          "p95": 876728.2999999995,
+          "p99": 1244288.8,
+          "max": 147916062.0
+        },
+        "classification_latency_ns": {
+          "mean": 3886727731.151784,
+          "median": 180493961.0,
+          "p95": 22850237080.699993,
+          "p99": 35392148903.64,
+          "max": 37308078227.0
+        },
+        "wait_before_inference_ns": {
+          "mean": 3886163041.844541,
+          "median": 179981535.0,
+          "p95": 22849745457.099995,
+          "p99": 35391640237.54,
+          "max": 37307215765.0
+        },
+        "explanation_ns": {
+          "mean": 870456.2176495343,
+          "median": 812837.0,
+          "p95": 1480237.0999999994,
+          "p99": 2237816.460000001,
+          "max": 75507750.0
+        },
+        "explanation_latency_ns": {
+          "mean": 3889463376.997712,
+          "median": 184257221.0,
+          "p95": 22852008879.899994,
+          "p99": 35394339602.66,
+          "max": 37310479141.0
+        },
+        "queue_wait_ns": {
+          "mean": 1736150.067015595,
+          "median": 818102.0,
+          "p95": 5720984.4999999795,
+          "p99": 15080551.120000012,
+          "max": 101669148.0
+        }
+      },
+      "classified_per_second": 138.85117668315556,
+      "flows": 169832,
+      "classified": 168707,
+      "explanations": {
+        "eligible": 168707,
+        "selected": 168707,
+        "completed": 168707,
+        "selected_share": 1.0,
+        "completed_share": 1.0
+      },
+      "queue": {
+        "requested": 168707,
+        "accepted": 168707,
+        "dropped": 0,
+        "completed": 168707,
+        "pending": 0,
+        "drain_after_end_of_capture_ns": 0,
+        "killed_after_drain_timeout": false,
+        "max": 60,
+        "max_at_share_of_run": 0.32839506172839505,
+        "max_in_last_tenth": 21
+      },
+      "resources": {
+        "classifier": {
+          "cpu_seconds": 207.293913,
+          "max_rss_mib": 468.55078125
+        },
+        "explainer": {
+          "cpu_seconds": 174.51152899999997,
+          "max_rss_mib": 203.23046875
+        },
+        "extractor": {
+          "cpu_seconds": 2048.28,
+          "max_rss_mib": 4672.96875
+        }
+      },
+      "machine": {
+        "mains_online_in_every_sample": true,
+        "frequency_mhz": {
+          "0": 1935.186,
+          "2": 998.914
+        },
+        "throttle_events": {
+          "0": {
+            "core": 0,
+            "package": 130
+          },
+          "1": {
+            "core": 0,
+            "package": 130
+          },
+          "2": {
+            "core": 130,
+            "package": 130
+          },
+          "3": {
+            "core": 130,
+            "package": 130
+          },
+          "4": {
+            "core": 0,
+            "package": 130
+          },
+          "5": {
+            "core": 0,
+            "package": 130
+          },
+          "6": {
+            "core": 0,
+            "package": 130
+          },
+          "7": {
+            "core": 0,
+            "package": 130
+          },
+          "8": {
+            "core": 0,
+            "package": 130
+          },
+          "9": {
+            "core": 0,
+            "package": 130
+          },
+          "10": {
+            "core": 0,
+            "package": 130
+          },
+          "11": {
+            "core": 0,
+            "package": 130
+          }
+        },
+        "busy_share_sibling_cpus": {
+          "1": 0.9090909090909091,
+          "3": 0.93
+        },
+        "memory_available_mib_min": 5163.171875
+      }
+    },
+    {
+      "cell": {
+        "block": "xgb-carga-alta",
+        "model": "xgboost",
+        "configuration": "sincrono-total",
+        "load": 8,
+        "repetition": 1,
+        "id": "xgb-carga-alta/xgboost/sincrono-total/carga-8/rep-1",
+        "strategy": "sincrono-total",
+        "criterion": null
+      },
+      "attempt": 2,
+      "valid": true,
+      "reasons": [],
+      "run_dir": "/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261117T124450541633Z",
+      "validation": {
+        "status": "reprovada",
+        "error": "Algum contador da reprodução não fechou. Ver /home/pedro/projects/explicabilidade-ia/relatorios/nids-validacao-20261117T134009354213Z.md.",
+        "file_run": "training-runs/nids/arquivo/20261115T200416040050Z"
+      },
+      "copies": 8,
+      "load": {
+        "flows_emitted": 169519,
+        "flows_per_second": 141.23589989227824,
+        "packets_per_second": 24707.84,
+        "mbps": 243.76
+      },
+      "drops": {
+        "h2_interface": 0,
+        "libpcap": 14149086,
+        "libpcap_interface": 0,
+        "packets_received": 29649208,
+        "extractor_queue_flows": 116,
+        "extractor_queue_share": 0.0006842890767406603,
+        "extractor_queue_max": 10000
+      },
+      "timings": {
+        "inference_ns": {
+          "mean": 372055.88557199144,
+          "median": 332265.0,
+          "p95": 693686.7,
+          "p99": 1025414.5200000003,
+          "max": 85742721.0
+        },
+        "classification_latency_ns": {
+          "mean": 8521883971.706549,
+          "median": 852585164.0,
+          "p95": 45592785753.7,
+          "p99": 55787657649.18,
+          "max": 61478596152.0
+        },
+        "wait_before_inference_ns": {
+          "mean": 8520686090.2850895,
+          "median": 851416242.0,
+          "p95": 45590873194.0,
+          "p99": 55785728868.18,
+          "max": 61477338482.0
+        },
+        "explanation_ns": {
+          "mean": 670861.6891592329,
+          "median": 642026.0,
+          "p95": 1093155.3,
+          "p99": 1528887.4200000018,
+          "max": 27241880.0
+        },
+        "explanation_latency_ns": {
+          "mean": 8521883971.706549,
+          "median": 852585164.0,
+          "p95": 45592785753.7,
+          "p99": 55787657649.18,
+          "max": 61478596152.0
+        }
+      },
+      "classified_per_second": 138.60432360210223,
+      "flows": 169403,
+      "classified": 168263,
+      "explanations": {
+        "eligible": 168263,
+        "selected": 168263,
+        "completed": 168263,
+        "selected_share": 1.0,
+        "completed_share": 1.0
+      },
+      "queue": {
+        "requested": null,
+        "accepted": null,
+        "dropped": null,
+        "completed": null,
+        "pending": null,
+        "drain_after_end_of_capture_ns": null,
+        "killed_after_drain_timeout": null,
+        "max": null
+      },
+      "resources": {
+        "classifier": {
+          "cpu_seconds": 294.713828,
+          "max_rss_mib": 517.28125
+        },
+        "explainer": null,
+        "extractor": {
+          "cpu_seconds": 2068.78,
+          "max_rss_mib": 4683.71875
+        }
+      },
+      "machine": {
+        "mains_online_in_every_sample": true,
+        "frequency_mhz": {
+          "0": 2000.0,
+          "2": 976.707
+        },
+        "throttle_events": {
+          "0": {
+            "core": 0,
+            "package": 384
+          },
+          "1": {
+            "core": 0,
+            "package": 384
+          },
+          "2": {
+            "core": 384,
+            "package": 384
+          },
+          "3": {
+            "core": 384,
+            "package": 384
+          },
+          "4": {
+            "core": 0,
+            "package": 384
+          },
+          "5": {
+            "core": 0,
+            "package": 384
+          },
+          "6": {
+            "core": 0,
+            "package": 384
+          },
+          "7": {
+            "core": 0,
+            "package": 384
+          },
+          "8": {
+            "core": 0,
+            "package": 384
+          },
+          "9": {
+            "core": 0,
+            "package": 384
+          },
+          "10": {
+            "core": 0,
+            "package": 384
+          },
+          "11": {
+            "core": 0,
+            "package": 384
+          }
+        },
+        "busy_share_sibling_cpus": {
+          "1": 0.9285714285714286,
+          "3": 0.898989898989899
+        },
+        "memory_available_mib_min": 5176.921875
+      }
+    }
+  ],
+  "variability": [
+    {
+      "model": "random-forest",
+      "configuration": "sem-xai",
+      "load": 1,
+      "trials": 3,
+      "inference_ns_mean": {
+        "min": 3.877183304599115,
+        "median": 3.9828337945974748,
+        "max": 3.9901854349483523,
+        "relative_range": 0.028372293742841965
+      },
+      "classification_latency_ns_p95": {
+        "min": 139.3490075,
+        "median": 166.99718925,
+        "max": 297.9461085,
+        "relative_range": 0.9496992237550489
+      },
+      "classification_latency_ns_p99": {
+        "min": 260.68600294999993,
+        "median": 415.405135599998,
+        "max": 1936.0527287499986,
+        "relative_range": 4.033091029026765
+      }
+    },
+    {
+      "model": "random-forest",
+      "configuration": "sincrono-total",
+      "load": 2,
+      "trials": 3,
+      "inference_ns_mean": {
+        "min": 5.228009378267839,
+        "median": 5.250666823250077,
+        "max": 5.304418240507109,
+        "relative_range": 0.014552220662893666
+      },
+      "classification_latency_ns_p95": {
+        "min": 40042.933051,
+        "median": 40527.768656,
+        "max": 40868.27131355,
+        "relative_range": 0.020364759519712988
+      },
+      "classification_latency_ns_p99": {
+        "min": 42775.9795752,
+        "median": 43178.614842,
+        "max": 43331.14866297,
+        "relative_range": 0.01285750109866857
+      }
+    }
+  ],
+  "acceleration_run": "training-runs/nids/aceleracao/20261116T102343628819Z",
+  "environment": {
+    "python": "3.12.3",
+    "libraries": {
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "scipy": "1.18.1",
+      "joblib": "1.6.0",
+      "xgboost-cpu": "3.4.1",
+      "shap": "0.54.1",
+      "matplotlib": "3.11.2",
+      "threadpoolctl": "3.8.0",
+      "pandas": "3.1.1"
+    },
+    "platform": "Linux-7.0.0-43-generic-x86_64-desconhecido-with-glibc2.43",
+    "cpu": "13th Gen Intel(R) Core(TM) i5-1334U",
+    "logical_cpus": 12
+  }
+}

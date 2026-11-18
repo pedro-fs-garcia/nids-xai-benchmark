@@ -1,0 +1,235 @@
+{
+  "stage": "acceleration effect",
+  "run_id": "20261116T102343628819Z",
+  "segment": "campanha",
+  "factors": [
+    2.0,
+    4.0,
+    8.0
+  ],
+  "original_runs": {
+    "random-forest": "training-runs/nids/arquivo/20261115T193902561523Z",
+    "xgboost": "training-runs/nids/arquivo/20261115T231006523112Z"
+  },
+  "thresholds": {
+    "probabilidade": {
+      "random-forest": 0.5,
+      "xgboost": 0.5
+    },
+    "incerteza": {
+      "random-forest": 0.4,
+      "xgboost": 0.4
+    }
+  },
+  "rows": [
+    {
+      "factor": 2.0,
+      "model": "random-forest",
+      "run": "training-runs/nids/arquivo/20261116T102602202232Z",
+      "flows": {
+        "original": 24413,
+        "scaled": 22993,
+        "matched": 22992,
+        "only_original": 1421,
+        "only_scaled": 1
+      },
+      "matched_with_equal_exact_attributes": 21125,
+      "matched_with_equal_temporal_attributes": 8,
+      "predictions": {
+        "compared": 22982,
+        "differing": 11,
+        "attacks_original": 681,
+        "attacks_scaled": 674
+      },
+      "selection": {
+        "probabilidade": {
+          "selected_original": 681,
+          "selected_scaled": 674,
+          "differing_in_matched": 11
+        },
+        "incerteza": {
+          "selected_original": 32,
+          "selected_scaled": 757,
+          "differing_in_matched": 727
+        }
+      }
+    },
+    {
+      "factor": 2.0,
+      "model": "xgboost",
+      "run": "training-runs/nids/arquivo/20261116T103150033239Z",
+      "flows": {
+        "original": 24413,
+        "scaled": 22993,
+        "matched": 22992,
+        "only_original": 1421,
+        "only_scaled": 1
+      },
+      "matched_with_equal_exact_attributes": 21125,
+      "matched_with_equal_temporal_attributes": 8,
+      "predictions": {
+        "compared": 22982,
+        "differing": 4,
+        "attacks_original": 696,
+        "attacks_scaled": 694
+      },
+      "selection": {
+        "probabilidade": {
+          "selected_original": 696,
+          "selected_scaled": 694,
+          "differing_in_matched": 4
+        },
+        "incerteza": {
+          "selected_original": 29,
+          "selected_scaled": 24,
+          "differing_in_matched": 6
+        }
+      }
+    },
+    {
+      "factor": 4.0,
+      "model": "random-forest",
+      "run": "training-runs/nids/arquivo/20261116T103607721309Z",
+      "flows": {
+        "original": 24413,
+        "scaled": 21908,
+        "matched": 21907,
+        "only_original": 2506,
+        "only_scaled": 1
+      },
+      "matched_with_equal_exact_attributes": 19399,
+      "matched_with_equal_temporal_attributes": 8,
+      "predictions": {
+        "compared": 21891,
+        "differing": 9,
+        "attacks_original": 681,
+        "attacks_scaled": 670
+      },
+      "selection": {
+        "probabilidade": {
+          "selected_original": 681,
+          "selected_scaled": 670,
+          "differing_in_matched": 9
+        },
+        "incerteza": {
+          "selected_original": 32,
+          "selected_scaled": 814,
+          "differing_in_matched": 788
+        }
+      }
+    },
+    {
+      "factor": 4.0,
+      "model": "xgboost",
+      "run": "training-runs/nids/arquivo/20261116T104423913106Z",
+      "flows": {
+        "original": 24413,
+        "scaled": 21908,
+        "matched": 21907,
+        "only_original": 2506,
+        "only_scaled": 1
+      },
+      "matched_with_equal_exact_attributes": 19399,
+      "matched_with_equal_temporal_attributes": 8,
+      "predictions": {
+        "compared": 21891,
+        "differing": 17,
+        "attacks_original": 696,
+        "attacks_scaled": 679
+      },
+      "selection": {
+        "probabilidade": {
+          "selected_original": 696,
+          "selected_scaled": 679,
+          "differing_in_matched": 17
+        },
+        "incerteza": {
+          "selected_original": 29,
+          "selected_scaled": 26,
+          "differing_in_matched": 24
+        }
+      }
+    },
+    {
+      "factor": 8.0,
+      "model": "random-forest",
+      "run": "training-runs/nids/arquivo/20261116T104929655181Z",
+      "flows": {
+        "original": 24413,
+        "scaled": 20953,
+        "matched": 20953,
+        "only_original": 3460,
+        "only_scaled": 0
+      },
+      "matched_with_equal_exact_attributes": 18505,
+      "matched_with_equal_temporal_attributes": 8,
+      "predictions": {
+        "compared": 20944,
+        "differing": 9,
+        "attacks_original": 681,
+        "attacks_scaled": 670
+      },
+      "selection": {
+        "probabilidade": {
+          "selected_original": 681,
+          "selected_scaled": 670,
+          "differing_in_matched": 9
+        },
+        "incerteza": {
+          "selected_original": 32,
+          "selected_scaled": 1147,
+          "differing_in_matched": 1125
+        }
+      }
+    },
+    {
+      "factor": 8.0,
+      "model": "xgboost",
+      "run": "training-runs/nids/arquivo/20261116T105614545170Z",
+      "flows": {
+        "original": 24413,
+        "scaled": 20953,
+        "matched": 20953,
+        "only_original": 3460,
+        "only_scaled": 0
+      },
+      "matched_with_equal_exact_attributes": 18505,
+      "matched_with_equal_temporal_attributes": 8,
+      "predictions": {
+        "compared": 20944,
+        "differing": 18,
+        "attacks_original": 696,
+        "attacks_scaled": 679
+      },
+      "selection": {
+        "probabilidade": {
+          "selected_original": 696,
+          "selected_scaled": 679,
+          "differing_in_matched": 18
+        },
+        "incerteza": {
+          "selected_original": 29,
+          "selected_scaled": 44,
+          "differing_in_matched": 44
+        }
+      }
+    }
+  ],
+  "environment": {
+    "python": "3.12.3",
+    "libraries": {
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "scipy": "1.18.1",
+      "joblib": "1.6.0",
+      "xgboost-cpu": "3.4.1",
+      "shap": "0.54.1",
+      "matplotlib": "3.11.2",
+      "threadpoolctl": "3.8.0",
+      "pandas": "3.1.1"
+    },
+    "platform": "Linux-7.0.0-43-generic-x86_64-desconhecido-with-glibc2.43",
+    "cpu": "13th Gen Intel(R) Core(TM) i5-1334U",
+    "logical_cpus": 12
+  }
+}

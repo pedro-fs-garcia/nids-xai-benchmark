@@ -103,6 +103,10 @@ def render_run(summary: dict[str, Any]) -> str:
         lines += [
             "## Conferência com a tabela de referência",
             "",
+            *([f"O trecho começa no meio da captura. {_integer(conference['carried_over']['flows'])} fluxos do NIDS "
+               f"pertencem a {_integer(conference['carried_over']['connections'])} conexões que já tinham pacotes "
+               "antes do início e ficam fora da conferência, porque não correspondem aos fluxos do CSV.", ""]
+              if (conference.get("carried_over") or {}).get("connections") else []),
             f"Fora da borda dos últimos {summary['segment']['border_seconds']} s, "
             f"{_integer(conference['matched_inside'])} fluxos do NIDS correspondem a fluxos de `tuesday.csv`. "
             f"Ficaram {_integer(conference['reference_only_inside'])} fluxos só no CSV e "
@@ -236,6 +240,129 @@ COMPARISON_CHECKS = {
     "async_explanations_equal_total": "Assíncrono explica os mesmos fluxos que o Síncrono total, com as mesmas "
                                       "contribuições",
 }
+
+COPY_CHECKS = {
+    "every_flow_in_one_copy": "Todo fluxo com endereços do trecho pertence à cópia conferida",
+    "same_flows": "Cada fluxo da cópia corresponde a um fluxo do trecho original, e vice-versa",
+    "same_inputs": "As 80 entradas de cada fluxo são idênticas às do fluxo original",
+    "same_predictions": "A probabilidade de ataque e a previsão de cada fluxo são idênticas às do fluxo original",
+}
+
+
+def render_copy_check(summary: dict[str, Any]) -> str:
+    flows, rewrite = summary["flows"], summary["rewrite"]
+    lines = [
+        f"# Conferência da cópia {summary['copy']} do trecho `{summary['segment']}`: {MODEL_NAMES[summary['model']]}",
+        "",
+        f"A conferência foi {'aprovada' if summary['passed'] else 'reprovada'}. Ela grava a cópia "
+        f"{summary['copy']} do trecho com o `tcprewrite` {rewrite['tool']['version']}, que troca cada um dos "
+        f"{_integer(rewrite['pnat_pairs'])} endereços IPv4 do trecho pelo endereço da cópia, com a mesma biblioteca "
+        "de edição que o `tcpreplay-edit` usa na rede emulada. O NIDS lê a cópia do arquivo, sem XAI, e cada fluxo, "
+        "com os endereços de volta aos originais, é comparado com o fluxo da leitura do trecho original. O primeiro "
+        f"endereço da cópia é `{summary['addresses']['first_copy_address']}`.",
+        "",
+        "| Situação | Fluxos |",
+        "|---|---:|",
+        f"| No trecho original | {_integer(flows['original'])} |",
+        f"| Na cópia | {_integer(flows['copy'])} |",
+        f"| Na cópia, com endereços da cópia | {_integer(flows['mapped'])} |",
+        f"| Na cópia, sem endereço IPv4 do trecho | {_integer(flows['without_copy'])} |",
+        f"| Casados | {_integer(flows['matched'])} |",
+        f"| Só no original | {_integer(flows['only_original'])} |",
+        f"| Só na cópia | {_integer(flows['only_copy'])} |",
+        f"| Casados com as 80 entradas idênticas | {_integer(flows['exact_values'])} |",
+        f"| Casados com previsão ou probabilidade diferente | {_integer(flows['differing_predictions'])} |",
+        "",
+        "Os fluxos sem endereço IPv4 do trecho são os que o extrator forma de quadros que não são IPv4, como o ARP. "
+        "A troca de endereços não os altera, e eles são comparados sem conversão.",
+        "",
+        "| Verificação | Resultado |",
+        "|---|---|",
+        *[f"| {COPY_CHECKS[name]} | {'aprovada' if value else 'reprovada'} |"
+          for name, value in summary["checks"].items()],
+        "",
+    ]
+    if summary["attribute_mismatches"]:
+        lines += ["Entradas divergentes: " + ", ".join(f"{name} ({_integer(item['mismatches'])})" for name, item
+                                                      in summary["attribute_mismatches"].items()) + ".", ""]
+    lines += [
+        "## Reprodução",
+        "",
+        "```bash",
+        f"cd src && python main.py nids-conferir-copia --modelo {summary['model']} --trecho {summary['segment']} "
+        f"--numero {summary['copy']} --original ../{summary['original_run']}",
+        "```",
+        "",
+        f"A cópia gravada tinha SHA-256 `{summary['copy_pcap']['sha256']}` e foi apagada depois da leitura. A leitura "
+        f"da cópia está em [{summary['copy_run']}](../{summary['copy_run']}/report.json), e o registro da conferência, "
+        f"em [training-runs/nids/copia/{summary['run_id']}/report.json]"
+        f"(../training-runs/nids/copia/{summary['run_id']}/report.json).",
+        "",
+    ]
+    return "\n".join(lines)
+
+
+def render_acceleration(summary: dict[str, Any]) -> str:
+    rows = summary["rows"]
+    lines = [
+        f"# Efeito da aceleração sobre os fluxos: trecho `{summary['segment']}`",
+        "",
+        "O NIDS leu o trecho com os intervalos entre pacotes divididos por cada fator, sem rede, como chegaria numa "
+        "reprodução acelerada sem atraso de envio nem de captura. Cada leitura acelerada é comparada com a leitura "
+        "original do mesmo classificador. Os fluxos são casados pela quíntupla, pelo `Flow ID` e pela ordem de "
+        "ocorrência. Os atributos de contagem, tamanho e flags não dependem dos instantes. Os temporais dependem. "
+        "Os termos seguem o [glossário](../docs/glossario.md).",
+        "",
+        "## Fluxos",
+        "",
+        "| Classificador | Fator | Fluxos originais | Fluxos acelerados | Casados | Só no original | Só no acelerado | "
+        "Casados com contagem, tamanho e flags iguais | Casados com atributos temporais iguais |",
+        "|---|---:|---:|---:|---:|---:|---:|---:|---:|",
+    ]
+    for row in rows:
+        flows = row["flows"]
+        lines.append(
+            f"| {MODEL_NAMES[row['model']]} | {_number(row['factor'])} | {_integer(flows['original'])} | "
+            f"{_integer(flows['scaled'])} | {_integer(flows['matched'])} | {_integer(flows['only_original'])} | "
+            f"{_integer(flows['only_scaled'])} | {_integer(row['matched_with_equal_exact_attributes'])} | "
+            f"{_integer(row['matched_with_equal_temporal_attributes'])} |")
+    lines += [
+        "",
+        "## Previsões e seleção",
+        "",
+        "| Classificador | Fator | Previsões diferentes, entre os casados | Ataques previstos, original → acelerado | "
+        "Seleção por probabilidade, original → acelerado | Seleção por incerteza, original → acelerado |",
+        "|---|---:|---:|---:|---:|---:|",
+    ]
+    for row in rows:
+        predictions, selection = row["predictions"], row["selection"]
+        lines.append(
+            f"| {MODEL_NAMES[row['model']]} | {_number(row['factor'])} | {_integer(predictions['differing'])} de "
+            f"{_integer(predictions['compared'])} | {_integer(predictions['attacks_original'])} → "
+            f"{_integer(predictions['attacks_scaled'])} | "
+            + " | ".join(f"{_integer(selection[name]['selected_original'])} → "
+                         f"{_integer(selection[name]['selected_scaled'])}" for name in ("probabilidade", "incerteza"))
+            + " |")
+    lines += [
+        "",
+        "Os limiares de seleção são os de [configs/nids.json](../configs/nids.json): "
+        + "; ".join(f"{criterion} {', '.join(f'{MODEL_NAMES[model]} {_number(value)}' for model, value in values.items())}"
+                    for criterion, values in summary["thresholds"].items()) + ".",
+        "",
+        "## Reprodução",
+        "",
+        "```bash",
+        f"cd src && python main.py nids-efeito-aceleracao --trecho {summary['segment']} --fatores "
+        + " ".join(_number(factor) for factor in summary["factors"]) + " --originais "
+        + " ".join(f"../{run}" for run in summary["original_runs"].values()),
+        "```",
+        "",
+        f"As leituras aceleradas estão em {', '.join(f'`{row['run']}`' for row in rows)}. Os arquivos acelerados "
+        f"foram apagados depois da leitura. O registro está em [training-runs/nids/aceleracao/{summary['run_id']}/"
+        f"report.json](../training-runs/nids/aceleracao/{summary['run_id']}/report.json).",
+        "",
+    ]
+    return "\n".join(lines)
 
 
 def render_comparison(summary: dict[str, Any]) -> str:
@@ -426,6 +553,33 @@ def _percent(share: float | None, digits: int = 2) -> str:
     return "—" if share is None else _decimal(share * 100, digits) + "%"
 
 
+def _copy_lines(summary: dict[str, Any]) -> list[str]:
+    """Comparação de cada cópia com a execução por arquivo, depois de os endereços voltarem aos originais."""
+    copies = summary.get("copies")
+    if not copies:
+        return []
+    flows = summary["flows"]
+    lines = [
+        "## Cópias",
+        "",
+        f"Cada fluxo da reprodução foi atribuído à cópia dos seus endereços e voltou aos endereços originais. "
+        f"{_integer(flows['without_copy'])} fluxos ficaram sem cópia: o extrator os forma de quadros que não são "
+        "IPv4, como o ARP, que a troca de endereços não altera, e eles juntam pacotes de todas as cópias. Por isso, "
+        f"a comparação usa os {_integer(flows['compared_file'])} fluxos da execução por arquivo com as duas pontas "
+        "entre os endereços do trecho.",
+        "",
+        "| Cópia | Fluxos | Casados fora da borda | Casados na borda | Só no arquivo | Só na reprodução | "
+        "Contagem, tamanho e flags iguais | Previsões diferentes |",
+        "|---:|---:|---:|---:|---:|---:|---:|---:|",
+    ]
+    for copy, row in copies.items():
+        lines.append(f"| {copy} | {_integer(row['replay_flows'])} | {_integer(row['matched_inside'])} | "
+                     f"{_integer(row['matched_border'])} | {_integer(row['file_only_inside'])} | "
+                     f"{_integer(row['replay_only_inside'])} | {_integer(row['flows_with_equal_exact_attributes'])} | "
+                     f"{_integer(row['predictions_differing'])} de {_integer(row['predictions_compared'])} |")
+    return lines + [""]
+
+
 def _packet_shift_lines(shifts: dict[str, Any] | None) -> list[str]:
     if not shifts or not shifts["flows"]:
         return []
@@ -470,9 +624,13 @@ def render_validation(summary: dict[str, Any]) -> str:
     build = replay.get("tcpreplay_build") or {}
     tool = f"tcpreplay {build['version']}" if build else "tcpreplay"
     command = " ".join([Path(replay["replay_command"][0]).name, *replay["replay_command"][1:-1]])
+    copies = int(replay.get("copies") or 1)
+    sent = ("o trecho" if copies == 1 else
+            f"{copies} cópias do trecho ao mesmo tempo, a cópia 1 sem alteração e as demais com os endereços IPv4 "
+            "trocados pelos do bloco de cada cópia,")
     lines = [
-        f"# Validação do NIDS em baixa carga: {summary.get('strategy', 'Sem XAI')}, {MODEL_NAMES[summary['model']]}, "
-        f"trecho `{summary['segment']}`",
+        f"# Validação do NIDS na rede emulada: {summary.get('strategy', 'Sem XAI')}, {MODEL_NAMES[summary['model']]}, "
+        f"trecho `{summary['segment']}`, {copies} {'cópia' if copies == 1 else 'cópias'}",
         "",
         f"A validação foi {'aprovada' if summary['passed'] else 'reprovada'}. Ela compara a execução do NIDS que "
         "capturou o trecho reproduzido na rede emulada com a execução que leu o mesmo trecho do arquivo. A execução "
@@ -482,7 +640,7 @@ def render_validation(summary: dict[str, Any]) -> str:
         "",
         f"O Mininet criou dois hosts ligados por um enlace direto, sem switch, com MTU de "
         f"{_integer(replay['topology']['mtu'])} bytes, IPv6 desativado e as descargas de processamento das placas "
-        f"desligadas. O host h1 enviou o trecho com o {tool} na velocidade original "
+        f"desligadas. O host h1 enviou {sent} com o {tool} na velocidade original "
         f"(`{command}`), e o NIDS capturou a interface de h2. A reprodução levou "
         f"{_decimal(replay['replay_seconds'], 1)} s, a {_decimal(tcpreplay.get('rated_mbps') or 0, 3)} Mbps e "
         f"{_decimal(tcpreplay.get('rated_packets_per_second') or 0, 1)} pacotes/s. Depois do último pacote, a execução "
@@ -513,7 +671,8 @@ def render_validation(summary: dict[str, Any]) -> str:
         *[f"| {VALIDATION_CHECKS[name]} | {'aprovada' if value else 'reprovada'} |"
           for name, value in summary["checks"].items()],
         "",
-        "## Fluxos",
+        *_copy_lines(summary),
+        "## Fluxos" + (" da cópia 1" if copies > 1 else ""),
         "",
         "Os fluxos das duas execuções são casados pela quíntupla, pelo `Flow ID` e pela ordem de ocorrência, porque "
         "os instantes da reprodução são os da emulação, e não os de 2017. A borda dos últimos 120 s do trecho fica "
@@ -565,9 +724,10 @@ def render_validation(summary: dict[str, Any]) -> str:
         "## Reprodução do ensaio",
         "",
         "```bash",
-        f"sudo python3 scripts/emular_baixa_carga.py --modelo {summary['model']} --trecho {summary['segment']} "
+        f"sudo python3 scripts/emular_trecho.py --modelo {summary['model']} --trecho {summary['segment']} "
         f"--estrategia {summary.get('strategy_key', 'sem-xai')}"
-        + (f" --criterio {summary['selection']['criterion']}" if summary.get("selection") else ""),
+        + (f" --criterio {summary['selection']['criterion']}" if summary.get("selection") else "")
+        + f" --carga {copies}",
         f"cd src && python main.py nids-validar --reproduzida ../{summary['replay_run']} --arquivo ../{summary['file_run']}",
         "```",
         "",

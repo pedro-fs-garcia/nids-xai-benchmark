@@ -9,7 +9,7 @@ from typing import Any
 
 from domains.model_training.repository import ModelTrainingRepository, sha256
 from domains.traffic_preparation.exceptions import TrafficPreparationError
-from domains.traffic_preparation.schemas import PreparationConfig, SourcePcap
+from domains.traffic_preparation.schemas import DerivedSegmentConfig, PreparationConfig, SourcePcap
 
 csv.field_size_limit(1 << 20)
 
@@ -36,6 +36,32 @@ class TrafficRepository:
                 flows_csv=self.root / content["flows_csv"], output_dir=self.root / content["output_dir"],
                 segments=segments, border_seconds=int(content["border_seconds"]),
             )
+        except (OSError, KeyError, ValueError, TypeError) as error:
+            raise TrafficPreparationError(f"Configuração inválida em {path}: {error}") from error
+
+    def read_any_config(self, path: Path) -> PreparationConfig | DerivedSegmentConfig:
+        """Configuração da preparação do PCAP ou de um trecho derivado, conforme os campos do arquivo."""
+        try:
+            derived = "base_manifest" in json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as error:
+            raise TrafficPreparationError(f"Configuração inválida em {path}: {error}") from error
+        return self.read_derived_config(path) if derived else self.read_config(path)
+
+    def read_derived_config(self, path: Path) -> DerivedSegmentConfig:
+        try:
+            content = json.loads(path.read_text(encoding="utf-8"))
+            if set(content) != {"base_manifest", "base_segment", "flows_csv", "output_dir", "segment",
+                                "border_seconds"} or set(content["segment"]) != {"name", "start", "stop"}:
+                raise ValueError("campos inesperados ou ausentes")
+            start, stop = (datetime.fromisoformat(content["segment"][key].replace("Z", "+00:00"))
+                           for key in ("start", "stop"))
+            if start.tzinfo != timezone.utc or stop.tzinfo != timezone.utc or not start < stop:
+                raise ValueError("o início e o fim do trecho devem estar em UTC, nessa ordem")
+            return DerivedSegmentConfig(
+                path=path, sha256=sha256(path), base_manifest=self.root / content["base_manifest"],
+                base_segment=content["base_segment"], flows_csv=self.root / content["flows_csv"],
+                output_dir=self.root / content["output_dir"], name=content["segment"]["name"], start=start,
+                stop=stop, border_seconds=int(content["border_seconds"]))
         except (OSError, KeyError, ValueError, TypeError) as error:
             raise TrafficPreparationError(f"Configuração inválida em {path}: {error}") from error
 

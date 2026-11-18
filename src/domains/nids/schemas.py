@@ -16,7 +16,8 @@ class NidsConfig:
     sha256: str
     content: dict[str, Any]
     frozen_run: Path
-    preparation_manifest: Path
+    # Manifestos das preparações de tráfego. Cada trecho tem nome único entre eles.
+    preparation_manifests: tuple[Path, ...]
     tree_shap_config: Path
     selection: dict[str, Any]
     explanation_queue: dict[str, Any]

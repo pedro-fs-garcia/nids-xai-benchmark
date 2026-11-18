@@ -10,6 +10,7 @@ from domains.model_artifacts import router as model_artifacts_router
 from domains.explanations import router as explanations_router
 from domains.traffic_preparation import router as traffic_preparation_router
 from domains.nids import router as nids_router
+from domains.campaign import router as campaign_router
 
 
 def verify_environment(_args: argparse.Namespace) -> int:
@@ -39,6 +40,7 @@ def build_parser() -> argparse.ArgumentParser:
     explanations_router.register(subparsers)
     traffic_preparation_router.register(subparsers)
     nids_router.register(subparsers)
+    campaign_router.register(subparsers)
     return parser
 
 

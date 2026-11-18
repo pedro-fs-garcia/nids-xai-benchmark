@@ -16,8 +16,10 @@ tcpreplay/build.sh
 
 O script baixa o pacote `tcpreplay-4.6.2.tar.xz` da página de versões do projeto, confere o SHA-256 fixado no próprio script e compila com as opções padrão do `configure`, mais `--disable-shared`. Ele grava em `tcpreplay/build/`, que fica fora do Git:
 
-- `tcpreplay`, o binário usado por [scripts/emular_baixa_carga.py](../scripts/emular_baixa_carga.py);
-- `tcpreplay-build.json`, com a versão, o endereço e o hash do pacote, as opções de compilação, o compilador, o hash do binário e a saída de `tcpreplay --version`;
+- `tcpreplay-edit`, o binário usado por [scripts/emular_trecho.py](../scripts/emular_trecho.py), que envia cada cópia do trecho e troca os endereços IPv4 das cópias com `--pnat` ([decisão 15](../docs/decisoes.md));
+- `tcprewrite`, que aplica a mesma troca e grava a cópia num arquivo, para a conferência das cópias sem rede (`nids-conferir-copia`);
+- `tcpreplay`, o mesmo envio sem a edição de pacotes;
+- `tcpreplay-build.json`, com a versão, o endereço e o hash do pacote, as opções de compilação, o compilador, o hash e a saída de `--version` de cada binário;
 - `configure.log` e `make.log`.
 
-O script da emulação confere o hash do binário com `tcpreplay-build.json` e recusa versões anteriores à 4.6.0.
+A compilação é reprodutível: com o mesmo pacote e o mesmo compilador, os binários saem com o mesmo hash. O script da emulação confere o hash do `tcpreplay-edit` com `tcpreplay-build.json`, recusa versões anteriores à 4.6.0 e exige a edição de pacotes.

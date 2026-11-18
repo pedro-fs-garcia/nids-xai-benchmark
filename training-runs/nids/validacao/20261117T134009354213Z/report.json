@@ -1,0 +1,1605 @@
+{
+  "stage": "low-load validation",
+  "run_id": "20261117T134009354213Z",
+  "passed": false,
+  "checks": {
+    "tcpreplay_sent_whole_segment": true,
+    "h1_sent_equals_tcpreplay_successful": true,
+    "h2_received_equals_h1_sent": true,
+    "no_capture_drops": false,
+    "extractor_read_equals_h2_received": false,
+    "replay_run_flow_chain": true
+  },
+  "counters": {
+    "copies": 8,
+    "segment_packets": 29649208,
+    "tcpreplay_attempted": 29649208,
+    "tcpreplay_successful": 29649208,
+    "tcpreplay_failed": 0,
+    "tcpreplay_truncated": 0,
+    "h1_sent": 29649208,
+    "h2_received": 29649208,
+    "h2_dropped": 0,
+    "pcap_received": 29649208,
+    "pcap_dropped": 14149086,
+    "pcap_interface_dropped": 0,
+    "extractor_read": 15500122,
+    "extractor_valid": 15479415,
+    "extractor_discarded": 20707,
+    "file_extractor_read": 3706151,
+    "file_extractor_valid": 3703160,
+    "packets_after_emission": 0,
+    "flows_emitted": 169519,
+    "flows_dropped_in_extractor_queue": 116,
+    "flows_received": 169403,
+    "flows_classified": 168263,
+    "flows_with_error": 1140
+  },
+  "model": "xgboost",
+  "segment": "campanha",
+  "strategy": "Síncrono total",
+  "strategy_key": "sincrono-total",
+  "selection": null,
+  "replay_run": "training-runs/nids/interface/20261117T124450541633Z",
+  "file_run": "training-runs/nids/arquivo/20261115T200416040050Z",
+  "replay": {
+    "topology": {
+      "hosts": [
+        "h1",
+        "h2"
+      ],
+      "link": "h1-eth0 <-> h2-eth0, enlace direto (veth)",
+      "switch": null,
+      "mtu": 24860,
+      "ipv6": "desativado"
+    },
+    "replay_command": [
+      "/home/pedro/projects/explicabilidade-ia/tcpreplay/build/tcpreplay-edit",
+      "--intf1=h1-eth0",
+      "--multiplier=1",
+      "--no-flow-stats",
+      "--stats=60",
+      "/home/pedro/projects/explicabilidade-ia/derived-data/pcap/tuesday-campanha/segment-campanha.pcap"
+    ],
+    "replay_seconds": 1200.2543271880131,
+    "wait_after_replay_s": 137.0,
+    "replay_started_utc": "2026-11-17T12:44:51.428616+00:00",
+    "tcpreplay_build": {
+      "version": "4.6.2",
+      "binary": "tcpreplay/build/tcpreplay-edit",
+      "binary_sha256": "4b1bb7506c3ea32cfd64ed4bfe8fad7b4caad4cf2a731106a24e8031df3bdad8",
+      "archive": {
+        "url": "https://github.com/appneta/tcpreplay/releases/download/v4.6.2/tcpreplay-4.6.2.tar.xz",
+        "sha256": "83a7ca2f9daa367949926cfe34d30193e756c233c164b38f84f0d6d272a87e66"
+      }
+    },
+    "copies": 8
+  },
+  "tcpreplay": {
+    "exit_code": 0,
+    "attempted_packets": 29649208,
+    "attempted_bytes": 36571150072,
+    "successful": 29649208,
+    "failed": 0,
+    "truncated": 0,
+    "retried_enobufs": 0,
+    "retried_eagain": 0,
+    "rated_bytes_per_second": 30476218.4,
+    "rated_mbps": 243.76,
+    "rated_packets_per_second": 24707.84
+  },
+  "tcpreplay_copies": [
+    {
+      "copy": 1,
+      "cpu": 8,
+      "exit_code": 0,
+      "started_monotonic_ns": 241982774559037,
+      "pnat_pairs": 0,
+      "pnat_sha256": null,
+      "attempted_packets": 3706151,
+      "attempted_bytes": 4571393759,
+      "seconds": 1199.99,
+      "rated_bytes_per_second": 3809526.5,
+      "rated_mbps": 30.47,
+      "rated_packets_per_second": 3088.48,
+      "successful": 3706151,
+      "failed": 0,
+      "truncated": 0,
+      "retried_enobufs": 0,
+      "retried_eagain": 0
+    },
+    {
+      "copy": 2,
+      "cpu": 9,
+      "exit_code": 0,
+      "started_monotonic_ns": 241982803199517,
+      "pnat_pairs": 1661,
+      "pnat_sha256": "87ae0eced2cd632e9e56a3660f7c83f00381c778141484cd89d4f73a5819195b",
+      "attempted_packets": 3706151,
+      "attempted_bytes": 4571393759,
+      "seconds": 1199.99,
+      "rated_bytes_per_second": 3809526.5,
+      "rated_mbps": 30.47,
+      "rated_packets_per_second": 3088.48,
+      "successful": 3706151,
+      "failed": 0,
+      "truncated": 0,
+      "retried_enobufs": 0,
+      "retried_eagain": 0
+    },
+    {
+      "copy": 3,
+      "cpu": 10,
+      "exit_code": 0,
+      "started_monotonic_ns": 241982833242240,
+      "pnat_pairs": 1661,
+      "pnat_sha256": "e6767cb82ad7959d2e212142a0bf537767ed145715fbdf6cfece2c991bc353d9",
+      "attempted_packets": 3706151,
+      "attempted_bytes": 4571393759,
+      "seconds": 1199.98,
+      "rated_bytes_per_second": 3809529.7,
+      "rated_mbps": 30.47,
+      "rated_packets_per_second": 3088.48,
+      "successful": 3706151,
+      "failed": 0,
+      "truncated": 0,
+      "retried_enobufs": 0,
+      "retried_eagain": 0
+    },
+    {
+      "copy": 4,
+      "cpu": 11,
+      "exit_code": 0,
+      "started_monotonic_ns": 241982852510395,
+      "pnat_pairs": 1661,
+      "pnat_sha256": "928808a6481f5cc31fc887b733849efe5e9e508965f8c4ce829d57eb486d0d36",
+      "attempted_packets": 3706151,
+      "attempted_bytes": 4571393759,
+      "seconds": 1199.99,
+      "rated_bytes_per_second": 3809526.5,
+      "rated_mbps": 30.47,
+      "rated_packets_per_second": 3088.48,
+      "successful": 3706151,
+      "failed": 0,
+      "truncated": 0,
+      "retried_enobufs": 0,
+      "retried_eagain": 0
+    },
+    {
+      "copy": 5,
+      "cpu": 8,
+      "exit_code": 0,
+      "started_monotonic_ns": 241982865619245,
+      "pnat_pairs": 1661,
+      "pnat_sha256": "b342dabf7c43d15c57d8bf3330d0b18da9542bc2d1f6efeffc9cb3c31e731b82",
+      "attempted_packets": 3706151,
+      "attempted_bytes": 4571393759,
+      "seconds": 1199.99,
+      "rated_bytes_per_second": 3809526.5,
+      "rated_mbps": 30.47,
+      "rated_packets_per_second": 3088.48,
+      "successful": 3706151,
+      "failed": 0,
+      "truncated": 0,
+      "retried_enobufs": 0,
+      "retried_eagain": 0
+    },
+    {
+      "copy": 6,
+      "cpu": 9,
+      "exit_code": 0,
+      "started_monotonic_ns": 241982879397810,
+      "pnat_pairs": 1661,
+      "pnat_sha256": "f1b3a3209e59998598ec1bde4bc3ed5b4046e7b35a6936dab8ee33ee6de44fce",
+      "attempted_packets": 3706151,
+      "attempted_bytes": 4571393759,
+      "seconds": 1199.99,
+      "rated_bytes_per_second": 3809526.5,
+      "rated_mbps": 30.47,
+      "rated_packets_per_second": 3088.48,
+      "successful": 3706151,
+      "failed": 0,
+      "truncated": 0,
+      "retried_enobufs": 0,
+      "retried_eagain": 0
+    },
+    {
+      "copy": 7,
+      "cpu": 10,
+      "exit_code": 0,
+      "started_monotonic_ns": 241982893074761,
+      "pnat_pairs": 1661,
+      "pnat_sha256": "fa98b1cc39450de1e9bf6224fedc5202ec08376189ee437fe60695835af26545",
+      "attempted_packets": 3706151,
+      "attempted_bytes": 4571393759,
+      "seconds": 1199.99,
+      "rated_bytes_per_second": 3809526.5,
+      "rated_mbps": 30.47,
+      "rated_packets_per_second": 3088.48,
+      "successful": 3706151,
+      "failed": 0,
+      "truncated": 0,
+      "retried_enobufs": 0,
+      "retried_eagain": 0
+    },
+    {
+      "copy": 8,
+      "cpu": 11,
+      "exit_code": 0,
+      "started_monotonic_ns": 241982906683614,
+      "pnat_pairs": 1661,
+      "pnat_sha256": "ccbac647f123ed9afed4b5999ad97e2d504dbc1b99a83fdf04ec90ba347f2203",
+      "attempted_packets": 3706151,
+      "attempted_bytes": 4571393759,
+      "seconds": 1199.98,
+      "rated_bytes_per_second": 3809529.7,
+      "rated_mbps": 30.47,
+      "rated_packets_per_second": 3088.48,
+      "successful": 3706151,
+      "failed": 0,
+      "truncated": 0,
+      "retried_enobufs": 0,
+      "retried_eagain": 0
+    }
+  ],
+  "flows": {
+    "matched_inside": 19008,
+    "matched_border": 1487,
+    "file_only_inside": 3188,
+    "replay_only_inside": 519,
+    "swapped_direction_inside": 517,
+    "replay_offset_us": 295749291552144,
+    "replay_flows": 21118,
+    "file_only_examples": [
+      {
+        "seq": "13653",
+        "cause": "timeout_sweep",
+        "Flow ID": "172.16.0.1-192.168.10.50-52212-21-6",
+        "Src IP": "172.16.0.1",
+        "Src Port": "52212",
+        "Dst IP": "192.168.10.50",
+        "Dst Port": "21",
+        "Protocol": "6",
+        "Timestamp": "2017-07-04 12:20:10.992507",
+        "Total Fwd Packet": "11",
+        "Total Bwd packets": "17"
+      },
+      {
+        "seq": "13654",
+        "cause": "timeout_sweep",
+        "Flow ID": "172.16.0.1-192.168.10.50-52214-21-6",
+        "Src IP": "172.16.0.1",
+        "Src Port": "52214",
+        "Dst IP": "192.168.10.50",
+        "Dst Port": "21",
+        "Protocol": "6",
+        "Timestamp": "2017-07-04 12:20:10.994118",
+        "Total Fwd Packet": "11",
+        "Total Bwd packets": "17"
+      },
+      {
+        "seq": "13655",
+        "cause": "timeout_sweep",
+        "Flow ID": "172.16.0.1-192.168.10.50-52216-21-6",
+        "Src IP": "172.16.0.1",
+        "Src Port": "52216",
+        "Dst IP": "192.168.10.50",
+        "Dst Port": "21",
+        "Protocol": "6",
+        "Timestamp": "2017-07-04 12:20:11.001327",
+        "Total Fwd Packet": "11",
+        "Total Bwd packets": "17"
+      },
+      {
+        "seq": "13656",
+        "cause": "timeout_sweep",
+        "Flow ID": "192.168.10.9-172.217.12.163-1747-443-6",
+        "Src IP": "192.168.10.9",
+        "Src Port": "1747",
+        "Dst IP": "172.217.12.163",
+        "Dst Port": "443",
+        "Protocol": "6",
+        "Timestamp": "2017-07-04 12:20:11.095122",
+        "Total Fwd Packet": "4",
+        "Total Bwd packets": "2"
+      },
+      {
+        "seq": "13657",
+        "cause": "timeout_sweep",
+        "Flow ID": "192.168.10.51-192.168.10.3-54144-53-17",
+        "Src IP": "192.168.10.51",
+        "Src Port": "54144",
+        "Dst IP": "192.168.10.3",
+        "Dst Port": "53",
+        "Protocol": "17",
+        "Timestamp": "2017-07-04 12:20:11.457545",
+        "Total Fwd Packet": "2",
+        "Total Bwd packets": "2"
+      }
+    ],
+    "replay_only_examples": [
+      {
+        "seq": "109295",
+        "cause": "timeout_sweep",
+        "Flow ID": "192.168.10.50-172.16.0.1-21-52218-6",
+        "Src IP": "192.168.10.50",
+        "Src Port": "21",
+        "Dst IP": "172.16.0.1",
+        "Dst Port": "52218",
+        "Protocol": "6",
+        "Timestamp": "2026-11-17 12:55:12.906815",
+        "Total Fwd Packet": "4",
+        "Total Bwd packets": "2"
+      },
+      {
+        "seq": "109296",
+        "cause": "timeout_sweep",
+        "Flow ID": "192.168.10.50-172.16.0.1-21-52220-6",
+        "Src IP": "192.168.10.50",
+        "Src Port": "21",
+        "Dst IP": "172.16.0.1",
+        "Dst Port": "52220",
+        "Protocol": "6",
+        "Timestamp": "2026-11-17 12:55:12.906818",
+        "Total Fwd Packet": "4",
+        "Total Bwd packets": "2"
+      },
+      {
+        "seq": "109297",
+        "cause": "timeout_sweep",
+        "Flow ID": "192.168.10.50-172.16.0.1-21-52222-6",
+        "Src IP": "192.168.10.50",
+        "Src Port": "21",
+        "Dst IP": "172.16.0.1",
+        "Dst Port": "52222",
+        "Protocol": "6",
+        "Timestamp": "2026-11-17 12:55:12.907476",
+        "Total Fwd Packet": "4",
+        "Total Bwd packets": "2"
+      },
+      {
+        "seq": "109343",
+        "cause": "timeout_sweep",
+        "Flow ID": "192.168.10.50-172.16.0.1-21-52224-6",
+        "Src IP": "192.168.10.50",
+        "Src Port": "21",
+        "Dst IP": "172.16.0.1",
+        "Dst Port": "52224",
+        "Protocol": "6",
+        "Timestamp": "2026-11-17 12:55:13.121321",
+        "Total Fwd Packet": "4",
+        "Total Bwd packets": "2"
+      },
+      {
+        "seq": "109812",
+        "cause": "timeout_sweep",
+        "Flow ID": "192.168.10.50-172.16.0.1-21-52226-6",
+        "Src IP": "192.168.10.50",
+        "Src Port": "21",
+        "Dst IP": "172.16.0.1",
+        "Dst Port": "52226",
+        "Protocol": "6",
+        "Timestamp": "2026-11-17 12:55:13.988597",
+        "Total Fwd Packet": "4",
+        "Total Bwd packets": "2"
+      }
+    ],
+    "file": 24413,
+    "replay": 169403,
+    "compared_file": 24403,
+    "without_copy": 10
+  },
+  "emission": {
+    "flows": 169519,
+    "per_second": 141.23589989227824,
+    "peak_per_second": 4965
+  },
+  "packet_shifts": {
+    "flows": 2178,
+    "conserved_in_connection": 0,
+    "connections": 0,
+    "examples": [
+      {
+        "flow_id": "192.168.10.9-204.2.255.233-2149-443-6",
+        "timestamp": "2017-07-04 12:18:15.388575",
+        "file_packets": 46,
+        "replay_packets": 40
+      },
+      {
+        "flow_id": "192.168.10.9-169.60.66.38-2151-443-6",
+        "timestamp": "2017-07-04 12:18:15.391368",
+        "file_packets": 42,
+        "replay_packets": 37
+      },
+      {
+        "flow_id": "192.168.10.3-192.168.10.1-61806-53-17",
+        "timestamp": "2017-07-04 12:18:25.898793",
+        "file_packets": 4,
+        "replay_packets": 2
+      },
+      {
+        "flow_id": "192.168.10.3-192.168.10.1-61162-53-17",
+        "timestamp": "2017-07-04 12:18:26.474280",
+        "file_packets": 4,
+        "replay_packets": 2
+      },
+      {
+        "flow_id": "192.168.10.14-64.4.54.254-50116-443-6",
+        "timestamp": "2017-07-04 12:18:26.548583",
+        "file_packets": 94,
+        "replay_packets": 91
+      },
+      {
+        "flow_id": "192.168.10.16-23.15.4.10-44970-80-6",
+        "timestamp": "2017-07-04 12:18:30.259816",
+        "file_packets": 32,
+        "replay_packets": 30
+      },
+      {
+        "flow_id": "192.168.10.16-192.0.79.33-58176-80-6",
+        "timestamp": "2017-07-04 12:18:30.504379",
+        "file_packets": 79,
+        "replay_packets": 77
+      },
+      {
+        "flow_id": "192.168.10.3-192.168.10.1-60176-53-17",
+        "timestamp": "2017-07-04 12:18:30.634420",
+        "file_packets": 4,
+        "replay_packets": 2
+      },
+      {
+        "flow_id": "192.168.10.3-192.168.10.1-60725-53-17",
+        "timestamp": "2017-07-04 12:18:30.642383",
+        "file_packets": 6,
+        "replay_packets": 4
+      },
+      {
+        "flow_id": "192.168.10.16-172.217.10.228-35854-80-6",
+        "timestamp": "2017-07-04 12:18:30.693249",
+        "file_packets": 114,
+        "replay_packets": 112
+      }
+    ]
+  },
+  "exact_attributes": {
+    "Total Fwd Packet": {
+      "mismatches": 2075,
+      "max_abs_difference": 121344.0,
+      "example": {
+        "flow_id": "192.168.10.9-204.2.255.233-2149-443-6",
+        "timestamp": "2017-07-04 12:18:15.388575",
+        "left": "22",
+        "right": "19"
+      },
+      "rounding_differences": 0,
+      "max_rounding_relative": 0.0,
+      "max_rounding_ulps": 0.0,
+      "rounding_example": null
+    },
+    "Total Bwd packets": {
+      "mismatches": 2133,
+      "max_abs_difference": 162909.0,
+      "example": {
+        "flow_id": "192.168.10.9-204.2.255.233-2149-443-6",
+        "timestamp": "2017-07-04 12:18:15.388575",
+        "left": "24",
+        "right": "21"
+      },
+      "rounding_differences": 0,
+      "max_rounding_relative": 0.0,
+      "max_rounding_ulps": 0.0,
+      "rounding_example": null
+    },
+    "Total Length of Fwd Packet": {
+      "mismatches": 1726,
+      "max_abs_difference": 215703.0,
+      "example": {
+        "flow_id": "192.168.10.9-204.2.255.233-2149-443-6",
+        "timestamp": "2017-07-04 12:18:15.388575",
+        "left": "1536.0",
+        "right": "1483.0"
+      },
+      "rounding_differences": 0,
+      "max_rounding_relative": 0.0,
+      "max_rounding_ulps": 0.0,
+      "rounding_example": null
+    },
+    "Total Length of Bwd Packet": {
+      "mismatches": 1509,
+      "max_abs_difference": 362972707.0,
+      "example": {
+        "flow_id": "192.168.10.3-192.168.10.1-61806-53-17",
+        "timestamp": "2017-07-04 12:18:25.898793",
+        "left": "305.0",
+        "right": "116.0"
+      },
+      "rounding_differences": 0,
+      "max_rounding_relative": 0.0,
+      "max_rounding_ulps": 0.0,
+      "rounding_example": null
+    },
+    "Fwd Packet Length Max": {
+      "mismatches": 711,
+      "max_abs_difference": 11471.0,
+      "example": {
+        "flow_id": "192.168.10.3-192.168.10.1-60176-53-17",
+        "timestamp": "2017-07-04 12:18:30.634420",
+        "left": "54.0",
+        "right": "38.0"
+      },
+      "rounding_differences": 0,
+      "max_rounding_relative": 0.0,
+      "max_rounding_ulps": 0.0,
+      "rounding_example": null
+    },
+    "Fwd Packet Length Min": {
+      "mismatches": 231,
+      "max_abs_difference": 71.0,
+      "example": {
+        "flow_id": "192.168.10.3-192.168.10.1-61806-53-17",
+        "timestamp": "2017-07-04 12:18:25.898793",
+        "left": "49.0",
+        "right": "52.0"
+      },
+      "rounding_differences": 0,
+      "max_rounding_relative": 0.0,
+      "max_rounding_ulps": 0.0,
+      "rounding_example": null
+    },
+    "Fwd Packet Length Mean": {
+      "mismatches": 1931,
+      "max_abs_difference": 1093.6739130434783,
+      "example": {
+        "flow_id": "192.168.10.9-204.2.255.233-2149-443-6",
+        "timestamp": "2017-07-04 12:18:15.388575",
+        "left": "69.8181818181818",
+        "right": "78.05263157894736"
+      },
+      "rounding_differences": 3,
+      "max_rounding_relative": 1.6556335590526607e-16,
+      "max_rounding_ulps": 1.0,
+      "rounding_example": {
+        "flow_id": "192.168.10.50-192.168.10.3-52578-3268-6",
+        "timestamp": "2017-07-04 12:19:53.955017",
+        "left": "201.49999999999997",
+        "right": "201.5"
+      }
+    },
+    "Fwd Packet Length Std": {
+      "mismatches": 1851,
+      "max_abs_difference": 2126.3521262241443,
+      "example": {
+        "flow_id": "192.168.10.9-204.2.255.233-2149-443-6",
+        "timestamp": "2017-07-04 12:18:15.388575",
+        "left": "152.9670479185558",
+        "right": "163.30900284233178"
+      },
+      "rounding_differences": 0,
+      "max_rounding_relative": 0.0,
+      "max_rounding_ulps": 0.0,
+      "rounding_example": null
+    },
+    "Bwd Packet Length Max": {
+      "mismatches": 775,
+      "max_abs_difference": 8760.0,
+      "example": {
+        "flow_id": "192.168.10.3-192.168.10.1-61806-53-17",
+        "timestamp": "2017-07-04 12:18:25.898793",
+        "left": "189.0",
+        "right": "116.0"
+      },
+      "rounding_differences": 0,
+      "max_rounding_relative": 0.0,
+      "max_rounding_ulps": 0.0,
+      "rounding_example": null
+    },
+    "Bwd Packet Length Min": {
+      "mismatches": 321,
+      "max_abs_difference": 946.0,
+      "example": {
+        "flow_id": "192.168.10.3-192.168.10.1-60725-53-17",
+        "timestamp": "2017-07-04 12:18:30.642383",
+        "left": "77.0",
+        "right": "111.0"
+      },
+      "rounding_differences": 0,
+      "max_rounding_relative": 0.0,
+      "max_rounding_ulps": 0.0,
+      "rounding_example": null
+    },
+    "Bwd Packet Length Mean": {
+      "mismatches": 1991,
+      "max_abs_difference": 2130.555709754155,
+      "example": {
+        "flow_id": "192.168.10.9-204.2.255.233-2149-443-6",
+        "timestamp": "2017-07-04 12:18:15.388575",
+        "left": "213.41666666666663",
+        "right": "243.90476190476187"
+      },
+      "rounding_differences": 2,
+      "max_rounding_relative": 2.5706464154124595e-16,
+      "max_rounding_ulps": 2.0,
+      "rounding_example": {
+        "flow_id": "192.168.10.51-23.61.187.27-33599-80-6",
+        "timestamp": "2017-07-04 12:23:47.903888",
+        "left": "221.12499999999997",
+        "right": "221.12500000000003"
+      }
+    },
+    "Bwd Packet Length Std": {
+      "mismatches": 1834,
+      "max_abs_difference": 1500.7027353876583,
+      "example": {
+        "flow_id": "192.168.10.9-204.2.255.233-2149-443-6",
+        "timestamp": "2017-07-04 12:18:15.388575",
+        "left": "466.6179814148938",
+        "right": "492.5283651488415"
+      },
+      "rounding_differences": 0,
+      "max_rounding_relative": 0.0,
+      "max_rounding_ulps": 0.0,
+      "rounding_example": null
+    },
+    "Fwd PSH Flags": {
+      "mismatches": 1174,
+      "max_abs_difference": 194.0,
+      "example": {
+        "flow_id": "192.168.10.9-204.2.255.233-2149-443-6",
+        "timestamp": "2017-07-04 12:18:15.388575",
+        "left": "5",
+        "right": "4"
+      },
+      "rounding_differences": 0,
+      "max_rounding_relative": 0.0,
+      "max_rounding_ulps": 0.0,
+      "rounding_example": null
+    },
+    "Bwd PSH Flags": {
+      "mismatches": 1136,
+      "max_abs_difference": 2829.0,
+      "example": {
+        "flow_id": "192.168.10.16-172.217.10.34-60130-443-6",
+        "timestamp": "2017-07-04 12:18:32.564424",
+        "left": "307",
+        "right": "306"
+      },
+      "rounding_differences": 0,
+      "max_rounding_relative": 0.0,
+      "max_rounding_ulps": 0.0,
+      "rounding_example": null
+    },
+    "Fwd RST Flags": {
+      "mismatches": 102,
+      "max_abs_difference": 4.0,
+      "example": {
+        "flow_id": "192.168.10.51-172.217.11.6-46996-443-6",
+        "timestamp": "2017-07-04 12:19:03.119730",
+        "left": "2",
+        "right": "0"
+      },
+      "rounding_differences": 0,
+      "max_rounding_relative": 0.0,
+      "max_rounding_ulps": 0.0,
+      "rounding_example": null
+    },
+    "Bwd RST Flags": {
+      "mismatches": 185,
+      "max_abs_difference": 4.0,
+      "example": {
+        "flow_id": "192.168.10.15-134.170.111.154-49556-443-6",
+        "timestamp": "2017-07-04 12:19:14.051817",
+        "left": "1",
+        "right": "0"
+      },
+      "rounding_differences": 0,
+      "max_rounding_relative": 0.0,
+      "max_rounding_ulps": 0.0,
+      "rounding_example": null
+    },
+    "Packet Length Min": {
+      "mismatches": 167,
+      "max_abs_difference": 49.0,
+      "example": {
+        "flow_id": "192.168.10.3-192.168.10.1-61806-53-17",
+        "timestamp": "2017-07-04 12:18:25.898793",
+        "left": "49.0",
+        "right": "52.0"
+      },
+      "rounding_differences": 0,
+      "max_rounding_relative": 0.0,
+      "max_rounding_ulps": 0.0,
+      "rounding_example": null
+    },
+    "Packet Length Max": {
+      "mismatches": 752,
+      "max_abs_difference": 11042.0,
+      "example": {
+        "flow_id": "192.168.10.3-192.168.10.1-61806-53-17",
+        "timestamp": "2017-07-04 12:18:25.898793",
+        "left": "189.0",
+        "right": "116.0"
+      },
+      "rounding_differences": 0,
+      "max_rounding_relative": 0.0,
+      "max_rounding_ulps": 0.0,
+      "rounding_example": null
+    },
+    "Packet Length Mean": {
+      "mismatches": 2050,
+      "max_abs_difference": 1206.0271610056031,
+      "example": {
+        "flow_id": "192.168.10.9-204.2.255.233-2149-443-6",
+        "timestamp": "2017-07-04 12:18:15.388575",
+        "left": "144.73913043478262",
+        "right": "165.12500000000006"
+      },
+      "rounding_differences": 5,
+      "max_rounding_relative": 1.9980112077612655e-16,
+      "max_rounding_ulps": 1.0,
+      "rounding_example": {
+        "flow_id": "192.168.10.50-192.168.10.3-52578-3268-6",
+        "timestamp": "2017-07-04 12:19:53.955017",
+        "left": "158.33333333333334",
+        "right": "158.33333333333337"
+      }
+    },
+    "Packet Length Std": {
+      "mismatches": 2068,
+      "max_abs_difference": 1365.7092596849473,
+      "example": {
+        "flow_id": "192.168.10.9-204.2.255.233-2149-443-6",
+        "timestamp": "2017-07-04 12:18:15.388575",
+        "left": "357.0219062549155",
+        "right": "379.1394566173541"
+      },
+      "rounding_differences": 0,
+      "max_rounding_relative": 0.0,
+      "max_rounding_ulps": 0.0,
+      "rounding_example": null
+    },
+    "Packet Length Variance": {
+      "mismatches": 2068,
+      "max_abs_difference": 2499767.5979978302,
+      "example": {
+        "flow_id": "192.168.10.9-204.2.255.233-2149-443-6",
+        "timestamp": "2017-07-04 12:18:15.388575",
+        "left": "127464.64154589368",
+        "right": "143746.72756410253"
+      },
+      "rounding_differences": 0,
+      "max_rounding_relative": 0.0,
+      "max_rounding_ulps": 0.0,
+      "rounding_example": null
+    },
+    "FIN Flag Count": {
+      "mismatches": 737,
+      "max_abs_difference": 5.0,
+      "example": {
+        "flow_id": "192.168.10.9-204.2.255.233-2149-443-6",
+        "timestamp": "2017-07-04 12:18:15.388575",
+        "left": "2",
+        "right": "0"
+      },
+      "rounding_differences": 0,
+      "max_rounding_relative": 0.0,
+      "max_rounding_ulps": 0.0,
+      "rounding_example": null
+    },
+    "SYN Flag Count": {
+      "mismatches": 560,
+      "max_abs_difference": 4.0,
+      "example": {
+        "flow_id": "192.168.10.51-209.48.71.129-49528-80-6",
+        "timestamp": "2017-07-04 12:20:11.552738",
+        "left": "2",
+        "right": "0"
+      },
+      "rounding_differences": 0,
+      "max_rounding_relative": 0.0,
+      "max_rounding_ulps": 0.0,
+      "rounding_example": null
+    },
+    "RST Flag Count": {
+      "mismatches": 253,
+      "max_abs_difference": 4.0,
+      "example": {
+        "flow_id": "192.168.10.51-172.217.11.6-46996-443-6",
+        "timestamp": "2017-07-04 12:19:03.119730",
+        "left": "2",
+        "right": "0"
+      },
+      "rounding_differences": 0,
+      "max_rounding_relative": 0.0,
+      "max_rounding_ulps": 0.0,
+      "rounding_example": null
+    },
+    "PSH Flag Count": {
+      "mismatches": 1246,
+      "max_abs_difference": 2904.0,
+      "example": {
+        "flow_id": "192.168.10.9-204.2.255.233-2149-443-6",
+        "timestamp": "2017-07-04 12:18:15.388575",
+        "left": "9",
+        "right": "8"
+      },
+      "rounding_differences": 0,
+      "max_rounding_relative": 0.0,
+      "max_rounding_ulps": 0.0,
+      "rounding_example": null
+    },
+    "ACK Flag Count": {
+      "mismatches": 1873,
+      "max_abs_difference": 284253.0,
+      "example": {
+        "flow_id": "192.168.10.9-204.2.255.233-2149-443-6",
+        "timestamp": "2017-07-04 12:18:15.388575",
+        "left": "45",
+        "right": "39"
+      },
+      "rounding_differences": 0,
+      "max_rounding_relative": 0.0,
+      "max_rounding_ulps": 0.0,
+      "rounding_example": null
+    },
+    "ECE Flag Count": {
+      "mismatches": 1,
+      "max_abs_difference": 1.0,
+      "example": {
+        "flow_id": "192.168.10.3-65.55.44.108-64404-443-6",
+        "timestamp": "2017-07-04 12:22:00.092827",
+        "left": "2",
+        "right": "1"
+      },
+      "rounding_differences": 0,
+      "max_rounding_relative": 0.0,
+      "max_rounding_ulps": 0.0,
+      "rounding_example": null
+    },
+    "Down/Up Ratio": {
+      "mismatches": 1744,
+      "max_abs_difference": 1.2679738562091503,
+      "example": {
+        "flow_id": "192.168.10.9-204.2.255.233-2149-443-6",
+        "timestamp": "2017-07-04 12:18:15.388575",
+        "left": "1.0909090909090908",
+        "right": "1.105263157894737"
+      },
+      "rounding_differences": 0,
+      "max_rounding_relative": 0.0,
+      "max_rounding_ulps": 0.0,
+      "rounding_example": null
+    },
+    "Average Packet Size": {
+      "mismatches": 2050,
+      "max_abs_difference": 1206.027161005605,
+      "example": {
+        "flow_id": "192.168.10.9-204.2.255.233-2149-443-6",
+        "timestamp": "2017-07-04 12:18:15.388575",
+        "left": "144.7391304347826",
+        "right": "165.125"
+      },
+      "rounding_differences": 0,
+      "max_rounding_relative": 0.0,
+      "max_rounding_ulps": 0.0,
+      "rounding_example": null
+    },
+    "Fwd Segment Size Avg": {
+      "mismatches": 1931,
+      "max_abs_difference": 1093.6739130434783,
+      "example": {
+        "flow_id": "192.168.10.9-204.2.255.233-2149-443-6",
+        "timestamp": "2017-07-04 12:18:15.388575",
+        "left": "69.81818181818181",
+        "right": "78.05263157894737"
+      },
+      "rounding_differences": 0,
+      "max_rounding_relative": 0.0,
+      "max_rounding_ulps": 0.0,
+      "rounding_example": null
+    },
+    "Bwd Segment Size Avg": {
+      "mismatches": 1991,
+      "max_abs_difference": 2130.555709754163,
+      "example": {
+        "flow_id": "192.168.10.9-204.2.255.233-2149-443-6",
+        "timestamp": "2017-07-04 12:18:15.388575",
+        "left": "213.41666666666666",
+        "right": "243.9047619047619"
+      },
+      "rounding_differences": 0,
+      "max_rounding_relative": 0.0,
+      "max_rounding_ulps": 0.0,
+      "rounding_example": null
+    },
+    "Subflow Fwd Packets": {
+      "mismatches": 100,
+      "max_abs_difference": 1.0,
+      "example": {
+        "flow_id": "192.168.10.3-192.168.10.1-60886-53-17",
+        "timestamp": "2017-07-04 12:20:17.443295",
+        "left": "0",
+        "right": "1"
+      },
+      "rounding_differences": 0,
+      "max_rounding_relative": 0.0,
+      "max_rounding_ulps": 0.0,
+      "rounding_example": null
+    },
+    "Subflow Fwd Bytes": {
+      "mismatches": 1827,
+      "max_abs_difference": 437.0,
+      "example": {
+        "flow_id": "192.168.10.9-204.2.255.233-2149-443-6",
+        "timestamp": "2017-07-04 12:18:15.388575",
+        "left": "33",
+        "right": "37"
+      },
+      "rounding_differences": 0,
+      "max_rounding_relative": 0.0,
+      "max_rounding_ulps": 0.0,
+      "rounding_example": null
+    },
+    "Subflow Bwd Bytes": {
+      "mismatches": 1918,
+      "max_abs_difference": 1206.0,
+      "example": {
+        "flow_id": "192.168.10.9-204.2.255.233-2149-443-6",
+        "timestamp": "2017-07-04 12:18:15.388575",
+        "left": "111",
+        "right": "128"
+      },
+      "rounding_differences": 0,
+      "max_rounding_relative": 0.0,
+      "max_rounding_ulps": 0.0,
+      "rounding_example": null
+    },
+    "FWD Init Win Bytes": {
+      "mismatches": 541,
+      "max_abs_difference": 65535.0,
+      "example": {
+        "flow_id": "192.168.10.51-209.48.71.129-49528-80-6",
+        "timestamp": "2017-07-04 12:20:11.552738",
+        "left": "29200",
+        "right": "258"
+      },
+      "rounding_differences": 0,
+      "max_rounding_relative": 0.0,
+      "max_rounding_ulps": 0.0,
+      "rounding_example": null
+    },
+    "Bwd Init Win Bytes": {
+      "mismatches": 285,
+      "max_abs_difference": 42445.0,
+      "example": {
+        "flow_id": "192.168.10.9-204.2.255.233-2149-443-6",
+        "timestamp": "2017-07-04 12:18:15.388575",
+        "left": "5905",
+        "right": "5852"
+      },
+      "rounding_differences": 0,
+      "max_rounding_relative": 0.0,
+      "max_rounding_ulps": 0.0,
+      "rounding_example": null
+    },
+    "Fwd Act Data Pkts": {
+      "mismatches": 1660,
+      "max_abs_difference": 195.0,
+      "example": {
+        "flow_id": "192.168.10.9-204.2.255.233-2149-443-6",
+        "timestamp": "2017-07-04 12:18:15.388575",
+        "left": "16",
+        "right": "15"
+      },
+      "rounding_differences": 0,
+      "max_rounding_relative": 0.0,
+      "max_rounding_ulps": 0.0,
+      "rounding_example": null
+    },
+    "Fwd Seg Size Min": {
+      "mismatches": 79,
+      "max_abs_difference": 32.0,
+      "example": {
+        "flow_id": "192.168.10.51-172.217.11.6-46996-443-6",
+        "timestamp": "2017-07-04 12:19:03.119730",
+        "left": "20",
+        "right": "32"
+      },
+      "rounding_differences": 0,
+      "max_rounding_relative": 0.0,
+      "max_rounding_ulps": 0.0,
+      "rounding_example": null
+    }
+  },
+  "temporal_attributes": {
+    "Flow Duration": {
+      "differing": 18864,
+      "max_abs_difference": 119576353.0,
+      "median_relative_difference": 0.0006050851046672065
+    },
+    "Flow Bytes/s": {
+      "differing": 17571,
+      "max_abs_difference": 227537790.69767442,
+      "median_relative_difference": 0.0008556236221603033
+    },
+    "Flow Packets/s": {
+      "differing": 18872,
+      "max_abs_difference": 999944.8534480381,
+      "median_relative_difference": 0.0007848960427622245
+    },
+    "Flow IAT Mean": {
+      "differing": 18908,
+      "max_abs_difference": 46756479.37037037,
+      "median_relative_difference": 0.0007828731444402048
+    },
+    "Flow IAT Std": {
+      "differing": 15763,
+      "max_abs_difference": 68966944.25943229,
+      "median_relative_difference": 0.001173929921184856
+    },
+    "Flow IAT Max": {
+      "differing": 18881,
+      "max_abs_difference": 119454038.0,
+      "median_relative_difference": 0.0008908627397295335
+    },
+    "Flow IAT Min": {
+      "differing": 16400,
+      "max_abs_difference": 65903607.0,
+      "median_relative_difference": 0.5
+    },
+    "Fwd IAT Total": {
+      "differing": 14322,
+      "max_abs_difference": 119576659.0,
+      "median_relative_difference": 0.01170375968634308
+    },
+    "Fwd IAT Mean": {
+      "differing": 14337,
+      "max_abs_difference": 119576659.0,
+      "median_relative_difference": 0.23076874715359721
+    },
+    "Fwd IAT Std": {
+      "differing": 7747,
+      "max_abs_difference": 68466625.25108457,
+      "median_relative_difference": 6.354166721611647e-05
+    },
+    "Fwd IAT Max": {
+      "differing": 14315,
+      "max_abs_difference": 119576659.0,
+      "median_relative_difference": 0.25
+    },
+    "Fwd IAT Min": {
+      "differing": 13653,
+      "max_abs_difference": 119576659.0,
+      "median_relative_difference": 0.42424242424242425
+    },
+    "Bwd IAT Total": {
+      "differing": 14235,
+      "max_abs_difference": 119576474.0,
+      "median_relative_difference": 0.18658974099819764
+    },
+    "Bwd IAT Mean": {
+      "differing": 14244,
+      "max_abs_difference": 119576474.0,
+      "median_relative_difference": 0.25
+    },
+    "Bwd IAT Std": {
+      "differing": 6786,
+      "max_abs_difference": 68279009.38301928,
+      "median_relative_difference": 4.7412083433653235e-05
+    },
+    "Bwd IAT Max": {
+      "differing": 14228,
+      "max_abs_difference": 119576474.0,
+      "median_relative_difference": 0.25
+    },
+    "Bwd IAT Min": {
+      "differing": 13419,
+      "max_abs_difference": 119576474.0,
+      "median_relative_difference": 0.5
+    },
+    "Fwd Packets/s": {
+      "differing": 18871,
+      "max_abs_difference": 999972.4267240191,
+      "median_relative_difference": 0.0007833482542523464
+    },
+    "Bwd Packets/s": {
+      "differing": 18693,
+      "max_abs_difference": 385185.1851851851,
+      "median_relative_difference": 0.0007881385153441489
+    },
+    "Fwd Bytes/Bulk Avg": {
+      "differing": 29,
+      "max_abs_difference": 97701.0,
+      "median_relative_difference": 1.0
+    },
+    "Fwd Packet/Bulk Avg": {
+      "differing": 28,
+      "max_abs_difference": 18.0,
+      "median_relative_difference": 1.0
+    },
+    "Fwd Bulk Rate Avg": {
+      "differing": 385,
+      "max_abs_difference": 78961676.0,
+      "median_relative_difference": 0.0012578616352201257
+    },
+    "Bwd Bytes/Bulk Avg": {
+      "differing": 237,
+      "max_abs_difference": 10746523.0,
+      "median_relative_difference": 1.0
+    },
+    "Bwd Packet/Bulk Avg": {
+      "differing": 223,
+      "max_abs_difference": 5030.0,
+      "median_relative_difference": 1.0
+    },
+    "Bwd Bulk Rate Avg": {
+      "differing": 1725,
+      "max_abs_difference": 541500000.0,
+      "median_relative_difference": 0.0049066772280181884
+    },
+    "Active Mean": {
+      "differing": 5417,
+      "max_abs_difference": 84248278.0,
+      "median_relative_difference": 0.0010279733349947045
+    },
+    "Active Std": {
+      "differing": 2582,
+      "max_abs_difference": 24889369.532183215,
+      "median_relative_difference": 0.03432590599385579
+    },
+    "Active Max": {
+      "differing": 5408,
+      "max_abs_difference": 84248278.0,
+      "median_relative_difference": 0.0004208660061793977
+    },
+    "Active Min": {
+      "differing": 5401,
+      "max_abs_difference": 84248278.0,
+      "median_relative_difference": 0.0012591177492184786
+    },
+    "Idle Mean": {
+      "differing": 5419,
+      "max_abs_difference": 119515409.0,
+      "median_relative_difference": 6.731748728199823e-06
+    },
+    "Idle Std": {
+      "differing": 2590,
+      "max_abs_difference": 66479305.17809367,
+      "median_relative_difference": 0.004079438726851519
+    },
+    "Idle Max": {
+      "differing": 5416,
+      "max_abs_difference": 119515409.0,
+      "median_relative_difference": 7.493198985801279e-06
+    },
+    "Idle Min": {
+      "differing": 5410,
+      "max_abs_difference": 119515409.0,
+      "median_relative_difference": 7.044919700904259e-06
+    },
+    "Total TCP Flow Time": {
+      "differing": 7505,
+      "max_abs_difference": 300056306.0,
+      "median_relative_difference": 1.3054385294380015e-05
+    }
+  },
+  "flows_with_equal_exact_attributes": 16746,
+  "predictions": {
+    "compared": 18933,
+    "differing": 52,
+    "differing_with_equal_exact_attributes": 3,
+    "examples": [
+      {
+        "seq": "3175",
+        "cause": "timeout_sweep",
+        "Flow ID": "192.168.10.5-192.168.10.19-137-137-17",
+        "Src IP": "192.168.10.5",
+        "Src Port": "137",
+        "Dst IP": "192.168.10.19",
+        "Dst Port": "137",
+        "Protocol": "17",
+        "Timestamp": "2017-07-04 12:11:55.933733",
+        "Total Fwd Packet": "2",
+        "Total Bwd packets": "2",
+        "file_probability": "0.08153233677148819",
+        "replay_probability": "0.8857583403587341"
+      },
+      {
+        "seq": "12057",
+        "cause": "timeout_sweep",
+        "Flow ID": "192.168.10.50-192.168.10.12-139-45860-6",
+        "Src IP": "192.168.10.50",
+        "Src Port": "139",
+        "Dst IP": "192.168.10.12",
+        "Dst Port": "45860",
+        "Protocol": "6",
+        "Timestamp": "2017-07-04 12:18:45.579707",
+        "Total Fwd Packet": "2",
+        "Total Bwd packets": "2",
+        "file_probability": "0.6691121459007263",
+        "replay_probability": "0.2941676080226898"
+      },
+      {
+        "seq": "14886",
+        "cause": "timeout_sweep",
+        "Flow ID": "172.16.0.1-192.168.10.50-52258-21-6",
+        "Src IP": "172.16.0.1",
+        "Src Port": "52258",
+        "Dst IP": "192.168.10.50",
+        "Dst Port": "21",
+        "Protocol": "6",
+        "Timestamp": "2017-07-04 12:20:29.757690",
+        "Total Fwd Packet": "11",
+        "Total Bwd packets": "17",
+        "file_probability": "0.9995212554931641",
+        "replay_probability": "0.32347002625465393"
+      },
+      {
+        "seq": "14888",
+        "cause": "timeout_sweep",
+        "Flow ID": "172.16.0.1-192.168.10.50-52260-21-6",
+        "Src IP": "172.16.0.1",
+        "Src Port": "52260",
+        "Dst IP": "192.168.10.50",
+        "Dst Port": "21",
+        "Protocol": "6",
+        "Timestamp": "2017-07-04 12:20:29.759812",
+        "Total Fwd Packet": "11",
+        "Total Bwd packets": "17",
+        "file_probability": "0.9995212554931641",
+        "replay_probability": "0.4265315532684326"
+      },
+      {
+        "seq": "14890",
+        "cause": "timeout_sweep",
+        "Flow ID": "172.16.0.1-192.168.10.50-52262-21-6",
+        "Src IP": "172.16.0.1",
+        "Src Port": "52262",
+        "Dst IP": "192.168.10.50",
+        "Dst Port": "21",
+        "Protocol": "6",
+        "Timestamp": "2017-07-04 12:20:29.761399",
+        "Total Fwd Packet": "11",
+        "Total Bwd packets": "17",
+        "file_probability": "0.9994650483131409",
+        "replay_probability": "0.3996526300907135"
+      },
+      {
+        "seq": "15991",
+        "cause": "timeout_sweep",
+        "Flow ID": "172.16.0.1-192.168.10.50-52322-21-6",
+        "Src IP": "172.16.0.1",
+        "Src Port": "52322",
+        "Dst IP": "192.168.10.50",
+        "Dst Port": "21",
+        "Protocol": "6",
+        "Timestamp": "2017-07-04 12:20:56.717077",
+        "Total Fwd Packet": "11",
+        "Total Bwd packets": "17",
+        "file_probability": "0.9995575547218323",
+        "replay_probability": "0.42672979831695557"
+      },
+      {
+        "seq": "16064",
+        "cause": "timeout_sweep",
+        "Flow ID": "172.16.0.1-192.168.10.50-52352-21-6",
+        "Src IP": "172.16.0.1",
+        "Src Port": "52352",
+        "Dst IP": "192.168.10.50",
+        "Dst Port": "21",
+        "Protocol": "6",
+        "Timestamp": "2017-07-04 12:21:11.640679",
+        "Total Fwd Packet": "11",
+        "Total Bwd packets": "17",
+        "file_probability": "0.9996039271354675",
+        "replay_probability": "0.057760681957006454"
+      },
+      {
+        "seq": "16065",
+        "cause": "timeout_sweep",
+        "Flow ID": "172.16.0.1-192.168.10.50-52354-21-6",
+        "Src IP": "172.16.0.1",
+        "Src Port": "52354",
+        "Dst IP": "192.168.10.50",
+        "Dst Port": "21",
+        "Protocol": "6",
+        "Timestamp": "2017-07-04 12:21:11.648748",
+        "Total Fwd Packet": "11",
+        "Total Bwd packets": "17",
+        "file_probability": "0.999518632888794",
+        "replay_probability": "0.06524669378995895"
+      },
+      {
+        "seq": "16373",
+        "cause": "timeout_sweep",
+        "Flow ID": "172.16.0.1-192.168.10.50-52396-21-6",
+        "Src IP": "172.16.0.1",
+        "Src Port": "52396",
+        "Dst IP": "192.168.10.50",
+        "Dst Port": "21",
+        "Protocol": "6",
+        "Timestamp": "2017-07-04 12:21:29.953630",
+        "Total Fwd Packet": "11",
+        "Total Bwd packets": "17",
+        "file_probability": "0.9995575547218323",
+        "replay_probability": "0.42672979831695557"
+      },
+      {
+        "seq": "16382",
+        "cause": "timeout_sweep",
+        "Flow ID": "172.16.0.1-192.168.10.50-52398-21-6",
+        "Src IP": "172.16.0.1",
+        "Src Port": "52398",
+        "Dst IP": "192.168.10.50",
+        "Dst Port": "21",
+        "Protocol": "6",
+        "Timestamp": "2017-07-04 12:21:31.867928",
+        "Total Fwd Packet": "11",
+        "Total Bwd packets": "17",
+        "file_probability": "0.9996039271354675",
+        "replay_probability": "0.42672979831695557"
+      }
+    ]
+  },
+  "labels": {
+    "matched_inside": {
+      "BENIGN": 18266,
+      "sem rótulo": 463,
+      "FTP-Patator - Attempted": 1,
+      "FTP-Patator": 278
+    },
+    "file_only_inside": {
+      "FTP-Patator": 280,
+      "BENIGN": 2892,
+      "sem rótulo": 5,
+      "FTP-Patator - Attempted": 11
+    }
+  },
+  "copies": {
+    "1": {
+      "replay_flows": 21118,
+      "matched_inside": 19008,
+      "matched_border": 1487,
+      "file_only_inside": 3188,
+      "replay_only_inside": 519,
+      "replay_offset_us": 295749291552144,
+      "flows_with_equal_exact_attributes": 16746,
+      "exact_attribute_mismatches": 45586,
+      "predictions_compared": 18933,
+      "predictions_differing": 52
+    },
+    "2": {
+      "replay_flows": 21135,
+      "matched_inside": 19000,
+      "matched_border": 1489,
+      "file_only_inside": 3196,
+      "replay_only_inside": 544,
+      "replay_offset_us": 295749291581828,
+      "flows_with_equal_exact_attributes": 16759,
+      "exact_attribute_mismatches": 45172,
+      "predictions_compared": 18939,
+      "predictions_differing": 55
+    },
+    "3": {
+      "replay_flows": 21167,
+      "matched_inside": 19039,
+      "matched_border": 1481,
+      "file_only_inside": 3157,
+      "replay_only_inside": 543,
+      "replay_offset_us": 295749291602288,
+      "flows_with_equal_exact_attributes": 16792,
+      "exact_attribute_mismatches": 45491,
+      "predictions_compared": 18982,
+      "predictions_differing": 56
+    },
+    "4": {
+      "replay_flows": 21173,
+      "matched_inside": 19078,
+      "matched_border": 1464,
+      "file_only_inside": 3118,
+      "replay_only_inside": 522,
+      "replay_offset_us": 295749291616254,
+      "flows_with_equal_exact_attributes": 16824,
+      "exact_attribute_mismatches": 45670,
+      "predictions_compared": 19018,
+      "predictions_differing": 55
+    },
+    "5": {
+      "replay_flows": 21176,
+      "matched_inside": 19076,
+      "matched_border": 1462,
+      "file_only_inside": 3120,
+      "replay_only_inside": 529,
+      "replay_offset_us": 295749291623920,
+      "flows_with_equal_exact_attributes": 16828,
+      "exact_attribute_mismatches": 45600,
+      "predictions_compared": 19015,
+      "predictions_differing": 54
+    },
+    "6": {
+      "replay_flows": 21204,
+      "matched_inside": 19104,
+      "matched_border": 1454,
+      "file_only_inside": 3092,
+      "replay_only_inside": 530,
+      "replay_offset_us": 295749291648815,
+      "flows_with_equal_exact_attributes": 16852,
+      "exact_attribute_mismatches": 45564,
+      "predictions_compared": 19035,
+      "predictions_differing": 56
+    },
+    "7": {
+      "replay_flows": 21207,
+      "matched_inside": 19111,
+      "matched_border": 1447,
+      "file_only_inside": 3085,
+      "replay_only_inside": 528,
+      "replay_offset_us": 295749291651759,
+      "flows_with_equal_exact_attributes": 16853,
+      "exact_attribute_mismatches": 45662,
+      "predictions_compared": 19037,
+      "predictions_differing": 56
+    },
+    "8": {
+      "replay_flows": 21213,
+      "matched_inside": 19113,
+      "matched_border": 1445,
+      "file_only_inside": 3083,
+      "replay_only_inside": 534,
+      "replay_offset_us": 295749291659409,
+      "flows_with_equal_exact_attributes": 16863,
+      "exact_attribute_mismatches": 45485,
+      "predictions_compared": 19033,
+      "predictions_differing": 58
+    }
+  },
+  "without_copy_examples": [
+    {
+      "seq": "5176",
+      "cause": "timeout_sweep",
+      "Flow ID": "8.6.0.1-8.0.6.4-0-0-0",
+      "Src IP": "8.6.0.1",
+      "Src Port": "0",
+      "Dst IP": "8.0.6.4",
+      "Dst Port": "0",
+      "Protocol": "0",
+      "Timestamp": "2026-11-17 12:44:55.199626",
+      "Total Fwd Packet": "1824",
+      "Total Bwd packets": "0"
+    },
+    {
+      "seq": "28794",
+      "cause": "timeout_sweep",
+      "Flow ID": "8.6.0.1-8.0.6.4-0-0-0",
+      "Src IP": "8.6.0.1",
+      "Src Port": "0",
+      "Dst IP": "8.0.6.4",
+      "Dst Port": "0",
+      "Protocol": "0",
+      "Timestamp": "2026-11-17 12:46:56.076013",
+      "Total Fwd Packet": "1920",
+      "Total Bwd packets": "0"
+    },
+    {
+      "seq": "42892",
+      "cause": "timeout_sweep",
+      "Flow ID": "8.6.0.1-8.0.6.4-0-0-0",
+      "Src IP": "8.6.0.1",
+      "Src Port": "0",
+      "Dst IP": "8.0.6.4",
+      "Dst Port": "0",
+      "Protocol": "0",
+      "Timestamp": "2026-11-17 12:48:59.193424",
+      "Total Fwd Packet": "1432",
+      "Total Bwd packets": "0"
+    },
+    {
+      "seq": "69067",
+      "cause": "timeout_sweep",
+      "Flow ID": "8.6.0.1-8.0.6.4-0-0-0",
+      "Src IP": "8.6.0.1",
+      "Src Port": "0",
+      "Dst IP": "8.0.6.4",
+      "Dst Port": "0",
+      "Protocol": "0",
+      "Timestamp": "2026-11-17 12:50:59.871470",
+      "Total Fwd Packet": "1072",
+      "Total Bwd packets": "0"
+    },
+    {
+      "seq": "85989",
+      "cause": "timeout_sweep",
+      "Flow ID": "8.6.0.1-8.0.6.4-0-0-0",
+      "Src IP": "8.6.0.1",
+      "Src Port": "0",
+      "Dst IP": "8.0.6.4",
+      "Dst Port": "0",
+      "Protocol": "0",
+      "Timestamp": "2026-11-17 12:53:00.075918",
+      "Total Fwd Packet": "1152",
+      "Total Bwd packets": "0"
+    }
+  ],
+  "replay_timings": {
+    "inference_ns": {
+      "count": 168263,
+      "mean": 372055.88557199144,
+      "median": 332265.0,
+      "p95": 693686.7,
+      "p99": 1025414.5200000003,
+      "min": 121703.0,
+      "max": 85742721.0
+    },
+    "classification_latency_ns": {
+      "count": 168263,
+      "mean": 8521883971.706549,
+      "median": 852585164.0,
+      "p95": 45592785753.7,
+      "p99": 55787657649.18,
+      "min": 743781.0,
+      "max": 61478596152.0
+    },
+    "wait_before_inference_ns": {
+      "count": 168263,
+      "mean": 8520686090.2850895,
+      "median": 851416242.0,
+      "p95": 45590873194.0,
+      "p99": 55785728868.18,
+      "min": 244774.0,
+      "max": 61477338482.0
+    },
+    "selection_ns": {
+      "count": 168263,
+      "mean": 685.3527038029752,
+      "median": 565.0,
+      "p95": 1467.0,
+      "p99": 2110.0,
+      "min": 160.0,
+      "max": 85866.0
+    },
+    "delivery_ns": {
+      "count": 168263,
+      "mean": 131548.16487284788,
+      "median": 116774.0,
+      "p95": 228036.99999999994,
+      "p99": 428075.96000000066,
+      "min": 41477.0,
+      "max": 16242452.0
+    },
+    "classified_per_second": 138.60432360210223,
+    "explanation_ns": {
+      "count": 168263,
+      "mean": 670861.6891592329,
+      "median": 642026.0,
+      "p95": 1093155.3,
+      "p99": 1528887.4200000018,
+      "min": 265742.0,
+      "max": 27241880.0
+    },
+    "explanation_latency_ns": {
+      "count": 168263,
+      "mean": 8521883971.706549,
+      "median": 852585164.0,
+      "p95": 45592785753.7,
+      "p99": 55787657649.18,
+      "min": 743781.0,
+      "max": 61478596152.0
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "libraries": {
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "scipy": "1.18.1",
+      "joblib": "1.6.0",
+      "xgboost-cpu": "3.4.1",
+      "shap": "0.54.1",
+      "matplotlib": "3.11.2",
+      "threadpoolctl": "3.8.0",
+      "pandas": "3.1.1"
+    },
+    "platform": "Linux-7.0.0-43-generic-x86_64-desconhecido-with-glibc2.43",
+    "cpu": "13th Gen Intel(R) Core(TM) i5-1334U",
+    "logical_cpus": 12
+  }
+}

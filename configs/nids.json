@@ -1,6 +1,10 @@
 {
   "frozen_run": "training-runs/frozen-models/20261111T181031847482Z",
-  "preparation_manifest": "derived-data/pcap/tuesday/manifest.json",
+  "preparation_manifests": [
+    "derived-data/pcap/tuesday/manifest.json",
+    "derived-data/pcap/tuesday-campanha/manifest.json",
+    "derived-data/pcap/tuesday-curto/manifest.json"
+  ],
   "tree_shap_config": "configs/tree-shap.json",
   "selection": {
     "calibration_grid": {
@@ -29,9 +33,10 @@
       "classifier": [2],
       "explainer": [0],
       "extractor": [4, 5, 6, 7],
-      "replay": [8]
+      "replay": [8, 9, 10, 11]
     },
-    "extractor_max_heap_mib": 4096
+    "extractor_max_heap_mib": 4096,
+    "extractor_jvm_options": ["-Dnio.mx=1073741824", "-Dnio.ms=1073741824", "-XX:+ExplicitGCInvokesConcurrent"]
   },
   "classifier_threads": 1,
   "shared_clock_tolerance_ns": 1000000000

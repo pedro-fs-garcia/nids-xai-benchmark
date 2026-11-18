@@ -1,0 +1,1547 @@
+{
+  "stage": "nids run",
+  "run_id": "20261115T195845825041Z",
+  "passed": true,
+  "checks": {
+    "emitted_equals_received_plus_dropped": true,
+    "no_dropped_flow_in_file_mode": true,
+    "received_equals_classified_plus_errors": true,
+    "timestamps_ordered": true,
+    "no_packets_after_emission_in_file_mode": true,
+    "selection_follows_strategy": true,
+    "explanations_match_classifications": true,
+    "sum_identity": true,
+    "every_selected_flow_requested_or_dropped": true,
+    "no_explanation_without_accepted_request": true,
+    "explanation_marks_ordered": true,
+    "explained_output_matches_classification": true,
+    "contributions_cover_every_input": true,
+    "explanation_requests_accounted": true,
+    "explainer_received_every_accepted_request": true,
+    "explainer_ended_without_error": true,
+    "no_pending_after_normal_end": true,
+    "no_dropped_request_in_file_mode": true,
+    "explainer_uses_the_same_model": true,
+    "processes_on_configured_cpus": true
+  },
+  "model": "random-forest",
+  "source": {
+    "kind": "arquivo",
+    "pcap": "/home/pedro/projects/explicabilidade-ia/derived-data/pcap/tuesday-campanha/segment-campanha.pcap"
+  },
+  "segment": {
+    "name": "campanha",
+    "start": "2017-07-04T12:10:00Z",
+    "start_us": 1499170200000000,
+    "stop": "2017-07-04T12:30:00Z",
+    "stop_us": 1499171400000000,
+    "pcap": {
+      "file": "derived-data/pcap/tuesday-campanha/segment-campanha.pcap",
+      "bytes": 4630692199,
+      "sha256": "89abbf3441fbcdb04ba5e29fa4647ea82a714aa18843d046c663e0f4bad5a191"
+    },
+    "reference": {
+      "file": "derived-data/pcap/tuesday-campanha/reference-campanha.csv",
+      "bytes": 13285870,
+      "sha256": "0adbe59662496177cbeb9640eca73b9c67b3e70ee11254b086d53d1e244a59e4"
+    },
+    "carried_over": {
+      "file": "derived-data/pcap/tuesday-campanha/carried-over-campanha.json",
+      "bytes": 119030,
+      "sha256": "80ca161f83741e499afecf5eb9aff5785516f1e197457e47f2efb05ba64e710b"
+    },
+    "addresses": {
+      "file": "derived-data/pcap/tuesday-campanha/addresses-campanha.json",
+      "bytes": 61818,
+      "sha256": "2f7a0266a9f3a3303117def2a31e20fd2270aea5a2caa0d0fadeda1dcd8fac15"
+    },
+    "border_seconds": 120,
+    "manifest": "derived-data/pcap/tuesday-campanha/manifest.json",
+    "manifest_sha256": "80ee6b6d90b17a969f58ede086f5ac318f6f471e862cc1be94378f8dc9247539"
+  },
+  "config": "configs/nids.json",
+  "config_sha256": "c97a1eb7ac9123442f46edb7f25297ad960b92d503f3d59763d95d5a1e67af09",
+  "selection_calibration_run": "training-runs/nids/calibracao/20261114T204351398308Z",
+  "frozen_run": "training-runs/frozen-models/20261111T181031847482Z",
+  "model_manifest_sha256": "b18708731de1a1901969789a93479a6a4e4b228ea56aff24c65bf4bfd7c71805",
+  "classifier_threads": 1,
+  "extractor_options": {
+    "snaplen": 65535,
+    "read-timeout-ms": 100,
+    "idle-margin-us": 2000000,
+    "buffer-bytes": 268435456,
+    "flow-queue-limit": 10000
+  },
+  "extractor_build": {
+    "extractor_commit": "13a061520b862d605eea746c79ca4033b30d98fc",
+    "java": "openjdk version \"17.0.21.0.3\" 2026-10-24",
+    "release": 8,
+    "libpcap": "/usr/lib/x86_64-linux-gnu/libpcap.so.0.8",
+    "jars": {
+      "nids-extractor.jar": "75c7b3825a3f3a29827f3bc93ac4b80beed6e73f5f53e4e4d10f943e37a3f96e",
+      "reference-extractor.jar": "a934558afd72f16424a935c3b0ce2334b4733ae845a00b1988b6ee835f9f6338"
+    },
+    "patches": {
+      "01-flow-emission-sweep.patch": "06a76076bed3b391ca5f3d306fc2c4aecd915240296ef73d07b4bc60a8aa9ca1",
+      "02-live-capture.patch": "4fc3091fa0b1791b1de9b0d4d2ad369bf71fa3a939e0e20f882112fb21d3cc48"
+    },
+    "sources": {
+      "NidsExtractor.java": "62992d472cdb6cd31bcb898e3e46060737d024cf79b375f3898ea02b6859814c",
+      "ReferenceExtractor.java": "624309cb3acd7d933381308d23c0f87647a598ae8867608f4ecd49b663cfccec"
+    },
+    "libraries": {
+      "commons-lang3-3.6.jar": "89c27f03fff18d0b06e7afd7ef25e209766df95b6c1269d6c3ebbdea48d5f284",
+      "commons-math3-3.5.jar": "dcf9768726b82e8d7b8a928447b08bca7cfe2773d5120a63a41ec224207c1a29",
+      "jnetpcap.jar": "7dfff1e5abd453293415074dd09e10edbeb00cf37b8db9a07d44108e1a10c163",
+      "slf4j-api-1.7.25.jar": "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
+      "slf4j-nop-1.7.25.jar": "6cb127138f41b5a869f9ecdd061ad17799a0e3fe7204600797154eb0432eeb12",
+      "tika-core-1.17.jar": "77c0a63d7693dc968553f92ef061469979b04d458bb11996d7738c45c5f66b5c"
+    },
+    "native": {
+      "libjnetpcap-pcap100.so": "b758a46ef7ff3cf39b2956de4c08e19a5585cbb6aefd6ce4416566227211aec9",
+      "libjnetpcap.so": "93d8c8c53a63e448f82e778791a0a725d1345a4c80c9d7334f7c9f8067688a49"
+    }
+  },
+  "extractor_start": {
+    "extractor_commit": "13a061520b862d605eea746c79ca4033b30d98fc",
+    "flow_timeout_us": 120000000,
+    "activity_timeout_us": 5000000,
+    "source": "file",
+    "location": "/home/pedro/projects/explicabilidade-ia/derived-data/pcap/tuesday-campanha/segment-campanha.pcap",
+    "snaplen": 65535,
+    "read_timeout_ms": 100,
+    "idle_sleep_ms": 1,
+    "capture_mode": "file",
+    "buffer_bytes": null,
+    "ring_bytes": null,
+    "flow_output": "direct",
+    "flow_queue_limit": null,
+    "idle_margin_us": 2000000,
+    "java_version": "17.0.21.0.3",
+    "monotonic_ns": 128979551784568
+  },
+  "extractor_end": {
+    "stop_reason": "end_of_file",
+    "packets_read": 3706151,
+    "packets_valid": 3703160,
+    "packets_discarded": 2991,
+    "idle_reads": 0,
+    "packets_after_emission": 0,
+    "first_disordered_packet_id": -1,
+    "open_flows_before_flush": 2208,
+    "flows_emitted": 24413,
+    "flows_by_cause": {
+      "tcp_new_connection": 363,
+      "timeout_sweep": 21842,
+      "end_of_capture": 2208
+    },
+    "output_queue_max": null,
+    "flows_dropped": 0,
+    "process": {
+      "cpu_ns": 152050000000,
+      "max_rss_kib": 1682544,
+      "max_heap_bytes": 4294967296
+    },
+    "pcap_stats": null,
+    "monotonic_ns": 129192667078627
+  },
+  "shared_clock_difference_ns": 748612,
+  "flows": {
+    "received": 24413,
+    "classified": 24396,
+    "errors": 17,
+    "by_cause": {
+      "tcp_new_connection": 363,
+      "timeout_sweep": 21842,
+      "end_of_capture": 2208
+    },
+    "predictions": {
+      "0": 23715,
+      "1": 681
+    },
+    "error_examples": [
+      {
+        "seq": 181,
+        "flow_id": "208.81.233.32-192.168.10.14-80-49870-6",
+        "error": "Valor não finito em Flow Bytes/s."
+      },
+      {
+        "seq": 376,
+        "flow_id": "63.241.108.104-192.168.10.14-443-49832-6",
+        "error": "Valor não finito em Flow Bytes/s."
+      },
+      {
+        "seq": 396,
+        "flow_id": "63.241.108.104-192.168.10.14-80-49856-6",
+        "error": "Valor não finito em Flow Bytes/s."
+      },
+      {
+        "seq": 957,
+        "flow_id": "13.107.4.50-192.168.10.14-80-49694-6",
+        "error": "Valor não finito em Flow Bytes/s."
+      },
+      {
+        "seq": 4968,
+        "flow_id": "192.168.10.16-23.96.179.163-52322-443-6",
+        "error": "Valor não finito em Flow Bytes/s."
+      }
+    ]
+  },
+  "timings": {
+    "inference_ns": {
+      "count": 24396,
+      "mean": 7122899.561813412,
+      "median": 6702687.0,
+      "p95": 9685843.5,
+      "p99": 12067845.049999988,
+      "min": 2956233.0,
+      "max": 99787064.0
+    },
+    "classification_latency_ns": {
+      "count": 24396,
+      "mean": 558560050.4464667,
+      "median": 594896276.0,
+      "p95": 771176140.5,
+      "p99": 861583682.4499999,
+      "min": 5969530.0,
+      "max": 1019390084.0
+    },
+    "wait_before_inference_ns": {
+      "count": 24396,
+      "mean": 551315704.4629447,
+      "median": 588152086.5,
+      "p95": 762601541.75,
+      "p99": 852962596.6999999,
+      "min": 645766.0,
+      "max": 1009253073.0
+    },
+    "selection_ns": {
+      "count": 24396,
+      "mean": 1477.5859157238892,
+      "median": 1445.0,
+      "p95": 2222.25,
+      "p99": 2713.0999999999985,
+      "min": 302.0,
+      "max": 17123.0
+    },
+    "delivery_ns": {
+      "count": 24396,
+      "mean": 79266.79463846532,
+      "median": 73301.0,
+      "p95": 120433.75,
+      "p99": 241373.74999999945,
+      "min": 19400.0,
+      "max": 11111599.0
+    },
+    "classified_per_second": 114.43805667994887,
+    "explanation_ns": {
+      "count": 24396,
+      "mean": 10606070.341490408,
+      "median": 10702291.5,
+      "p95": 15031342.5,
+      "p99": 18043494.94999999,
+      "min": 5099210.0,
+      "max": 32679810.0
+    },
+    "explanation_latency_ns": {
+      "count": 24396,
+      "mean": 42550902632.616165,
+      "median": 50953152530.0,
+      "p95": 70072377543.25,
+      "p99": 71946974128.3,
+      "min": 15458492.0,
+      "max": 72667517502.0
+    },
+    "queue_wait_ns": {
+      "count": 24396,
+      "mean": 41981587121.9943,
+      "median": 50326187594.5,
+      "p95": 69469503001.75,
+      "p99": 71431024141.15,
+      "min": 4090927.0,
+      "max": 71950740316.0
+    }
+  },
+  "artifacts": {
+    "classifications.jsonl": {
+      "file": "training-runs/nids/arquivo/20261115T195845825041Z/classifications.jsonl",
+      "bytes": 7191120,
+      "sha256": "2e18676d8138e9567dca41b1bf2fbd710763293ecc146c89c291fd10a0dba67d"
+    },
+    "flows.csv": {
+      "file": "training-runs/nids/arquivo/20261115T195845825041Z/flows.csv",
+      "bytes": 19914845,
+      "sha256": "afbd46848ff473389c363eccdf1945ead987aec356c0fcfc53fd54779ffad9b3"
+    },
+    "explanations.jsonl": {
+      "file": "training-runs/nids/arquivo/20261115T195845825041Z/explanations.jsonl",
+      "bytes": 48348162,
+      "sha256": "2800bb10b5783fe80fd4a1f2192aaf37c67387ef8189a63f82b80051f6c4ec63"
+    },
+    "explanations.csv": {
+      "file": "training-runs/nids/arquivo/20261115T195845825041Z/explanations.csv",
+      "bytes": 1721087,
+      "sha256": "5fd354785c0cf1b392ecaba02ce652246007d60ada2a1fd823d87cae3e37773b"
+    }
+  },
+  "cpu_state": {
+    "affinity": [
+      2
+    ],
+    "scaling_governor": {
+      "2": "powersave"
+    },
+    "mains_power_online": true
+  },
+  "environment": {
+    "python": "3.12.3",
+    "libraries": {
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "scipy": "1.18.1",
+      "joblib": "1.6.0",
+      "xgboost-cpu": "3.4.1",
+      "shap": "0.54.1",
+      "matplotlib": "3.11.2",
+      "threadpoolctl": "3.8.0",
+      "pandas": "3.1.1"
+    },
+    "platform": "Linux-7.0.0-43-generic-x86_64-desconhecido-with-glibc2.43",
+    "cpu": "13th Gen Intel(R) Core(TM) i5-1334U",
+    "logical_cpus": 12
+  },
+  "explanation_queue": {
+    "limit": 10000,
+    "drain_timeout_s": 300,
+    "full_queue_policy": "wait",
+    "requested": 24396,
+    "accepted": 24396,
+    "dropped": 0,
+    "completed": 24396,
+    "pending": 0,
+    "records_without_marks": 0,
+    "explainer_received": 24396,
+    "killed_after_drain_timeout": false,
+    "exit_code": 0,
+    "size": {
+      "max": 6800,
+      "max_at_ns": 129193286072317,
+      "max_by_second": [
+        [
+          0,
+          82
+        ],
+        [
+          1,
+          135
+        ],
+        [
+          2,
+          177
+        ],
+        [
+          3,
+          213
+        ],
+        [
+          4,
+          244
+        ],
+        [
+          5,
+          289
+        ],
+        [
+          6,
+          323
+        ],
+        [
+          7,
+          365
+        ],
+        [
+          8,
+          412
+        ],
+        [
+          9,
+          457
+        ],
+        [
+          10,
+          504
+        ],
+        [
+          11,
+          553
+        ],
+        [
+          12,
+          601
+        ],
+        [
+          13,
+          649
+        ],
+        [
+          14,
+          688
+        ],
+        [
+          15,
+          725
+        ],
+        [
+          16,
+          772
+        ],
+        [
+          17,
+          822
+        ],
+        [
+          18,
+          874
+        ],
+        [
+          19,
+          927
+        ],
+        [
+          20,
+          974
+        ],
+        [
+          21,
+          1022
+        ],
+        [
+          22,
+          1075
+        ],
+        [
+          23,
+          1130
+        ],
+        [
+          24,
+          1178
+        ],
+        [
+          25,
+          1238
+        ],
+        [
+          26,
+          1277
+        ],
+        [
+          27,
+          1321
+        ],
+        [
+          28,
+          1367
+        ],
+        [
+          29,
+          1415
+        ],
+        [
+          30,
+          1457
+        ],
+        [
+          31,
+          1497
+        ],
+        [
+          32,
+          1539
+        ],
+        [
+          33,
+          1586
+        ],
+        [
+          34,
+          1627
+        ],
+        [
+          35,
+          1678
+        ],
+        [
+          36,
+          1725
+        ],
+        [
+          37,
+          1746
+        ],
+        [
+          38,
+          1781
+        ],
+        [
+          39,
+          1827
+        ],
+        [
+          40,
+          1868
+        ],
+        [
+          41,
+          1917
+        ],
+        [
+          42,
+          1963
+        ],
+        [
+          43,
+          2009
+        ],
+        [
+          44,
+          2054
+        ],
+        [
+          45,
+          2102
+        ],
+        [
+          46,
+          2151
+        ],
+        [
+          47,
+          2200
+        ],
+        [
+          48,
+          2243
+        ],
+        [
+          49,
+          2281
+        ],
+        [
+          50,
+          2328
+        ],
+        [
+          51,
+          2375
+        ],
+        [
+          52,
+          2424
+        ],
+        [
+          53,
+          2476
+        ],
+        [
+          54,
+          2528
+        ],
+        [
+          55,
+          2578
+        ],
+        [
+          56,
+          2627
+        ],
+        [
+          57,
+          2676
+        ],
+        [
+          58,
+          2726
+        ],
+        [
+          59,
+          2773
+        ],
+        [
+          60,
+          2813
+        ],
+        [
+          61,
+          2861
+        ],
+        [
+          62,
+          2910
+        ],
+        [
+          63,
+          2958
+        ],
+        [
+          64,
+          3007
+        ],
+        [
+          65,
+          3058
+        ],
+        [
+          66,
+          3109
+        ],
+        [
+          67,
+          3158
+        ],
+        [
+          68,
+          3209
+        ],
+        [
+          69,
+          3252
+        ],
+        [
+          70,
+          3300
+        ],
+        [
+          71,
+          3337
+        ],
+        [
+          72,
+          3381
+        ],
+        [
+          73,
+          3432
+        ],
+        [
+          74,
+          3484
+        ],
+        [
+          75,
+          3528
+        ],
+        [
+          76,
+          3572
+        ],
+        [
+          77,
+          3607
+        ],
+        [
+          78,
+          3647
+        ],
+        [
+          79,
+          3683
+        ],
+        [
+          80,
+          3708
+        ],
+        [
+          81,
+          3744
+        ],
+        [
+          82,
+          3772
+        ],
+        [
+          83,
+          3812
+        ],
+        [
+          84,
+          3862
+        ],
+        [
+          85,
+          3899
+        ],
+        [
+          86,
+          3942
+        ],
+        [
+          87,
+          3990
+        ],
+        [
+          88,
+          4038
+        ],
+        [
+          89,
+          4087
+        ],
+        [
+          90,
+          4133
+        ],
+        [
+          91,
+          4179
+        ],
+        [
+          92,
+          4226
+        ],
+        [
+          93,
+          4264
+        ],
+        [
+          94,
+          4292
+        ],
+        [
+          95,
+          4335
+        ],
+        [
+          96,
+          4380
+        ],
+        [
+          97,
+          4430
+        ],
+        [
+          98,
+          4477
+        ],
+        [
+          99,
+          4513
+        ],
+        [
+          100,
+          4549
+        ],
+        [
+          101,
+          4592
+        ],
+        [
+          102,
+          4621
+        ],
+        [
+          103,
+          4658
+        ],
+        [
+          104,
+          4672
+        ],
+        [
+          105,
+          4707
+        ],
+        [
+          106,
+          4748
+        ],
+        [
+          107,
+          4781
+        ],
+        [
+          108,
+          4823
+        ],
+        [
+          109,
+          4871
+        ],
+        [
+          110,
+          4918
+        ],
+        [
+          111,
+          4966
+        ],
+        [
+          112,
+          5015
+        ],
+        [
+          113,
+          5059
+        ],
+        [
+          114,
+          5106
+        ],
+        [
+          115,
+          5155
+        ],
+        [
+          116,
+          5199
+        ],
+        [
+          117,
+          5243
+        ],
+        [
+          118,
+          5290
+        ],
+        [
+          119,
+          5337
+        ],
+        [
+          120,
+          5382
+        ],
+        [
+          121,
+          5427
+        ],
+        [
+          122,
+          5451
+        ],
+        [
+          123,
+          5441
+        ],
+        [
+          124,
+          5388
+        ],
+        [
+          125,
+          5388
+        ],
+        [
+          126,
+          5412
+        ],
+        [
+          127,
+          5441
+        ],
+        [
+          128,
+          5458
+        ],
+        [
+          129,
+          5438
+        ],
+        [
+          130,
+          5428
+        ],
+        [
+          131,
+          5381
+        ],
+        [
+          132,
+          5343
+        ],
+        [
+          133,
+          5299
+        ],
+        [
+          134,
+          5256
+        ],
+        [
+          135,
+          5248
+        ],
+        [
+          136,
+          5279
+        ],
+        [
+          137,
+          5325
+        ],
+        [
+          138,
+          5371
+        ],
+        [
+          139,
+          5405
+        ],
+        [
+          140,
+          5435
+        ],
+        [
+          141,
+          5470
+        ],
+        [
+          142,
+          5504
+        ],
+        [
+          143,
+          5502
+        ],
+        [
+          144,
+          5478
+        ],
+        [
+          145,
+          5428
+        ],
+        [
+          146,
+          5410
+        ],
+        [
+          147,
+          5428
+        ],
+        [
+          148,
+          5426
+        ],
+        [
+          149,
+          5404
+        ],
+        [
+          150,
+          5423
+        ],
+        [
+          151,
+          5421
+        ],
+        [
+          152,
+          5382
+        ],
+        [
+          153,
+          5354
+        ],
+        [
+          154,
+          5297
+        ],
+        [
+          155,
+          5235
+        ],
+        [
+          156,
+          5186
+        ],
+        [
+          157,
+          5148
+        ],
+        [
+          158,
+          5127
+        ],
+        [
+          159,
+          5095
+        ],
+        [
+          160,
+          5086
+        ],
+        [
+          161,
+          5064
+        ],
+        [
+          162,
+          5078
+        ],
+        [
+          163,
+          5115
+        ],
+        [
+          164,
+          5155
+        ],
+        [
+          165,
+          5200
+        ],
+        [
+          166,
+          5236
+        ],
+        [
+          167,
+          5271
+        ],
+        [
+          168,
+          5301
+        ],
+        [
+          169,
+          5338
+        ],
+        [
+          170,
+          5380
+        ],
+        [
+          171,
+          5426
+        ],
+        [
+          172,
+          5458
+        ],
+        [
+          173,
+          5490
+        ],
+        [
+          174,
+          5524
+        ],
+        [
+          175,
+          5568
+        ],
+        [
+          176,
+          5591
+        ],
+        [
+          177,
+          5600
+        ],
+        [
+          178,
+          5581
+        ],
+        [
+          179,
+          5561
+        ],
+        [
+          180,
+          5570
+        ],
+        [
+          181,
+          5564
+        ],
+        [
+          182,
+          5612
+        ],
+        [
+          183,
+          5661
+        ],
+        [
+          184,
+          5693
+        ],
+        [
+          185,
+          5722
+        ],
+        [
+          186,
+          5767
+        ],
+        [
+          187,
+          5805
+        ],
+        [
+          188,
+          5845
+        ],
+        [
+          189,
+          5882
+        ],
+        [
+          190,
+          5890
+        ],
+        [
+          191,
+          5914
+        ],
+        [
+          192,
+          5950
+        ],
+        [
+          193,
+          5987
+        ],
+        [
+          194,
+          6033
+        ],
+        [
+          195,
+          6066
+        ],
+        [
+          196,
+          6066
+        ],
+        [
+          197,
+          6062
+        ],
+        [
+          198,
+          6109
+        ],
+        [
+          199,
+          6162
+        ],
+        [
+          200,
+          6207
+        ],
+        [
+          201,
+          6254
+        ],
+        [
+          202,
+          6303
+        ],
+        [
+          203,
+          6355
+        ],
+        [
+          204,
+          6413
+        ],
+        [
+          205,
+          6462
+        ],
+        [
+          206,
+          6511
+        ],
+        [
+          207,
+          6559
+        ],
+        [
+          208,
+          6597
+        ],
+        [
+          209,
+          6645
+        ],
+        [
+          210,
+          6695
+        ],
+        [
+          211,
+          6743
+        ],
+        [
+          212,
+          6791
+        ],
+        [
+          213,
+          6800
+        ],
+        [
+          214,
+          6706
+        ],
+        [
+          215,
+          6570
+        ],
+        [
+          216,
+          6432
+        ],
+        [
+          217,
+          6295
+        ],
+        [
+          218,
+          6157
+        ],
+        [
+          219,
+          6031
+        ],
+        [
+          220,
+          5926
+        ],
+        [
+          221,
+          5794
+        ],
+        [
+          222,
+          5656
+        ],
+        [
+          223,
+          5518
+        ],
+        [
+          224,
+          5378
+        ],
+        [
+          225,
+          5240
+        ],
+        [
+          226,
+          5103
+        ],
+        [
+          227,
+          4962
+        ],
+        [
+          228,
+          4824
+        ],
+        [
+          229,
+          4687
+        ],
+        [
+          230,
+          4562
+        ],
+        [
+          231,
+          4450
+        ],
+        [
+          232,
+          4314
+        ],
+        [
+          233,
+          4175
+        ],
+        [
+          234,
+          4037
+        ],
+        [
+          235,
+          3894
+        ],
+        [
+          236,
+          3754
+        ],
+        [
+          237,
+          3616
+        ],
+        [
+          238,
+          3477
+        ],
+        [
+          239,
+          3339
+        ],
+        [
+          240,
+          3202
+        ],
+        [
+          241,
+          3092
+        ],
+        [
+          242,
+          2969
+        ],
+        [
+          243,
+          2833
+        ],
+        [
+          244,
+          2695
+        ],
+        [
+          245,
+          2558
+        ],
+        [
+          246,
+          2420
+        ],
+        [
+          247,
+          2281
+        ],
+        [
+          248,
+          2143
+        ],
+        [
+          249,
+          2006
+        ],
+        [
+          250,
+          1866
+        ],
+        [
+          251,
+          1730
+        ],
+        [
+          252,
+          1625
+        ],
+        [
+          253,
+          1496
+        ],
+        [
+          254,
+          1362
+        ],
+        [
+          255,
+          1222
+        ],
+        [
+          256,
+          1086
+        ],
+        [
+          257,
+          947
+        ],
+        [
+          258,
+          806
+        ],
+        [
+          259,
+          677
+        ],
+        [
+          260,
+          545
+        ],
+        [
+          261,
+          406
+        ],
+        [
+          262,
+          277
+        ],
+        [
+          263,
+          170
+        ],
+        [
+          264,
+          39
+        ]
+      ]
+    },
+    "drain_after_last_request_ns": 51106212490,
+    "drain_after_end_of_capture_ns": 51105717656,
+    "wait_for_explainer_after_end_of_capture_ns": 51365767473
+  },
+  "strategy": "Assíncrono",
+  "strategy_key": "assincrono",
+  "selection": null,
+  "tree_shap_config": "configs/tree-shap.json",
+  "tree_shap_config_sha256": "4578aea08402859e3054a6848947c80311d65860a74aa52579e5dcb8fc45ee52",
+  "explainer": {
+    "feature_perturbation": "tree_path_dependent",
+    "model_output": "raw",
+    "approximate": false,
+    "check_additivity": false
+  },
+  "warmup": {
+    "explainer_construction_ns": 9669395,
+    "explanation_ns": 11999435,
+    "inference_ns": 12822306,
+    "explainer_process": {
+      "model_sha256": "b18708731de1a1901969789a93479a6a4e4b228ea56aff24c65bf4bfd7c71805",
+      "load_ns": 54668063,
+      "explainer_construction_ns": 9669395,
+      "explanation_ns": 11999435,
+      "pid": 729245
+    }
+  },
+  "explanations": {
+    "eligible": 24396,
+    "selected": 24396,
+    "completed": 24396,
+    "selected_share": 1.0,
+    "completed_share": 1.0,
+    "scale": "probability",
+    "sum_identity": {
+      "residual": 5.551115123125783e-16,
+      "tolerance": 1e-09
+    },
+    "explained_output_vs_probability": {
+      "max_difference": 0.0,
+      "tolerance": 1e-12
+    }
+  },
+  "shared_clock_difference_explainer_ns": 808980,
+  "resources": {
+    "classifier_process": {
+      "user_seconds": 192.051942,
+      "system_seconds": 1.245908,
+      "max_rss_kib": 393240,
+      "peak_since_phase_start": true,
+      "threads": 2,
+      "thread_affinities": [
+        [
+          2
+        ]
+      ]
+    },
+    "classifier_process_total": {
+      "user_seconds": 244.319518,
+      "system_seconds": 4.083178,
+      "max_rss_kib": 533096,
+      "threads": 24,
+      "thread_affinities": [
+        [
+          2
+        ]
+      ]
+    },
+    "explainer_process": {
+      "user_seconds": 262.378964,
+      "system_seconds": 1.0834260000000002,
+      "max_rss_kib": 205632,
+      "peak_since_phase_start": true,
+      "threads": 2,
+      "thread_affinities": [
+        [
+          0
+        ]
+      ]
+    },
+    "extractor_process": {
+      "cpu_ns": 152050000000,
+      "max_rss_kib": 1682544,
+      "max_heap_bytes": 4294967296
+    },
+    "children_total": {
+      "user_seconds": 410.12508,
+      "system_seconds": 7.052224,
+      "max_rss_kib": 1682544
+    },
+    "memory_available_kib_at_start": 7455084,
+    "cpus": {
+      "configured": {
+        "classifier": [
+          2
+        ],
+        "explainer": [
+          0
+        ],
+        "extractor": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "replay": [
+          8,
+          9,
+          10,
+          11
+        ]
+      },
+      "classifier": [
+        [
+          2
+        ]
+      ],
+      "explainer": [
+        [
+          0
+        ]
+      ],
+      "extractor": [
+        4,
+        5,
+        6,
+        7
+      ]
+    }
+  },
+  "conference": {
+    "passed": true,
+    "reference_flows": 24075,
+    "matched_inside": 19438,
+    "matched_border": 1939,
+    "carried_over": {
+      "connections": 1582,
+      "flows": 3024
+    },
+    "reference_only_inside": 0,
+    "nids_only_inside": 11,
+    "nids_only_inside_with_nan": 11,
+    "attribute_mismatches": {},
+    "rounding_differences": 37533,
+    "max_rounding_relative": 5.6010313106286125e-15,
+    "compared_predictions": 19438,
+    "differing_predictions": 0,
+    "max_probability_difference": 0.0,
+    "probability_atol": 1e-12,
+    "labels_of_matched": {
+      "BENIGN": 18868,
+      "FTP-Patator - Attempted": 12,
+      "FTP-Patator": 558
+    }
+  }
+}

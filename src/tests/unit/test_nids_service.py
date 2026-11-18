@@ -1,5 +1,7 @@
 import subprocess
 import sys
+import threading
+import time
 
 import numpy as np
 import pytest
@@ -135,28 +137,77 @@ def test_packets_that_move_to_the_next_flow_of_a_connection_are_told_apart_from_
     assert (shifts["flows"], shifts["conserved_in_connection"], shifts["connections"]) == (3, 2, 1)
 
 
-def test_extractor_that_ignores_the_stop_request_is_killed_and_the_run_fails(monkeypatch):
-    monkeypatch.setattr(flow_extractor, "STOP_TIMEOUT_S", 0.3)
+def test_extractor_jvm_options_come_before_the_main_class(tmp_path):
+    build = flow_extractor.ExtractorBuild.__new__(flow_extractor.ExtractorBuild)
+    build.build_dir = tmp_path
+    command, _ = build.command("nids-extractor.jar", "nids.extractor.NidsExtractor", ["--pcap", "x.pcap"], 4096,
+                               ["-Dnio.mx=1073741824"])
+    assert command[:3] == ["java", "-Xmx4096m", "-Dnio.mx=1073741824"]
+    assert command[-3:] == ["nids.extractor.NidsExtractor", "--pcap", "x.pcap"]
+
+
+def _fake_extractor(script):
+    """Adaptador do extrator ligado a um processo Python que faz o papel do extrator."""
     extractor = NidsExtractorProcess.__new__(NidsExtractorProcess)
-    extractor.process = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(60)"], stdin=subprocess.PIPE,
+    extractor.process = subprocess.Popen([sys.executable, "-c", script], stdin=subprocess.PIPE,
                                          stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     extractor.start = extractor.end = extractor._watchdog = None
     extractor.header, extractor.killed_after_stop_timeout = [], False
+    extractor._last_progress_s, extractor._finished = time.monotonic(), threading.Event()
+    return extractor
+
+
+def test_extractor_that_ignores_the_stop_request_is_killed_and_the_run_fails(monkeypatch):
+    monkeypatch.setattr(flow_extractor, "STOP_TIMEOUT_S", 0.3)
+    extractor = _fake_extractor("import time; time.sleep(60)")
     extractor.request_stop()
-    with pytest.raises(RuntimeError, match="não parou"):
+    with pytest.raises(RuntimeError, match="sem entregar uma linha"):
         list(extractor.events())
     assert extractor.process.poll() is not None
 
 
 def test_extractor_that_stops_when_asked_is_not_killed(monkeypatch):
     monkeypatch.setattr(flow_extractor, "STOP_TIMEOUT_S", 5.0)
-    extractor = NidsExtractorProcess.__new__(NidsExtractorProcess)
-    script = ("import json, sys\nprint(json.dumps({'type': 'start', 'header': ['a']}), flush=True)\n"
-              "sys.stdin.read()\nprint(json.dumps({'type': 'end', 'flows_emitted': 0}), flush=True)")
-    extractor.process = subprocess.Popen([sys.executable, "-c", script], stdin=subprocess.PIPE,
-                                         stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    extractor.start = extractor.end = extractor._watchdog = None
-    extractor.header, extractor.killed_after_stop_timeout = [], False
+    extractor = _fake_extractor("import json, sys\nprint(json.dumps({'type': 'start', 'header': ['a']}), flush=True)\n"
+                                "sys.stdin.read()\nprint(json.dumps({'type': 'end', 'flows_emitted': 0}), flush=True)")
     extractor.request_stop()
     assert [event for event, _ in extractor.events()] == ["start", "end"]
     assert not extractor.killed_after_stop_timeout
+
+
+def test_extractor_that_keeps_delivering_its_queue_after_the_stop_request_is_not_killed(monkeypatch):
+    # O extrator leva mais que o prazo para entregar a fila, mas nunca fica tanto tempo sem entregar um fluxo.
+    monkeypatch.setattr(flow_extractor, "STOP_TIMEOUT_S", 0.5)
+    flow = ("{'type': 'flow', 'seq': seq, 'cause': 'timeout_sweep', 'first_packet_us': 0, 'last_packet_us': 0, "
+            "'capture_clock_us': 0, 't0_ns': 0, 'features': '1'}")
+    extractor = _fake_extractor(
+        "import json, sys, time\nprint(json.dumps({'type': 'start', 'header': ['a']}), flush=True)\n"
+        f"sys.stdin.read()\nfor seq in range(1, 31):\n    time.sleep(0.05)\n    print(json.dumps({flow}), flush=True)\n"
+        "print(json.dumps({'type': 'end', 'flows_emitted': 30}), flush=True)")
+    extractor.request_stop()
+    events = [event for event, _ in extractor.events()]
+    assert events == ["start"] + ["flow"] * 30 + ["end"]
+    assert not extractor.killed_after_stop_timeout
+
+
+def _accelerated_row(seq, first_us, packets="2", rate="10.0", probability="0.2"):
+    return {"seq": seq, "Flow ID": "10.0.0.1-10.0.0.2-1000-80-6", "Src IP": "10.0.0.1", "Src Port": "1000",
+            "Dst IP": "10.0.0.2", "Dst Port": "80", "Protocol": "6", "first_packet_us": str(first_us),
+            "Total Fwd Packet": packets, "Flow Packets/s": rate, "error": "",
+            "prediction": "1" if float(probability) >= 0.5 else "0", "attack_probability": probability}
+
+
+def test_the_accelerated_reading_is_matched_by_order_and_compared_with_the_original():
+    from domains.nids.service import _acceleration_row
+
+    original = [_accelerated_row("1", 0), _accelerated_row("2", 100, probability="0.7")]
+    scaled = [_accelerated_row("1", 0, rate="20.0"), _accelerated_row("2", 50, packets="3", probability="0.3"),
+              _accelerated_row("3", 60)]
+    row = _acceleration_row(original, scaled, ["Total Fwd Packet", "Flow Packets/s"],
+                            {"probabilidade": 0.5, "incerteza": 0.4})
+    assert row["flows"] == {"original": 2, "scaled": 3, "matched": 2, "only_original": 0, "only_scaled": 1}
+    assert row["matched_with_equal_exact_attributes"] == 1 and row["matched_with_equal_temporal_attributes"] == 1
+    assert row["predictions"] == {"compared": 2, "differing": 1, "attacks_original": 1, "attacks_scaled": 0}
+    assert row["selection"]["probabilidade"] == {"selected_original": 1, "selected_scaled": 0,
+                                                 "differing_in_matched": 1}
+    assert row["selection"]["incerteza"]["selected_scaled"] == 3

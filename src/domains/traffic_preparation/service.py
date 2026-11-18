@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from core.flow_extractor import EXTRACTOR_COMMIT, ExtractorBuild, NidsExtractorProcess, parse_timestamp_us
-from core.pcap_tools import PcapSummary, PcapTools
+from core.pcap_tools import PcapSummary, PcapTools, ipv4_endpoints, read_header, read_records
 from domains.model_training.repository import sha256
 from domains.traffic_preparation import reporting
 from domains.traffic_preparation.exceptions import TrafficPreparationError
@@ -106,6 +106,17 @@ def has_nan(row: dict[str, str]) -> bool:
     return any(value == "NaN" for value in row.values())
 
 
+def connection_key(row: dict[str, str]) -> tuple[Any, ...]:
+    """Conexão de um fluxo, sem o sentido: as duas pontas em ordem e o protocolo, como em Endpoints.connection."""
+    first, second = sorted([(row["Src IP"], int(row["Src Port"])), (row["Dst IP"], int(row["Dst Port"]))])
+    return (*first, *second, int(row["Protocol"]))
+
+
+def carried_over(rows: Iterable[dict[str, str]], connections: set[tuple[Any, ...]]) -> list[dict[str, str]]:
+    """Fluxos de conexões que já tinham pacotes antes do início do trecho."""
+    return [row for row in rows if connection_key(row) in connections]
+
+
 def _summary_dict(summary: PcapSummary) -> dict[str, Any]:
     return {"packets": summary.packets, "first_packet_us": summary.first_us, "last_packet_us": summary.last_us,
             "max_frame_bytes": summary.max_frame_bytes, "max_captured_bytes": summary.max_captured_bytes,
@@ -192,8 +203,101 @@ class TrafficPreparationService:
         self.repo.write_json(output / "manifest.json", manifest)
         return CommandResult(output / "manifest.json", None, manifest)
 
+    def derive_segment(self) -> CommandResult:
+        """Corta, de um trecho já preparado, os pacotes entre dois instantes, sem alterar bytes nem instantes.
+
+        A tabela de referência tem os fluxos do CSV que começam dentro do trecho. As conexões que já tinham pacotes
+        antes do início ficam registradas, porque os fluxos delas no trecho não correspondem aos do CSV. Os
+        endereços IPv4 do trecho, com a contagem de pacotes, sustentam a reescrita das cópias na rede emulada."""
+        config = self.repo.read_derived_config(self.config_path)
+        base = self.repo.read_json(config.base_manifest)
+        if config.base_segment not in base["segments"]:
+            raise TrafficPreparationError(f"Trecho base desconhecido: {config.base_segment}.")
+        info = base["segments"][config.base_segment]
+        source = self.repo.checked(info["pcap"])
+        start_us, stop_us = _microseconds(config.start), _microseconds(config.stop)
+        if not info["summary"]["first_packet_us"] < start_us < stop_us <= info["stop_us"]:
+            raise TrafficPreparationError("O trecho derivado deve começar depois do início do trecho base e "
+                                          "terminar até o fim dele.")
+        if info["summary"]["disordered_packets"] != 0:
+            raise TrafficPreparationError("O trecho base tem pacotes fora de ordem.")
+        flows_csv = self.repo.checked_flows_csv(config)
+        output = config.output_dir
+        if (output / "manifest.json").exists():
+            raise TrafficPreparationError(f"Preparação já existe em {output}. Remova a pasta para refazer.")
+        output.mkdir(parents=True, exist_ok=True)
+
+        pcap = output / f"segment-{config.name}.pcap"
+        header, _, _, link_type = read_header(source)
+        before: set[tuple[Any, ...]] = set()
+        inside: set[tuple[Any, ...]] = set()
+        addresses: Counter[str] = Counter()
+        written = non_ipv4 = 0
+        with pcap.open("wb") as stream:
+            stream.write(header)
+            for record in read_records(source):
+                if record.timestamp_us >= stop_us:
+                    break
+                endpoints = ipv4_endpoints(record.data, link_type)
+                if record.timestamp_us < start_us:
+                    if endpoints is not None:
+                        before.add(endpoints.connection())
+                    continue
+                stream.write(record.header)
+                stream.write(record.data)
+                written += 1
+                if endpoints is None:
+                    non_ipv4 += 1
+                    continue
+                inside.add(endpoints.connection())
+                addresses[endpoints.src] += 1
+                addresses[endpoints.dst] += 1
+        summary = self.tools.summarize(pcap)
+        if summary.packets != written or summary.disordered_packets != 0:
+            raise TrafficPreparationError("O trecho gravado difere dos pacotes selecionados.")
+        header_row = self.repo.csv_header(config.flows_csv)
+        selected: list[dict[str, str]] = []
+        before_csv: set[tuple[Any, ...]] = set()
+        for row in self.repo.iter_csv(config.flows_csv):
+            timestamp = parse_timestamp_us(row["Timestamp"])
+            if timestamp < start_us:
+                before_csv.add(connection_key(row))
+            elif timestamp < stop_us:
+                selected.append(row)
+        # O extrator também forma fluxos de quadros que não são IPv4, com endereços tirados de outros campos. As
+        # conexões anteriores ao início vêm dos pacotes IPv4 e, para esses fluxos, dos fluxos do CSV.
+        carried = sorted((before & inside) | (before_csv & {connection_key(row) for row in selected}))
+        carried_path = output / f"carried-over-{config.name}.json"
+        self.repo.write_json(carried_path, [list(item) for item in carried])
+        addresses_path = output / f"addresses-{config.name}.json"
+        self.repo.write_json(addresses_path, sorted(([ip, count] for ip, count in addresses.items()),
+                                                    key=lambda item: (-item[1], item[0])))
+        carried_set = set(carried)
+        segment = {
+            "start": config.start.isoformat().replace("+00:00", "Z"), "start_us": start_us,
+            "stop": config.stop.isoformat().replace("+00:00", "Z"), "stop_us": stop_us,
+            "pcap": self.repo.artifact(pcap), "summary": _summary_dict(summary),
+            "reference": self.repo.write_csv(output / f"reference-{config.name}.csv", header_row, selected),
+            "reference_flows": len(selected), "reference_labels": dict(Counter(row["Label"] for row in selected)),
+            "carried_over": self.repo.artifact(carried_path), "carried_over_connections": len(carried),
+            "reference_flows_carried_over": len(carried_over(selected, carried_set)),
+            "addresses": self.repo.artifact(addresses_path), "ipv4_addresses": len(addresses),
+            "non_ipv4_packets": non_ipv4,
+            "base": {"manifest": self.repo.relative(config.base_manifest),
+                     "manifest_sha256": sha256(config.base_manifest), "segment": config.base_segment,
+                     "pcap": info["pcap"]},
+        }
+        manifest = {
+            "stage": "derived segment", "config": self.repo.relative(config.path), "config_sha256": config.sha256,
+            "flows_csv": {"file": self.repo.relative(config.flows_csv), **flows_csv},
+            "segments": {config.name: segment}, "border_seconds": config.border_seconds,
+            "environment": self.repo.environment(),
+        }
+        self.repo.write_json(output / "manifest.json", manifest)
+        return CommandResult(output / "manifest.json", None, manifest)
+
     def check_extraction(self, segment: str) -> CommandResult:
-        config = self.repo.read_config(self.config_path)
+        config = self.repo.read_any_config(self.config_path)
         manifest = self.repo.read_json(config.output_dir / "manifest.json")
         if segment not in manifest["segments"]:
             raise TrafficPreparationError(f"Trecho desconhecido: {segment}.")
@@ -211,15 +315,22 @@ class TrafficPreparationService:
         inputs = self.repo.data_manifest()["inputs"]
 
         border_start = info["stop_us"] - config.border_seconds * 1_000_000
-        inside = lambda row: parse_timestamp_us(row["Timestamp"]) < border_start  # noqa: E731
+        # Num trecho que começa no meio da captura, os fluxos de conexões com pacotes antes do início ficam fora.
+        carried = self._carried(info)
+        is_carried = lambda row: connection_key(row) in carried  # noqa: E731
+        inside = lambda row: parse_timestamp_us(row["Timestamp"]) < border_start and not is_carried(row)  # noqa: E731
+        border = lambda row: parse_timestamp_us(row["Timestamp"]) >= border_start and not is_carried(row)  # noqa: E731
         pairs, only_reference, only_extracted = match_rows(reference, extracted)
         inside_pairs = [pair for pair in pairs if inside(pair[0])]
-        border_pairs = [pair for pair in pairs if not inside(pair[0])]
+        border_pairs = [pair for pair in pairs if border(pair[0])]
         attributes = compare_attributes(inside_pairs, inputs)
         excluded = compare_attributes(inside_pairs, EXCLUDED)
         border_attributes = compare_attributes(border_pairs, inputs)
         unmatched_reference_inside = [row for row in only_reference if inside(row)]
         unmatched_extracted_inside = [row for row in only_extracted if inside(row)]
+        carried_counts = {"connections": len(carried), "matched": sum(1 for row, _ in pairs if is_carried(row)),
+                          "reference_only": sum(1 for row in only_reference if is_carried(row)),
+                          "extracted_only": sum(1 for row in only_extracted if is_carried(row))}
         dropped_by_labelling = [row for row in unmatched_extracted_inside if has_nan(row)]
         unexplained_extracted_inside = [row for row in unmatched_extracted_inside if not has_nan(row)]
         input_mismatches = sum(item["mismatches"] for item in attributes.values())
@@ -241,15 +352,17 @@ class TrafficPreparationService:
                 "reference": len(reference), "extracted": len(extracted),
                 "matched_inside": len(inside_pairs), "matched_border": len(border_pairs),
                 "reference_only_inside": len(unmatched_reference_inside),
-                "reference_only_border": len(only_reference) - len(unmatched_reference_inside),
+                "reference_only_border": sum(1 for row in only_reference if border(row)),
                 "extracted_only_inside": len(unmatched_extracted_inside),
                 "extracted_only_inside_with_nan": len(dropped_by_labelling),
                 "nan_columns": dict(Counter(name for row in dropped_by_labelling for name, value in row.items()
                                             if value == "NaN")),
                 "extracted_with_nan": sum(1 for row in extracted if has_nan(row)),
                 "reference_with_nan": sum(1 for row in reference if has_nan(row)),
-                "extracted_only_border": len(only_extracted) - len(unmatched_extracted_inside),
+                "extracted_only_border": sum(1 for row in only_extracted if border(row)),
+                "carried_over": carried_counts,
             },
+            "start": info.get("start"),
             "matched_inside_labels": dict(Counter(pair[0]["Label"] for pair in inside_pairs)),
             "nids_extractor": emission,
             "attributes": attributes, "excluded_attributes": excluded, "relative_tolerance": RELATIVE_TOLERANCE,
@@ -267,6 +380,12 @@ class TrafficPreparationService:
             raise TrafficPreparationError(f"A extração diverge dos fluxos rotulados. Ver {report}.")
         return CommandResult(run_dir, report, summary)
 
+
+    def _carried(self, info: dict[str, Any]) -> set[tuple[Any, ...]]:
+        """Conexões com pacotes antes do início do trecho. Um trecho que começa na captura não tem nenhuma."""
+        if "carried_over" not in info:
+            return set()
+        return {tuple(item) for item in self.repo.read_json(self.repo.checked(info["carried_over"]))}
 
     def _emission_equivalence(self, build: ExtractorBuild, pcap: Path, reference_csv: Path) -> dict[str, Any]:
         """Compara as linhas do extrator do NIDS, em modo arquivo, com as do extrator de referência."""

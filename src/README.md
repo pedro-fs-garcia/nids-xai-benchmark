@@ -129,6 +129,13 @@ python main.py conferir-extracao --trecho validacao
 
 O comando extrai os fluxos do trecho com o extrator original e os compara com a tabela de referência: nomes e ordem das colunas, fluxos presentes de cada lado e os valores das 80 entradas. Os fluxos que começam nos últimos 120 s do trecho formam a borda e são contados à parte. O comando também executa o extrator do NIDS no mesmo trecho e confere que as linhas de atributos são as mesmas. O relatório vai para `relatorios/extracao-pcap-<execução>.md`, e o registro, para `training-runs/traffic/extracao/`. O comando termina com erro se alguma conferência falhar.
 
+```bash
+python main.py preparar-trecho --config ../configs/pcap-campanha.json
+python main.py conferir-extracao --config ../configs/pcap-campanha.json --trecho campanha
+```
+
+`preparar-trecho` corta, de um trecho já preparado, os pacotes entre dois instantes, sem alterar bytes nem instantes e sem ferramentas externas ([decisão 16](../docs/decisoes.md)). Ele grava, na pasta da configuração, o PCAP, a tabela de referência com os fluxos de `tuesday.csv` que começam dentro do trecho, as conexões que já tinham pacotes antes do início e a lista dos endereços IPv4 do trecho com o número de pacotes de cada um, usada pelas cópias da [decisão 15](../docs/decisoes.md). `conferir-extracao` aceita essa configuração e deixa de fora da comparação os fluxos das conexões anteriores ao início, que conta à parte. Os trechos `campanha` e `curto` vêm de [configs/pcap-campanha.json](../configs/pcap-campanha.json) e [configs/pcap-curto.json](../configs/pcap-curto.json).
+
 ## NIDS e estratégias de explicação
 
 ```bash
@@ -153,7 +160,25 @@ Cada execução grava `training-runs/nids/<arquivo|interface>/<execução>/`:
 
 A execução falha se os fluxos emitidos pelo extrator diferirem dos recebidos mais os descartados na fila de saída do extrator, se os recebidos diferirem dos classificados mais os não classificáveis, se alguma marcação estiver fora de ordem, se alguma explicação não reproduzir a saída explicada do fluxo, se as solicitações de explicação não fecharem com as concluídas, descartadas e pendentes, se algum processo estiver fora das CPUs configuradas ou se a conferência com a tabela de referência falhar. Um fluxo com algum valor que os dados de treino não têm, como `NaN`, é um fluxo não classificável: o NIDS não o entrega ao classificador, registra o motivo e o conta ([decisão 10](../docs/decisoes.md)). O resumo legível vai para `relatorios/nids-execucao-<fonte>-<execução>.md`.
 
-A reprodução em rede emulada e a validação em baixa carga estão descritas em [scripts/README.md](../scripts/README.md). O comando `nids-validar` compara a execução reproduzida com a execução do mesmo trecho lido do arquivo, com a mesma estratégia, e termina com erro se a cadeia de contadores não fechar.
+A reprodução em rede emulada e a execução de uma matriz de ensaios estão descritas em [scripts/README.md](../scripts/README.md). O comando `nids-validar` compara a execução reproduzida com a execução do mesmo trecho lido do arquivo, com a mesma estratégia, e termina com erro se a cadeia de contadores não fechar. Com mais de uma cópia, ele atribui cada fluxo à cópia dos seus endereços, volta os endereços aos originais e compara cada cópia em separado, lendo a tabela da reprodução uma vez por cópia para limitar a memória.
+
+```bash
+python main.py nids-conferir-copia --modelo xgboost --trecho campanha --numero 16 --original ../training-runs/nids/arquivo/<execução>
+```
+
+Grava a cópia dada do trecho com o `tcprewrite`, que aplica a mesma troca de endereços do `tcpreplay-edit` com a mesma biblioteca, lê a cópia com o NIDS, sem XAI, e confere que cada fluxo, com os endereços de volta aos originais, tem as mesmas 80 entradas e a mesma previsão que na leitura do trecho original. A cópia gravada é apagada depois da leitura. O relatório vai para `relatorios/nids-copia-<execução>.md`.
+
+```bash
+python main.py nids-efeito-aceleracao --trecho campanha --fatores 2 4 8 --originais ../training-runs/nids/arquivo/<execução> ...
+```
+
+Mede, sem rede, como a reprodução acelerada mudaria os fluxos: grava o trecho com os intervalos entre pacotes divididos por cada fator, lê com o NIDS, sem XAI, com o classificador de cada leitura original, e compara fluxos, atributos, previsões e seleção do Síncrono condicional com os da leitura original. Os arquivos acelerados são apagados depois da leitura. O relatório vai para `relatorios/nids-aceleracao-<execução>.md`.
+
+```bash
+python main.py matriz-analisar --matriz ../configs/piloto-2.json
+```
+
+Lê o registro de uma matriz executada por `scripts/executar_matriz.py`, valida cada ensaio válido contra a leitura por arquivo com as mesmas entradas fixas, estratégia, critério e trecho, e resume carga efetiva, descartes, latências, fila de explicações pendentes, recursos de cada processo, estado da máquina e a variação entre ensaios da mesma combinação. O relatório vai para `relatorios/<matriz>-<execução>.md`.
 
 ```bash
 python main.py calibrar-selecao
@@ -216,7 +241,7 @@ pip install -r requirements-dev.txt
 python -m pytest
 ```
 
-Os testes cobrem as regras da preparação dos dados, a amostragem para o treinamento e o cálculo das métricas. Os testes do extrator e do NIDS usam PCAPs sintéticos, gerados por `tests/integration/pcap_factory.py`. Eles conferem que o extrator do NIDS emite os mesmos fluxos que o extrator original, inclusive em conexões divididas pelo tempo limite, e o descarte com a fila de saída cheia, e rodam quando o extrator está compilado. Os testes das estratégias de explicação usam um classificador e um explicador de valores fixos e um relógio que avança a cada leitura, para conferir a ordem das marcações. Os do processo explicador usam um Random Forest sintético e um atraso fixo por explicação, para forçar descartes e o encerramento pelo tempo máximo de esvaziamento. Os testes do TreeSHAP usam um Random Forest e um XGBoost sintéticos e comparam as contribuições com o valor de Shapley calculado por força bruta, além da identidade da soma, dos atributos sem divisão e das recusas do adaptador. Os testes de integração verificam arquivos pequenos e o salvamento e carregamento do Random Forest em um diretório temporário.
+Os testes cobrem as regras da preparação dos dados, a amostragem para o treinamento e o cálculo das métricas. Os testes do extrator e do NIDS usam PCAPs sintéticos, gerados por `tests/integration/pcap_factory.py`. Eles conferem que o extrator do NIDS emite os mesmos fluxos que o extrator original, inclusive em conexões divididas pelo tempo limite, e o descarte com a fila de saída cheia, e rodam quando o extrator está compilado. Os testes das estratégias de explicação usam um classificador e um explicador de valores fixos e um relógio que avança a cada leitura, para conferir a ordem das marcações. Os do processo explicador usam um Random Forest sintético e um atraso fixo por explicação, para forçar descartes e o encerramento pelo tempo máximo de esvaziamento. Os testes do TreeSHAP usam um Random Forest e um XGBoost sintéticos e comparam as contribuições com o valor de Shapley calculado por força bruta, além da identidade da soma, dos atributos sem divisão e das recusas do adaptador. Os testes das cópias conferem a troca de endereços, a volta aos endereços originais, a leitura e a aceleração de PCAPs sintéticos e o resumo do estado da máquina. Os da matriz conferem a ordem sorteada das repetições, a recusa de valores não fixados, a retomada pelo registro e os critérios de validade. Os testes de integração verificam arquivos pequenos e o salvamento e carregamento do Random Forest em um diretório temporário.
 
 ## TG-006: árvore de decisão e Random Forest no Iris
 

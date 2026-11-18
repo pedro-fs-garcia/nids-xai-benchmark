@@ -1,0 +1,80 @@
+{
+  "stage": "derived segment",
+  "config": "configs/pcap-curto.json",
+  "config_sha256": "1ee193044a4b790547da759048fb2d924cd8a6790531312d2fefb4f7e8cf351e",
+  "flows_csv": {
+    "file": "tuesday.csv",
+    "bytes": 178397720,
+    "sha256": "e2a0a5b631dfc6b455cc9f9a88b944110637d70a7f74171473925f76f38b6b0c",
+    "records": 322078
+  },
+  "segments": {
+    "curto": {
+      "start": "2017-07-04T12:10:00Z",
+      "start_us": 1499170200000000,
+      "stop": "2017-07-04T12:15:00Z",
+      "stop_us": 1499170500000000,
+      "pcap": {
+        "file": "derived-data/pcap/tuesday-curto/segment-curto.pcap",
+        "bytes": 43894503,
+        "sha256": "98575fbdf9f8f06fab9a524ce33ac535ed0d7883878d2eecd38b20dad4e90026"
+      },
+      "summary": {
+        "packets": 86119,
+        "first_packet_us": 1499170200007330,
+        "last_packet_us": 1499170499922898,
+        "max_frame_bytes": 23414,
+        "max_captured_bytes": 23414,
+        "link_type": 1,
+        "disordered_packets": 0
+      },
+      "reference": {
+        "file": "derived-data/pcap/tuesday-curto/reference-curto.csv",
+        "bytes": 2923138,
+        "sha256": "2ac366718ddf1ede1f3123d0446e200bfbfec1a02a061f11696537240722204f"
+      },
+      "reference_flows": 5444,
+      "reference_labels": {
+        "BENIGN": 5444
+      },
+      "carried_over": {
+        "file": "derived-data/pcap/tuesday-curto/carried-over-curto.json",
+        "bytes": 67409,
+        "sha256": "06173cb1824d739b3355a28ed9b244ccb742a205352bf6ab66e338c2f78866ff"
+      },
+      "carried_over_connections": 894,
+      "reference_flows_carried_over": 677,
+      "addresses": {
+        "file": "derived-data/pcap/tuesday-curto/addresses-curto.json",
+        "bytes": 22822,
+        "sha256": "694325f8efcd12fe0313978e91d7653fe864cd22c4e4c37d1212fd98399a4ea7"
+      },
+      "ipv4_addresses": 616,
+      "non_ipv4_packets": 1856,
+      "base": {
+        "manifest": "derived-data/pcap/tuesday/manifest.json",
+        "manifest_sha256": "caabbefeb879428f05e778b0df32c4637518901159d9705c759a2dffdecbd3b0",
+        "segment": "validacao",
+        "pcap": {
+          "file": "derived-data/pcap/tuesday/segment-validacao.pcap",
+          "bytes": 4847864345,
+          "sha256": "a22b9c78f256cf981fa24b832c83bf4a221c0ff883a5d1898a4abf5edbfab16a"
+        }
+      }
+    }
+  },
+  "border_seconds": 120,
+  "environment": {
+    "python": "3.12.3",
+    "libraries": {
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "scipy": "1.18.1",
+      "joblib": "1.6.0",
+      "xgboost-cpu": "3.4.1"
+    },
+    "platform": "Linux-7.0.0-43-generic-x86_64-desconhecido-with-glibc2.43",
+    "cpu": "13th Gen Intel(R) Core(TM) i5-1334U",
+    "logical_cpus": 12
+  }
+}

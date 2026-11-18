@@ -1,0 +1,82 @@
+{
+  "stage": "derived segment",
+  "config": "configs/pcap-campanha.json",
+  "config_sha256": "8bcd1a34539166285ce416f061da76136634d25d1d35a605d50f498aa5d7bc44",
+  "flows_csv": {
+    "file": "tuesday.csv",
+    "bytes": 178397720,
+    "sha256": "e2a0a5b631dfc6b455cc9f9a88b944110637d70a7f74171473925f76f38b6b0c",
+    "records": 322078
+  },
+  "segments": {
+    "campanha": {
+      "start": "2017-07-04T12:10:00Z",
+      "start_us": 1499170200000000,
+      "stop": "2017-07-04T12:30:00Z",
+      "stop_us": 1499171400000000,
+      "pcap": {
+        "file": "derived-data/pcap/tuesday-campanha/segment-campanha.pcap",
+        "bytes": 4630692199,
+        "sha256": "89abbf3441fbcdb04ba5e29fa4647ea82a714aa18843d046c663e0f4bad5a191"
+      },
+      "summary": {
+        "packets": 3706151,
+        "first_packet_us": 1499170200007330,
+        "last_packet_us": 1499171399997029,
+        "max_frame_bytes": 24874,
+        "max_captured_bytes": 24874,
+        "link_type": 1,
+        "disordered_packets": 0
+      },
+      "reference": {
+        "file": "derived-data/pcap/tuesday-campanha/reference-campanha.csv",
+        "bytes": 13285870,
+        "sha256": "0adbe59662496177cbeb9640eca73b9c67b3e70ee11254b086d53d1e244a59e4"
+      },
+      "reference_flows": 24075,
+      "reference_labels": {
+        "BENIGN": 23374,
+        "FTP-Patator - Attempted": 12,
+        "FTP-Patator": 689
+      },
+      "carried_over": {
+        "file": "derived-data/pcap/tuesday-campanha/carried-over-campanha.json",
+        "bytes": 119030,
+        "sha256": "80ca161f83741e499afecf5eb9aff5785516f1e197457e47f2efb05ba64e710b"
+      },
+      "carried_over_connections": 1582,
+      "reference_flows_carried_over": 2698,
+      "addresses": {
+        "file": "derived-data/pcap/tuesday-campanha/addresses-campanha.json",
+        "bytes": 61818,
+        "sha256": "2f7a0266a9f3a3303117def2a31e20fd2270aea5a2caa0d0fadeda1dcd8fac15"
+      },
+      "ipv4_addresses": 1661,
+      "non_ipv4_packets": 4650,
+      "base": {
+        "manifest": "derived-data/pcap/tuesday/manifest.json",
+        "manifest_sha256": "caabbefeb879428f05e778b0df32c4637518901159d9705c759a2dffdecbd3b0",
+        "segment": "validacao",
+        "pcap": {
+          "file": "derived-data/pcap/tuesday/segment-validacao.pcap",
+          "bytes": 4847864345,
+          "sha256": "a22b9c78f256cf981fa24b832c83bf4a221c0ff883a5d1898a4abf5edbfab16a"
+        }
+      }
+    }
+  },
+  "border_seconds": 120,
+  "environment": {
+    "python": "3.12.3",
+    "libraries": {
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "scipy": "1.18.1",
+      "joblib": "1.6.0",
+      "xgboost-cpu": "3.4.1"
+    },
+    "platform": "Linux-7.0.0-43-generic-x86_64-desconhecido-with-glibc2.43",
+    "cpu": "13th Gen Intel(R) Core(TM) i5-1334U",
+    "logical_cpus": 12
+  }
+}

@@ -12,14 +12,22 @@ def register(subparsers: Any) -> None:
     prepare = subparsers.add_parser("preparar-pcap", help="Verifica, corrige, reordena e corta o PCAP de entrada.")
     prepare.add_argument("--config", type=Path, default=get_settings().pcap_preparation_config)
     prepare.set_defaults(handler=run_prepare)
+    derive = subparsers.add_parser("preparar-trecho", help="Corta um trecho entre dois instantes de um trecho preparado.")
+    derive.add_argument("--config", type=Path, required=True)
+    derive.set_defaults(handler=run_derive)
     check = subparsers.add_parser("conferir-extracao", help="Compara a extração de um trecho com os fluxos rotulados.")
-    check.add_argument("--config", type=Path, default=get_settings().pcap_preparation_config)
+    check.add_argument("--config", type=Path, default=get_settings().pcap_preparation_config,
+                       help="Configuração da preparação do PCAP ou de um trecho derivado.")
     check.add_argument("--trecho", required=True)
     check.set_defaults(handler=run_check)
 
 
 def run_prepare(args: argparse.Namespace) -> int:
     return _execute(lambda: get_traffic_preparation_service(args.config).prepare())
+
+
+def run_derive(args: argparse.Namespace) -> int:
+    return _execute(lambda: get_traffic_preparation_service(args.config).derive_segment())
 
 
 def run_check(args: argparse.Namespace) -> int:

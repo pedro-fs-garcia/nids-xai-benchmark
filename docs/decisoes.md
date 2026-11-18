@@ -173,7 +173,7 @@ A preparação dos dados só é válida quando as quatro verificações abaixo p
 - O treino ajusta os classificadores.
 - A validação escolhe os hiperparâmetros e calibra o critério de seleção da estratégia Síncrono condicional.
 - O teste só é usado na avaliação final, depois que os classificadores estão congelados. Ele não é usado para escolher atributos, hiperparâmetros, limiares nem estratégias.
-- As métricas de detecção vêm do conjunto de teste. A campanha reproduz capturas de dias inteiros, que incluem fluxos do treino, e mede latência e uso de recursos.
+- As métricas de detecção vêm do conjunto de teste. O piloto e a campanha reproduzem o trecho da [decisão 16](#16-tráfego-do-piloto-e-da-campanha), que inclui fluxos do treino, e medem latência e uso de recursos.
 
 ### Justificativa
 
@@ -331,7 +331,7 @@ Por isso, o valor de referência não é a saída média sobre o treino em nenhu
 - **Fluxos não classificáveis.** O NIDS não entrega ao classificador um fluxo com algum valor de entrada que os dados de treino não têm, como `NaN`. Ele registra o motivo e conta esses fluxos em cada execução. O tráfego não é alterado para retirá-los.
 - **Preparação.** O arquivo inteiro passa pelo `pcapfix` e depois pelo `reordercap`, como os autores do Improved CIC-IDS2017 descrevem no [CNS2022_Code](https://github.com/GintsEngelen/CNS2022_Code). O arquivo do mirror está no formato pcapng, apesar da extensão `.pcap`, e o `reordercap` mantém esse formato. Os trechos são cortados com o `editcap` a partir do início da captura e gravados como PCAP clássico, sem alterar os bytes nem os instantes dos pacotes: `dev` até 11:58:44 UTC e `validacao` até 12:30:00 UTC. A configuração está em [configs/pcap-preparation.json](../configs/pcap-preparation.json).
 - **Extrator.** O NIDS compila o pacote `cic.cs.unb.ca.jnetpcap` do commit da decisão 3 com o JDK 17, para Java 8, e usa o `jnetpcap` 1.4.r1425 incluído no repositório do extrator. A captura ao vivo usa o mesmo caminho de leitura de pacotes da leitura de arquivo, com o patch [extractor/patches/02-live-capture.patch](../extractor/patches/02-live-capture.patch).
-- **Emulação.** O Mininet cria dois hosts em enlace direto, sem switch. O host h1 envia o trecho na velocidade original com o `tcpreplay` 4.6.2, compilado por [tcpreplay/build.sh](../tcpreplay/README.md) a partir do pacote da versão publicado pelo projeto. O host h2 executa o NIDS, que captura a interface em modo promíscuo. As descargas de processamento das placas virtuais (`ethtool -K`) ficam desligadas, a MTU acompanha o maior quadro do trecho e o IPv6 fica desativado nos dois hosts.
+- **Emulação.** O Mininet cria dois hosts em enlace direto, sem switch. O host h1 envia o trecho, ou as cópias do trecho da [decisão 15](#15-carga-por-sobreposição-de-cópias), na velocidade original com o `tcpreplay-edit` 4.6.2, compilado por [tcpreplay/build.sh](../tcpreplay/README.md) a partir do pacote da versão publicado pelo projeto. O host h2 executa o NIDS, que captura a interface em modo promíscuo. As descargas de processamento das placas virtuais (`ethtool -K`) ficam desligadas, a MTU acompanha o maior quadro do trecho e o IPv6 fica desativado nos dois hosts.
 
 ### Justificativa
 
@@ -397,7 +397,7 @@ Por isso, o valor de referência não é a saída média sobre o treino em nenhu
 - A fila de explicações pendentes comporta 10.000 solicitações de explicação. Uma solicitação que encontra a fila cheia é descartada e contada. A classificação desse fluxo já foi entregue, e a explicação não é gerada.
 - Na leitura de arquivo, o extrator escreve os fluxos diretamente no pipe ([decisão 9](#9-marcações-de-tempo-e-relógio-do-nids)), e a solicitação de explicação espera vaga na fila em vez de ser descartada.
 - Depois do último fluxo, o classificador envia ao processo explicador a marca de fim, e o processo explicador esvazia a fila. O tempo máximo de esvaziamento é de 300 s. Passado esse tempo, o processo explicador é encerrado, e as solicitações que restaram ficam pendentes.
-- Os dois limites e o tempo máximo de esvaziamento ficam em [configs/nids.json](../configs/nids.json). O piloto confirma ou ajusta esses valores.
+- Os dois limites e o tempo máximo de esvaziamento ficam em [configs/nids.json](../configs/nids.json).
 
 ### Justificativa
 
@@ -406,6 +406,8 @@ Por isso, o valor de referência não é a saída média sobre o treino em nenhu
 - No modo assíncrono, a classificação não espera a explicação. O descarte da solicitação mantém essa propriedade quando a fila está cheia.
 - Na leitura de arquivo não há captura a perder. A espera por vaga completa a execução e permite comparar as explicações das estratégias fluxo a fluxo.
 - Na medição isolada, o Random Forest gera uma explicação em 7,4 ms, em média. A fila de explicações cheia leva cerca de 74 s para esvaziar, dentro do tempo máximo de 300 s. Uma linha da fila de saída do extrator tem cerca de 1 kB, e a fila cheia ocupa cerca de 10 MB do heap do extrator. Nos ensaios a 1× do trecho `validacao`, a fila de saída do extrator chegou a 392 fluxos.
+- No piloto, as filas só atingiram o limite em execuções do Random Forest com 4 cópias, que já ultrapassam o limite da [decisão 19](#19-limite-da-latência-de-classificação) ([análise do piloto](../relatorios/piloto-2-20261118T101010406495Z.md)). No Síncrono total, a fila de saída do extrator descartou 23.204 fluxos, e no Assíncrono, a fila de explicações pendentes descartou 5.319 solicitações. Um limite maior trocaria esses descartes por mais latência.
+- Nas execuções sem saturação, a maior fila de saída do extrator teve 769 fluxos, e a maior fila de explicações pendentes, 32 solicitações. O limite de 10.000 fica mais de 13 vezes acima da maior delas. Nas duas execuções do Assíncrono, o esvaziamento depois da captura levou 0,0 s, abaixo do tempo máximo de 300 s.
 
 ### Consequências
 
@@ -416,21 +418,152 @@ Por isso, o valor de referência não é a saída média sobre o treino em nenhu
 
 ### Decisão
 
-- O classificador roda na CPU lógica 2, o processo explicador na 0, o extrator nas CPUs 4 a 7 e o `tcpreplay` na 8. As CPUs 1 e 3 ficam sem processo do experimento.
-- Todas as threads de cada processo ficam fixas nas suas CPUs. O classificador fixa as próprias threads no início da execução. O extrator e o `tcpreplay` são fixados antes de começar, e o processo explicador fixa as próprias threads ao iniciar. Cada execução registra as CPUs observadas de cada processo e confere que elas são as configuradas.
+- O classificador roda na CPU lógica 2, o processo explicador na 0 e o extrator nas CPUs 4 a 7. As cópias do `tcpreplay-edit` ocupam as CPUs 8 a 11, uma CPU por cópia, em rodízio. A thread que lê o estado da máquina ([decisão 17](#17-estado-da-máquina-durante-os-ensaios)) fica na CPU 11. As CPUs 1 e 3 ficam sem processo do experimento.
+- Todas as threads de cada processo ficam fixas nas suas CPUs. O classificador fixa as próprias threads no início da execução. O extrator e as cópias do `tcpreplay-edit` são fixados antes de começar, e o processo explicador fixa as próprias threads ao iniciar. Cada execução registra as CPUs observadas de cada processo e confere que elas são as configuradas.
 - O classificador e o processo explicador usam uma thread cada, com `n_jobs=1` e `threadpool_limits(1)`.
 - O heap máximo do extrator é de 4.096 MiB.
-- Cada execução registra o tempo de CPU e o pico de memória residente do classificador, do processo explicador e do extrator, em separado, e a memória disponível na máquina no início.
+- A JVM do extrator roda com `-Dnio.mx=1073741824`, `-Dnio.ms=1073741824` e `-XX:+ExplicitGCInvokesConcurrent` ([configs/nids.json](../configs/nids.json)). As duas primeiras opções sobem de 64 MiB para 1 GiB os limites da memória nativa da jNetPcap. A terceira faz cada chamada de `System.gc()` iniciar uma coleta concorrente, sem parar a JVM.
+- Cada execução registra o tempo de CPU e o pico de memória residente de cada processo, em separado, e a memória disponível na máquina no início. O classificador é medido do início ao fim da captura, sem a carga do modelo nem as verificações feitas depois. O processo explicador é medido do fim da carga do modelo ao fim do atendimento das solicitações. O extrator é medido do início ao fim do processo.
 
 ### Justificativa
 
 - O processador da máquina, um Intel Core i5-1334U, tem dois núcleos de desempenho, nas CPUs lógicas 0 a 3, e oito núcleos de eficiência, nas CPUs 4 a 11 (`/sys/devices/cpu_core/cpus` e `/sys/devices/cpu_atom/cpus`). As CPUs 0 e 1 pertencem ao mesmo núcleo físico, assim como as CPUs 2 e 3.
 - O classificador e o processo explicador ficam em núcleos de desempenho diferentes, com as CPUs irmãs vazias. Assim, o processo explicador não toma CPU do classificador, e nenhum dos dois divide um núcleo físico. A medição isolada do TreeSHAP também usou a CPU 2.
 - O extrator usa pouca CPU na captura em velocidade original. No ensaio do trecho `validacao` com o Random Forest, ele usou 231 s de CPU em 2.188 s de reprodução. Quatro núcleos de eficiência comportam o extrator e as threads da JVM.
-- O `tcpreplay` fica fora das CPUs do NIDS para que o envio dos pacotes não dispute CPU com a captura e a classificação.
+- As cópias do `tcpreplay-edit` ficam fora das CPUs do NIDS para que o envio dos pacotes não dispute CPU com a captura e a classificação.
+- O pico de memória do classificador inclui a carga do modelo e as verificações feitas depois da captura, que crescem com o número de fluxos. Zerar o pico no início da captura (`/proc/self/clear_refs`) e lê-lo no fim deixa só a memória da classificação.
 - Sem limite explícito, a JVM 17 reserva para o heap até 25% da memória física, 3.792 MiB nesta máquina. O limite fixo torna o extrator independente da memória da máquina. Nos ensaios do trecho `validacao`, o pico de memória residente do extrator foi de 2.119 MiB.
+- A jNetPcap copia cada pacote lido para a memória nativa (`new PcapPacket(hdr, buf)`, em `PacketReader`) e libera a cópia quando o coletor de lixo descarta o objeto Java correspondente. Quando a memória nativa ocupada passa do limite brando, ela chama `System.gc()`. Quando passa do limite máximo, ela chama `System.gc()` e espera a liberação por até 15 s (`DisposableGC`, `OUT_OF_MEMORY_TIMEOUT`). Com os limites padrão, de 64 MiB, cada chamada faz o G1 da JVM 17 parar o extrator inteiro, inclusive a leitura dos pacotes.
+- Lendo o trecho `campanha` do arquivo nas CPUs do extrator, a JVM sem as três opções fez 123 pausas completas, que somaram 36,4 s, e a leitura levou 78 s. Com as opções, ela não fez pausa completa, as pausas somaram 0,9 s, a maior durou 52 ms, e a leitura levou 27 s. Os 24.413 fluxos emitidos foram idênticos nas duas leituras.
+- Sem as opções, o extrator chegou a ficar 15 s sem ler pacotes na rede emulada, e o buffer de captura, de 256 MiB, transbordava a partir de 2 cópias do trecho. Com as opções, as execuções do XGBoost sem explicação com 2 e 4 cópias não perderam pacotes, e cada cópia casou fluxo a fluxo com a leitura do arquivo ([2 cópias](../relatorios/nids-validacao-20261117T151302791243Z.md), [4 cópias](../relatorios/nids-validacao-20261117T151328708255Z.md)).
 
 ### Consequências
 
 - O modo assíncrono usa um núcleo de desempenho a mais que as outras estratégias. A comparação entre as estratégias registra a CPU usada por cada processo.
 - Os núcleos de eficiência são mais lentos que os de desempenho. Um atraso do extrator aparece nos descartes do libpcap, que cada execução registra.
+- O extrator pode ocupar até 1 GiB de memória nativa além do heap.
+- O gerador de fluxos guarda os pacotes de cada fluxo e mantém cada fluxo emitido até chegar outro pacote com a mesma chave. Por isso, o heap ocupado cresce com o número de cópias. Com 4 cópias, ele terminou em 3.696 MiB depois da última coleta, de 4.096 MiB. Com mais cópias, o heap se esgota, e as pausas do coletor voltam a parar a leitura dos pacotes. A carga fica limitada a 4 cópias ([decisão 15](#15-carga-por-sobreposição-de-cópias)).
+
+## 15. Carga por sobreposição de cópias
+
+### Decisão
+
+- O nível de carga de uma execução é o número de cópias do trecho que o host h1 envia ao mesmo tempo, todas na velocidade original e iniciadas juntas.
+- A cópia 1 é o trecho sem alteração. Cada cópia seguinte troca cada endereço IPv4 do trecho por um endereço reservado a ela no bloco 100.64.0.0/10, com 4.096 endereços por cópia, e mantém o restante de cada pacote. A troca usa a opção `--pnat` do `tcpreplay-edit`, com um par /32 por endereço do trecho ([src/core/traffic_copies.py](../src/core/traffic_copies.py)).
+- A lista dos endereços IPv4 do trecho, ordenada pelo número de pacotes, fica no manifesto do trecho. A posição de cada endereço na lista define o endereço que o substitui em cada cópia.
+- Cada cópia é um processo do `tcpreplay-edit`, com `--no-flow-stats`, fixo numa das CPUs de reprodução ([decisão 14](#14-orçamento-de-cpu-e-de-memória)).
+- A validação de uma execução atribui cada fluxo à cópia dos seus endereços, volta os endereços aos originais e compara cada cópia com a leitura do trecho do arquivo. Os fluxos que o extrator forma de quadros que não são IPv4 ficam sem cópia e fora da comparação.
+- Antes do piloto, uma cópia gravada pelo `tcprewrite`, com a mesma troca e a mesma biblioteca de edição, é lida do arquivo e comparada fluxo a fluxo com o trecho original (`nids-conferir-copia`).
+- O piloto e a campanha usam três níveis de carga, de 1, 2 e 4 cópias.
+
+### Justificativa
+
+- Acelerar a reprodução encurta os intervalos entre pacotes. Os atributos temporais mudam, e os tempos limite do extrator passam a formar outros fluxos, então as previsões e a seleção do Síncrono condicional deixam de ser comparáveis entre as cargas. Lido com os intervalos entre pacotes divididos por 2, o trecho `campanha` forma 22.993 fluxos, contra 24.413 na leitura original. Dos 22.992 fluxos casados, 1.867 mudam a contagem, o tamanho ou as flags, e só 8 mantêm os atributos temporais. A seleção do Random Forest pelo critério de incerteza passa de 32 para 757 fluxos, e, com os intervalos divididos por 8, para 1.147 ([medição](../relatorios/nids-aceleracao-20261116T102343628819Z.md)).
+- Com as cópias, cada fluxo de cada cópia tem as mesmas entradas do fluxo correspondente do trecho, e a carga cresce sem mudar o que o classificador recebe. Lida do arquivo, a cópia 16 do trecho `campanha` produziu os 24.413 fluxos do trecho, com as 80 entradas e as previsões idênticas ([conferência](../relatorios/nids-copia-20261115T193223330810Z.md)). Na rede emulada, com 2 cópias do trecho `curto`, cada cópia casou fluxo a fluxo com a leitura do arquivo, sem fluxo de um lado só ([validação](../relatorios/nids-validacao-20261116T102237656054Z.md)).
+- A opção `--seed` do `tcpreplay` troca os endereços por `(ip ^ semente) - (ip & semente)` (`randomize_ipv4_addr`, em `edit_packet.c`). Essa conta leva endereços diferentes ao mesmo endereço, e fluxos de cópias diferentes se juntariam.
+- O bloco 100.64.0.0/10 é reservado ao endereçamento compartilhado de provedores (RFC 6598) e não aparece no trecho. A preparação confere isso. O bloco comporta 1.024 cópias de 4.096 endereços, e o trecho `campanha` tem 1.661 endereços IPv4.
+- O `tcpreplay-edit` percorre os pares em ordem a cada pacote. Com a lista ordenada pelo número de pacotes, os endereços mais frequentes são encontrados primeiro.
+- Sem `--no-flow-stats`, o `tcpreplay` mantém uma tabela de fluxos própria a cada pacote, só para o relatório, e avisa em cada quadro que não consegue decodificar.
+- Até 4 cópias, o NIDS captura o trecho sem perder pacotes. Acima disso, o heap do extrator se esgota ([decisão 14](#14-orçamento-de-cpu-e-de-memória)).
+- O Random Forest satura dentro desses níveis. No Síncrono total, ele classifica cerca de 84 fluxos por segundo. Com 2 cópias do trecho `campanha`, o extrator emite até 508 fluxos num segundo, e 186 segundos passam de 84 fluxos.
+- Uma explicação do XGBoost custa 0,43 ms em média, contra 7,4 ms no Random Forest ([medição](../relatorios/treeshap-medicao-20261112T113136395550Z.md)). Com até 4 cópias, o XGBoost deve atender o tráfego em todas as estratégias. A campanha mede o custo do TreeSHAP no XGBoost abaixo da saturação, e não o ponto em que ele satura.
+
+### Consequências
+
+- As cópias começam juntas, e as rajadas de emissão de fluxos coincidem. O pico de carga cresce na mesma proporção da média.
+- Os quadros que não são IPv4, como o ARP, e os pacotes IPv6 chegam uma vez por cópia, sem troca. O extrator junta os quadros ARP de todas as cópias nos mesmos fluxos, 10 dos 24.413 fluxos do trecho `campanha`, e não forma fluxos IPv6.
+
+## 16. Tráfego do piloto e da campanha
+
+### Decisão
+
+- O piloto e a campanha reproduzem o trecho `campanha`, da captura de terça-feira de 12:10:00 a 12:30:00 UTC, cortado do trecho `validacao` da [decisão 10](#10-tráfego-de-entrada-e-emulação-da-rede) sem alterar bytes nem instantes ([configs/pcap-campanha.json](../configs/pcap-campanha.json)).
+- O corte grava um manifesto próprio, com o PCAP, a tabela de referência, as conexões que já tinham pacotes antes do início e a lista de endereços IPv4 do trecho. A tabela de referência tem os fluxos de `tuesday.csv` que começam dentro do trecho.
+- Os fluxos das conexões anteriores ao início ficam fora da equivalência com `tuesday.csv` e da conferência da leitura por arquivo, e cada conferência os conta. Eles continuam na carga e na classificação.
+- O trecho `curto`, de 12:10:00 a 12:15:00 UTC, serve aos ensaios de conferência das cópias, fora do piloto e da campanha ([configs/pcap-curto.json](../configs/pcap-curto.json)).
+
+### Justificativa
+
+- A terça-feira tem cerca de 8 h de tráfego. Com 70 a 90 execuções, um dia inteiro por execução ocuparia a máquina por semanas.
+- Os 20 minutos do trecho `campanha` têm 3.706.151 pacotes, 94% dos pacotes do trecho `validacao`, que começa no início da captura. Eles também têm todos os 689 fluxos de ataque do trecho `validacao`, de FTP-Patator, e os 12 fluxos de FTP-Patator - Attempted, benignos pela [decisão 1](#1-alvo-de-classificação-e-rótulos). Cada execução leva cerca de 25 min.
+- Um trecho que começa no meio da captura tem conexões em andamento. O primeiro fluxo de cada uma começa no meio da conexão, e os seguintes herdam outro sentido e outra duração acumulada ([decisão 8](#8-emissão-dos-fluxos-no-nids)), então não correspondem aos fluxos do CSV. No trecho `campanha`, são 1.582 conexões e 3.024 dos 24.413 fluxos do NIDS.
+- As conexões anteriores ao início vêm dos pacotes IPv4 lidos antes de 12:10:00 e dos fluxos do CSV anteriores a esse instante. O extrator também forma fluxos de quadros que não são IPv4, com endereços tirados de outros campos, como o fluxo `8.6.0.1-8.0.6.4` dos quadros ARP, e só o CSV mostra que esses fluxos já existiam antes do início.
+- Fora da borda e das conexões anteriores ao início, os 19.438 fluxos extraídos do trecho `campanha` têm as 80 entradas iguais às do CSV, e os 11 que só a extração tem têm algum `NaN` ([conferência](../relatorios/extracao-pcap-20261115T192306992011Z.md)).
+
+## 17. Estado da máquina durante os ensaios
+
+### Decisão
+
+- Antes de cada ensaio na rede emulada, o script de emulação confere, numa janela de 10 s, se a máquina está na tomada, se a ocupação média das CPUs fica em até 25% e se há pelo menos 3.072 MiB de memória disponível. Sem isso, ele repete a conferência a cada 30 s por até 10 min. Se a máquina não ficar pronta, o ensaio não começa e fica registrado como não iniciado. O executor da matriz põe esse ensaio no fim da fila, sem gastar tentativa, e segue até o horário de parada.
+- A ocupação da CPU durante o ensaio não interrompe nem invalida o ensaio. Ela fica registrada, e a análise mostra se algum ensaio sofreu interferência.
+- Durante o ensaio, uma thread do script, fixa na CPU 11, grava a cada segundo a fonte de energia, a frequência e as contagens de limitação térmica de cada CPU, a ocupação de cada CPU, a memória disponível e o swap livre, no arquivo `machine.jsonl` da execução.
+- Cada ensaio registra o commit do repositório e os arquivos versionados com alterações.
+- O executor da matriz impede a suspensão da máquina com o `systemd-inhibit`, inclusive com a tampa fechada.
+- Os limites da conferência ficam na configuração de cada matriz ([configs/piloto-2.json](../configs/piloto-2.json)). O piloto confirma ou ajusta esses valores.
+
+### Justificativa
+
+- Em ensaios do trecho `validacao` com o notebook na bateria e em uso, a mediana do tempo de inferência do Random Forest subiu de 3,6 ms para 9,1 ms no Síncrono condicional e de 4,3 ms para 11,5 ms no Assíncrono, contra os mesmos ensaios repetidos na tomada e com a máquina ociosa.
+- O registro de cada segundo mostra depois se a frequência caiu, se houve limitação térmica ou se outro programa ocupou as CPUs irmãs do classificador e do processo explicador.
+- A ocupação da máquina sem os ensaios varia com os serviços em segundo plano. Com o navegador e os containers de outros projetos abertos, ela ficou em 12% e 19% em duas janelas de 10 s. Um limite de 10% deixaria ensaios sem começar por oscilações do segundo plano, e o de 25% ainda barra o uso ativo da máquina por outro trabalho.
+
+## 18. Número de repetições
+
+### Decisão
+
+- Cada combinação de classificador, configuração de explicação e nível de carga tem 3 repetições na campanha. Com 2 classificadores, 5 configurações de explicação e 3 níveis de carga, a campanha tem 90 execuções.
+
+### Justificativa
+
+- No piloto, três repetições do Random Forest no Sem XAI com 1 cópia e no Síncrono total com 2 cópias tiveram amplitude, relativa à mediana, de 3,3% e 4,1% na média do tempo de inferência, de 11,9% e 16,9% no p95 da latência de classificação e de 26,2% e 15,3% no p99 ([análise do piloto](../relatorios/piloto-2-20261118T101010406495Z.md)).
+- Essa variação é pequena perto da diferença entre estratégias. No mesmo piloto, o p95 da latência de classificação do XGBoost com 4 cópias foi de 54 ms no Sem XAI e de 714 ms no Síncrono total.
+- Cada execução do piloto levou cerca de 23 min, e as 90 execuções somam cerca de 34 h.
+
+## 19. Limite da latência de classificação
+
+### Decisão
+
+- Pelo critério de latência da viabilidade, a latência de classificação de uma execução não ultrapassa 1 s no p95 nem 2 s no p99.
+
+### Justificativa
+
+- No piloto, as execuções se dividiram em dois grupos ([análise do piloto](../relatorios/piloto-2-20261118T101010406495Z.md)). Nas que não saturaram, o p99 da latência de classificação ficou em até 1,3 s. São as do XGBoost com 4 cópias, em todas as estratégias, e as do Random Forest no Sem XAI com 1 cópia. Nas saturadas, o p95 passou de 29 s, e a fila de saída do extrator passou de 2.600 fluxos. São as do Random Forest no Síncrono total a partir de 2 cópias e as do Random Forest em todas as estratégias com 4 cópias.
+- Os limites de 1 s e 2 s ficam entre os dois grupos e são os menores valores inteiros, em segundos, que mantêm viáveis todas as execuções sem saturação. Entre elas, a de maior latência foi a do XGBoost no Síncrono total com 4 cópias, com p95 de 714 ms e p99 de 1,3 s.
+
+## 20. Limiar de fluxos descartados
+
+### Decisão
+
+- Pelo critério de descartes da viabilidade, a proporção de fluxos descartados na fila de saída do extrator é 0%. Uma estratégia só é viável sob uma carga se o NIDS classifica todos os fluxos da execução.
+
+### Justificativa
+
+- No piloto, só a execução do Random Forest no Síncrono total com 4 cópias descartou fluxos, 23.204, ou 23,8% ([análise do piloto](../relatorios/piloto-2-20261118T101010406495Z.md)). Ela também ultrapassou o limite da [decisão 19](#19-limite-da-latência-de-classificação), com p95 de 200 s. Todas as outras execuções descartaram 0%, então uma tolerância maior não mudaria a viabilidade de nenhuma delas.
+
+## 21. Configurações de explicação da campanha
+
+### Decisão
+
+- A matriz da campanha tem cinco configurações de explicação, Sem XAI, Síncrono total, Síncrono condicional pelo critério de probabilidade, Síncrono condicional pelo critério de incerteza e Assíncrono. Os dois critérios do Síncrono condicional usam os limiares da [decisão 12](#12-critérios-de-seleção-do-síncrono-condicional).
+- A viabilidade é julgada para cada configuração de explicação, e cada resultado de viabilidade é reportado com a cobertura explicativa da execução.
+
+### Justificativa
+
+- As configurações vão de cobertura explicativa total a quase nula. No piloto, com 4 cópias, o Síncrono total e o Assíncrono do XGBoost explicaram 100% dos fluxos, o critério de probabilidade explicou 2,8%, e o de incerteza, 0,1% ([análise do piloto](../relatorios/piloto-2-20261118T101010406495Z.md)).
+- O critério de incerteza seleciona os fluxos em que o classificador está em dúvida, e esses fluxos concentram os erros de classificação. Na validação, ele selecionou 0,21% dos registros no Random Forest, com 187 dos 204 erros, e 0,04% no XGBoost, com 15 dos 32 erros ([decisão 12](#12-critérios-de-seleção-do-síncrono-condicional)).
+- Os critérios de viabilidade da seção 8 do [protocolo](protocolo-experimental.md) não incluem a cobertura. Uma configuração que explica poucos fluxos atende a eles com pouco custo, então só a viabilidade com a cobertura ao lado compara as configurações.
+- Com 4 cópias, o critério de incerteza explicou 117 fluxos no XGBoost e 133 no Random Forest. Com 1 cópia, a expectativa é de cerca de um quarto disso, e o p99 da latência de explicação fica perto do maior valor da amostra. Cada execução registra o número de fluxos explicados.
+
+## 22. Validade das execuções e número de tentativas
+
+### Decisão
+
+- Uma execução do piloto ou da campanha é válida quando termina sem erro, o NIDS passa nas próprias verificações, o `tcpreplay-edit` envia todos os pacotes e a máquina fica na tomada do início ao fim.
+- Os descartes de fluxos e de solicitações de explicação, as solicitações pendentes e a ocupação das CPUs durante a execução não invalidam uma execução.
+- Cada combinação de classificador, configuração de explicação, nível de carga e repetição tem no máximo 2 tentativas. Uma execução inválida fica registrada com o motivo, e a nova tentativa é outra execução. A combinação com 2 tentativas inválidas fica registrada como esgotada.
+- O número máximo de tentativas fica no campo `max_attempts` da configuração de cada matriz.
+
+### Justificativa
+
+- Os critérios de validade detectam falhas da execução, da geração do tráfego e da máquina. Os descartes e as pendências são resultados da carga, e a ocupação das CPUs fica registrada e aparece na análise ([decisão 17](#17-estado-da-máquina-durante-os-ensaios)).
+- No piloto, as 16 execuções foram válidas na primeira tentativa ([análise do piloto](../relatorios/piloto-2-20261118T101010406495Z.md)). A segunda tentativa cobre uma falha isolada. Uma combinação que falha duas vezes indica um problema que a auditoria precisa mostrar.

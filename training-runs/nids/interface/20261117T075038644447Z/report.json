@@ -1,0 +1,375 @@
+{
+  "stage": "nids run",
+  "run_id": "20261117T075038644447Z",
+  "passed": true,
+  "checks": {
+    "emitted_equals_received_plus_dropped": true,
+    "no_dropped_flow_in_file_mode": true,
+    "received_equals_classified_plus_errors": true,
+    "timestamps_ordered": true,
+    "no_packets_after_emission_in_file_mode": true,
+    "selection_follows_strategy": true,
+    "explanations_match_classifications": true,
+    "sum_identity": true,
+    "explained_equals_selected": true,
+    "explanation_marks_ordered": true,
+    "explained_output_matches_classification": true,
+    "contributions_cover_every_input": true,
+    "processes_on_configured_cpus": true
+  },
+  "model": "random-forest",
+  "source": {
+    "kind": "interface",
+    "iface": "h2-eth0"
+  },
+  "segment": {
+    "name": "campanha",
+    "start": "2017-07-04T12:10:00Z",
+    "start_us": 1499170200000000,
+    "stop": "2017-07-04T12:30:00Z",
+    "stop_us": 1499171400000000,
+    "pcap": {
+      "file": "derived-data/pcap/tuesday-campanha/segment-campanha.pcap",
+      "bytes": 4630692199,
+      "sha256": "89abbf3441fbcdb04ba5e29fa4647ea82a714aa18843d046c663e0f4bad5a191"
+    },
+    "reference": {
+      "file": "derived-data/pcap/tuesday-campanha/reference-campanha.csv",
+      "bytes": 13285870,
+      "sha256": "0adbe59662496177cbeb9640eca73b9c67b3e70ee11254b086d53d1e244a59e4"
+    },
+    "carried_over": {
+      "file": "derived-data/pcap/tuesday-campanha/carried-over-campanha.json",
+      "bytes": 119030,
+      "sha256": "80ca161f83741e499afecf5eb9aff5785516f1e197457e47f2efb05ba64e710b"
+    },
+    "addresses": {
+      "file": "derived-data/pcap/tuesday-campanha/addresses-campanha.json",
+      "bytes": 61818,
+      "sha256": "2f7a0266a9f3a3303117def2a31e20fd2270aea5a2caa0d0fadeda1dcd8fac15"
+    },
+    "border_seconds": 120,
+    "manifest": "derived-data/pcap/tuesday-campanha/manifest.json",
+    "manifest_sha256": "80ee6b6d90b17a969f58ede086f5ac318f6f471e862cc1be94378f8dc9247539"
+  },
+  "config": "configs/nids.json",
+  "config_sha256": "c97a1eb7ac9123442f46edb7f25297ad960b92d503f3d59763d95d5a1e67af09",
+  "selection_calibration_run": "training-runs/nids/calibracao/20261114T204351398308Z",
+  "frozen_run": "training-runs/frozen-models/20261111T181031847482Z",
+  "model_manifest_sha256": "b18708731de1a1901969789a93479a6a4e4b228ea56aff24c65bf4bfd7c71805",
+  "classifier_threads": 1,
+  "extractor_options": {
+    "snaplen": 65535,
+    "read-timeout-ms": 100,
+    "idle-margin-us": 2000000,
+    "buffer-bytes": 268435456,
+    "flow-queue-limit": 10000
+  },
+  "extractor_build": {
+    "extractor_commit": "13a061520b862d605eea746c79ca4033b30d98fc",
+    "java": "openjdk version \"17.0.21.0.3\" 2026-10-24",
+    "release": 8,
+    "libpcap": "/usr/lib/x86_64-linux-gnu/libpcap.so.0.8",
+    "jars": {
+      "nids-extractor.jar": "75c7b3825a3f3a29827f3bc93ac4b80beed6e73f5f53e4e4d10f943e37a3f96e",
+      "reference-extractor.jar": "a934558afd72f16424a935c3b0ce2334b4733ae845a00b1988b6ee835f9f6338"
+    },
+    "patches": {
+      "01-flow-emission-sweep.patch": "06a76076bed3b391ca5f3d306fc2c4aecd915240296ef73d07b4bc60a8aa9ca1",
+      "02-live-capture.patch": "4fc3091fa0b1791b1de9b0d4d2ad369bf71fa3a939e0e20f882112fb21d3cc48"
+    },
+    "sources": {
+      "NidsExtractor.java": "62992d472cdb6cd31bcb898e3e46060737d024cf79b375f3898ea02b6859814c",
+      "ReferenceExtractor.java": "624309cb3acd7d933381308d23c0f87647a598ae8867608f4ecd49b663cfccec"
+    },
+    "libraries": {
+      "commons-lang3-3.6.jar": "89c27f03fff18d0b06e7afd7ef25e209766df95b6c1269d6c3ebbdea48d5f284",
+      "commons-math3-3.5.jar": "dcf9768726b82e8d7b8a928447b08bca7cfe2773d5120a63a41ec224207c1a29",
+      "jnetpcap.jar": "7dfff1e5abd453293415074dd09e10edbeb00cf37b8db9a07d44108e1a10c163",
+      "slf4j-api-1.7.25.jar": "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
+      "slf4j-nop-1.7.25.jar": "6cb127138f41b5a869f9ecdd061ad17799a0e3fe7204600797154eb0432eeb12",
+      "tika-core-1.17.jar": "77c0a63d7693dc968553f92ef061469979b04d458bb11996d7738c45c5f66b5c"
+    },
+    "native": {
+      "libjnetpcap-pcap100.so": "b758a46ef7ff3cf39b2956de4c08e19a5585cbb6aefd6ce4416566227211aec9",
+      "libjnetpcap.so": "93d8c8c53a63e448f82e778791a0a725d1345a4c80c9d7334f7c9f8067688a49"
+    }
+  },
+  "extractor_start": {
+    "extractor_commit": "13a061520b862d605eea746c79ca4033b30d98fc",
+    "flow_timeout_us": 120000000,
+    "activity_timeout_us": 5000000,
+    "source": "interface",
+    "location": "h2-eth0",
+    "snaplen": 65535,
+    "read_timeout_ms": 100,
+    "idle_sleep_ms": 1,
+    "capture_mode": "non_blocking",
+    "buffer_bytes": 268435456,
+    "ring_bytes": 268435456,
+    "flow_output": "queue",
+    "flow_queue_limit": 10000,
+    "idle_margin_us": 2000000,
+    "java_version": "17.0.21.0.3",
+    "monotonic_ns": 224330683253303
+  },
+  "extractor_end": {
+    "stop_reason": "stop_requested",
+    "packets_read": 12712212,
+    "packets_valid": 12700856,
+    "packets_discarded": 11356,
+    "idle_reads": 702936,
+    "packets_after_emission": 0,
+    "first_disordered_packet_id": 22899,
+    "open_flows_before_flush": 0,
+    "flows_emitted": 93996,
+    "flows_by_cause": {
+      "tcp_new_connection": 1440,
+      "timeout_sweep": 92556
+    },
+    "output_queue_max": 6055,
+    "flows_dropped": 0,
+    "process": {
+      "cpu_ns": 1686520000000,
+      "max_rss_kib": 4777468,
+      "max_heap_bytes": 4294967296
+    },
+    "pcap_stats": {
+      "received": 14824604,
+      "dropped": 2112392,
+      "interface_dropped": 0
+    },
+    "monotonic_ns": 225668098602766
+  },
+  "shared_clock_difference_ns": 686581,
+  "flows": {
+    "received": 93996,
+    "classified": 93750,
+    "errors": 246,
+    "by_cause": {
+      "tcp_new_connection": 1440,
+      "timeout_sweep": 92556
+    },
+    "predictions": {
+      "0": 91714,
+      "1": 2036
+    },
+    "error_examples": [
+      {
+        "seq": 710,
+        "flow_id": "208.81.233.32-192.168.10.14-80-49870-6",
+        "error": "Valor não finito em Flow Bytes/s."
+      },
+      {
+        "seq": 720,
+        "flow_id": "100.64.1.132-100.64.0.1-80-49870-6",
+        "error": "Valor não finito em Flow Bytes/s."
+      },
+      {
+        "seq": 725,
+        "flow_id": "100.64.17.132-100.64.16.1-80-49870-6",
+        "error": "Valor não finito em Flow Bytes/s."
+      },
+      {
+        "seq": 732,
+        "flow_id": "100.64.33.132-100.64.32.1-80-49870-6",
+        "error": "Valor não finito em Flow Bytes/s."
+      },
+      {
+        "seq": 1483,
+        "flow_id": "63.241.108.104-192.168.10.14-443-49832-6",
+        "error": "Valor não finito em Flow Bytes/s."
+      }
+    ]
+  },
+  "timings": {
+    "inference_ns": {
+      "count": 93750,
+      "mean": 6890785.528224,
+      "median": 6493524.0,
+      "p95": 10819568.600000001,
+      "p99": 14430967.909999995,
+      "min": 2622949.0,
+      "max": 65993446.0
+    },
+    "classification_latency_ns": {
+      "count": 93750,
+      "mean": 16899237700.283371,
+      "median": 11419088762.5,
+      "p95": 48210726922.000015,
+      "p99": 57821207792.03999,
+      "min": 3195906.0,
+      "max": 63574514645.0
+    },
+    "wait_before_inference_ns": {
+      "count": 93750,
+      "mean": 16892221498.33968,
+      "median": 11411027571.0,
+      "p95": 48202973113.950005,
+      "p99": 57812087913.08999,
+      "min": 401579.0,
+      "max": 63567109033.0
+    },
+    "selection_ns": {
+      "count": 93750,
+      "mean": 1169.0529493333333,
+      "median": 1132.0,
+      "p95": 2010.0,
+      "p99": 2531.0,
+      "min": 179.0,
+      "max": 29822.0
+    },
+    "delivery_ns": {
+      "count": 93750,
+      "mean": 86265.63015466667,
+      "median": 70950.5,
+      "p95": 143801.75,
+      "p99": 349353.33999999985,
+      "min": 14687.0,
+      "max": 17849631.0
+    },
+    "classified_per_second": 77.1717943126396
+  },
+  "artifacts": {
+    "classifications.jsonl": {
+      "file": "training-runs/nids/interface/20261117T075038644447Z/classifications.jsonl",
+      "bytes": 27310470,
+      "sha256": "19483e3dec2e90c5d8363f879894ebe4d7d3072e572c9f75c6c1ba212f09315c"
+    },
+    "flows.csv": {
+      "file": "training-runs/nids/interface/20261117T075038644447Z/flows.csv",
+      "bytes": 75279059,
+      "sha256": "a764f803fce03f869d0b1c142bba3748a2d71e203efa9fbcacc84018e46b21ad"
+    }
+  },
+  "cpu_state": {
+    "affinity": [
+      2
+    ],
+    "scaling_governor": {
+      "2": "powersave"
+    },
+    "mains_power_online": true
+  },
+  "environment": {
+    "python": "3.12.3",
+    "libraries": {
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "scipy": "1.18.1",
+      "joblib": "1.6.0",
+      "xgboost-cpu": "3.4.1",
+      "shap": "0.54.1",
+      "matplotlib": "3.11.2",
+      "threadpoolctl": "3.8.0",
+      "pandas": "3.1.1"
+    },
+    "platform": "Linux-7.0.0-43-generic-x86_64-desconhecido-with-glibc2.43",
+    "cpu": "13th Gen Intel(R) Core(TM) i5-1334U",
+    "logical_cpus": 12
+  },
+  "strategy": "Sem XAI",
+  "strategy_key": "sem-xai",
+  "selection": null,
+  "tree_shap_config": "configs/tree-shap.json",
+  "tree_shap_config_sha256": "4578aea08402859e3054a6848947c80311d65860a74aa52579e5dcb8fc45ee52",
+  "explainer": {
+    "feature_perturbation": "tree_path_dependent",
+    "model_output": "raw",
+    "approximate": false,
+    "check_additivity": false
+  },
+  "warmup": {
+    "explainer_construction_ns": null,
+    "explanation_ns": null,
+    "inference_ns": 17704309
+  },
+  "explanations": {
+    "eligible": 93750,
+    "selected": 0,
+    "completed": 0,
+    "selected_share": 0.0,
+    "completed_share": 0.0,
+    "scale": "probability",
+    "sum_identity": {
+      "residual": null,
+      "tolerance": 1e-09
+    },
+    "explained_output_vs_probability": {
+      "max_difference": null,
+      "tolerance": 1e-12
+    }
+  },
+  "shared_clock_difference_explainer_ns": null,
+  "resources": {
+    "classifier_process": {
+      "user_seconds": 710.157869,
+      "system_seconds": 3.7879449999999997,
+      "max_rss_kib": 293304,
+      "peak_since_phase_start": true,
+      "threads": 2,
+      "thread_affinities": [
+        [
+          2
+        ]
+      ]
+    },
+    "classifier_process_total": {
+      "user_seconds": 719.667919,
+      "system_seconds": 5.373799,
+      "max_rss_kib": 317872,
+      "threads": 23,
+      "thread_affinities": [
+        [
+          2
+        ]
+      ]
+    },
+    "explainer_process": null,
+    "extractor_process": {
+      "cpu_ns": 1686520000000,
+      "max_rss_kib": 4777468,
+      "max_heap_bytes": 4294967296
+    },
+    "children_total": {
+      "user_seconds": 1674.299962,
+      "system_seconds": 12.612863,
+      "max_rss_kib": 4777468
+    },
+    "memory_available_kib_at_start": 10980684,
+    "cpus": {
+      "configured": {
+        "classifier": [
+          2
+        ],
+        "explainer": [
+          0
+        ],
+        "extractor": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "replay": [
+          8,
+          9,
+          10,
+          11
+        ]
+      },
+      "classifier": [
+        [
+          2
+        ]
+      ],
+      "explainer": null,
+      "extractor": [
+        4,
+        5,
+        6,
+        7
+      ]
+    }
+  }
+}

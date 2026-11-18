@@ -3,6 +3,7 @@
 import csv
 import json
 import os
+from collections.abc import Iterator
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import IO, Any
@@ -22,9 +23,12 @@ PROCESSES = ("classifier", "explainer", "extractor", "replay")
 
 
 def _checked_resources(resources: dict[str, Any]) -> None:
-    """CPUs de cada processo do experimento e heap máximo do extrator. Nenhuma CPU é dividida entre processos."""
-    if set(resources) != {"cpus", "extractor_max_heap_mib"} or set(resources["cpus"]) != set(PROCESSES):
-        raise ValueError(f"resources deve ter cpus de {list(PROCESSES)} e extractor_max_heap_mib")
+    """CPUs de cada processo do experimento, heap máximo e opções da JVM do extrator. Nenhuma CPU é dividida entre
+    processos."""
+    if (set(resources) != {"cpus", "extractor_max_heap_mib", "extractor_jvm_options"}
+            or set(resources["cpus"]) != set(PROCESSES)):
+        raise ValueError(f"resources deve ter cpus de {list(PROCESSES)}, extractor_max_heap_mib e "
+                         "extractor_jvm_options")
     cpus = [cpu for name in PROCESSES for cpu in resources["cpus"][name]]
     available = set(range(os.cpu_count() or 0))
     if not all(type(cpu) is int for cpu in cpus) or len(cpus) != len(set(cpus)) or not set(cpus) <= available:
@@ -33,6 +37,11 @@ def _checked_resources(resources: dict[str, Any]) -> None:
         raise ValueError("cada processo precisa de ao menos uma CPU")
     if type(resources["extractor_max_heap_mib"]) is not int or resources["extractor_max_heap_mib"] < 256:
         raise ValueError("extractor_max_heap_mib deve ser um inteiro de pelo menos 256")
+    options = resources["extractor_jvm_options"]
+    # O heap máximo fica só em extractor_max_heap_mib.
+    if (type(options) is not list or not all(type(option) is str and option.startswith("-") for option in options)
+            or any(option.startswith("-Xmx") for option in options)):
+        raise ValueError("extractor_jvm_options deve ser uma lista de opções da JVM, sem -Xmx")
 
 
 def _checked_selection(selection: dict[str, Any]) -> dict[str, Any]:
@@ -64,7 +73,7 @@ class NidsRepository:
     def read_config(self, path: Path) -> NidsConfig:
         try:
             content = json.loads(path.read_text(encoding="utf-8"))
-            if set(content) != {"frozen_run", "preparation_manifest", "tree_shap_config", "selection",
+            if set(content) != {"frozen_run", "preparation_manifests", "tree_shap_config", "selection",
                                 "explanation_queue", "resources", "extractor", "classifier_threads",
                                 "shared_clock_tolerance_ns"}:
                 raise ValueError("campos inesperados ou ausentes")
@@ -79,8 +88,11 @@ class NidsRepository:
             _checked_resources(content["resources"])
             if type(content["classifier_threads"]) is not int or content["classifier_threads"] < 1:
                 raise ValueError("classifier_threads deve ser um inteiro positivo")
+            manifests = content["preparation_manifests"]
+            if not manifests or not all(type(item) is str for item in manifests):
+                raise ValueError("preparation_manifests deve listar ao menos um manifesto")
             return NidsConfig(path, sha256(path), content, self.root / content["frozen_run"],
-                              self.root / content["preparation_manifest"], self.root / content["tree_shap_config"],
+                              tuple(self.root / item for item in manifests), self.root / content["tree_shap_config"],
                               _checked_selection(content["selection"]), dict(content["explanation_queue"]),
                               content["resources"], dict(content["extractor"]), content["classifier_threads"],
                               int(content["shared_clock_tolerance_ns"]))
@@ -107,16 +119,41 @@ class NidsRepository:
             raise NidsError(f"O modelo congelado {name} foi treinado com outro manifesto de dados.")
         return ModelArtifactRepository(self.root, self.data_dir, self.runs_dir).load(path)
 
-    def segment(self, manifest_path: Path, name: str) -> dict[str, Any]:
-        """Trecho preparado, com o PCAP e a tabela de referência conferidos pelo hash."""
-        manifest = self.read_json(manifest_path)
-        if name not in manifest["segments"]:
-            raise NidsError(f"Trecho desconhecido: {name}.")
+    def segment(self, manifest_paths: tuple[Path, ...], name: str) -> dict[str, Any]:
+        """Trecho preparado, procurado pelo nome nos manifestos, com os arquivos conferidos pelo hash."""
+        found = [(path, manifest) for path in manifest_paths
+                 if name in (manifest := self.read_json(path))["segments"]]
+        if len(found) != 1:
+            raise NidsError(f"Trecho desconhecido: {name}." if not found else f"Trecho {name} em mais de um manifesto.")
+        manifest_path, manifest = found[0]
         info = manifest["segments"][name]
-        for key in ("pcap", "reference"):
-            self.checked(info[key])
+        for key in ("pcap", "reference", "carried_over", "addresses"):
+            if key in info:
+                self.checked(info[key])
         return {**info, "name": name, "border_seconds": manifest["border_seconds"],
                 "manifest": self.relative(manifest_path), "manifest_sha256": sha256(manifest_path)}
+
+    def rewrite_tool(self) -> dict[str, Any]:
+        """tcprewrite compilado por tcpreplay/build.sh, conferido com o registro da compilação."""
+        build = self.root / "tcpreplay" / "build"
+        record = self.read_json(build / "tcpreplay-build.json")
+        entry = record.get("binaries", {}).get("tcprewrite")
+        path = build / "tcprewrite"
+        if entry is None or not path.is_file() or sha256(path) != entry["sha256"]:
+            raise NidsError("O tcprewrite está ausente ou difere do registro da compilação. Rode tcpreplay/build.sh.")
+        return {"path": path, "record": {"version": record["version"], "file": "tcpreplay/build/tcprewrite",
+                                         "sha256": entry["sha256"]}}
+
+    def carried_over(self, info: dict[str, Any]) -> set[tuple[Any, ...]]:
+        """Conexões com pacotes antes do início do trecho. Um trecho que começa na captura não tem nenhuma."""
+        if "carried_over" not in info:
+            return set()
+        return {tuple(item) for item in self.read_json(self.checked(info["carried_over"]))}
+
+    def stream_rows(self, path: Path) -> Iterator[dict[str, str]]:
+        """Linhas de uma tabela já conferida, uma de cada vez, para tabelas que não cabem na memória."""
+        with path.open(newline="", encoding="utf-8") as stream:
+            yield from csv.DictReader(stream)
 
     def read_rows(self, info: dict[str, Any]) -> list[dict[str, str]]:
         with self.checked(info).open(newline="", encoding="utf-8") as stream:

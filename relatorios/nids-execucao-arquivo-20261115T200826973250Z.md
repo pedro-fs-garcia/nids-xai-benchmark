@@ -1,0 +1,90 @@
+# Execução do NIDS: Síncrono condicional, XGBoost, arquivo
+
+A execução passou nas verificações. O NIDS leu o arquivo `/home/pedro/projects/explicabilidade-ia/derived-data/pcap/tuesday-campanha/segment-campanha.pcap`, formou os fluxos com o extrator da [decisão 3](../docs/decisoes.md) e classificou cada fluxo com o XGBoost congelado, na estratégia Síncrono condicional. Os termos seguem o [glossário](../docs/glossario.md), e as marcações de tempo seguem a seção 5.1 do [protocolo](../docs/protocolo-experimental.md).
+
+O tráfego é o trecho `campanha` da captura de terça-feira, até `2017-07-04T12:30:00Z` (UTC).
+
+## Contadores
+
+| Contador | Valor |
+|---|---:|
+| Pacotes lidos | 3.706.151 |
+| Pacotes IPv4 usados na formação dos fluxos | 3.703.160 |
+| Pacotes descartados por não serem IPv4 | 2.991 |
+| Pacotes que chegaram a um fluxo já emitido | 0 |
+| Fluxos emitidos pelo extrator | 24.413 |
+| Fluxos descartados na fila de saída do extrator | 0 |
+| Fluxos recebidos pelo classificador | 24.413 |
+| Fluxos classificados | 24.396 |
+| Fluxos não classificáveis | 17 |
+
+Causas de emissão: nova conexão TCP depois do encerramento (363), varredura do tempo limite (21.842), fim da captura (2.208).
+
+Exemplos de fluxos não classificáveis: fluxo 181 (`208.81.233.32-192.168.10.14-80-49870-6`): Valor não finito em Flow Bytes/s.; fluxo 376 (`63.241.108.104-192.168.10.14-443-49832-6`): Valor não finito em Flow Bytes/s.; fluxo 396 (`63.241.108.104-192.168.10.14-80-49856-6`): Valor não finito em Flow Bytes/s.; fluxo 957 (`13.107.4.50-192.168.10.14-80-49694-6`): Valor não finito em Flow Bytes/s.; fluxo 4968 (`192.168.10.16-23.96.179.163-52322-443-6`): Valor não finito em Flow Bytes/s..
+
+## Explicações
+
+O NIDS seleciona para explicação os fluxos em que a distância entre a probabilidade de ataque e 0,5 é menor ou igual a 0,4. O limiar vem da calibração registrada em [training-runs/nids/calibracao/20261114T204351398308Z](../training-runs/nids/calibracao/20261114T204351398308Z/report.json).
+
+O TreeSHAP segue a [decisão 7](../docs/decisoes.md). Antes de a captura abrir, a construção do explicador levou 43,493 ms, e as chamadas de aquecimento levaram 1,206 ms na inferência e 1,321 ms na explicação.
+
+| Cobertura explicativa | Fluxos | Proporção dos classificados |
+|---|---:|---:|
+| Classificados | 24.396 | 100,00% |
+| Selecionados para explicação | 29 | 0,12% |
+| Com a explicação concluída | 29 | 0,12% |
+
+A soma do valor de referência com as contribuições difere da saída explicada em no máximo 1.1e-06, na escala de log-odds, contra a tolerância de 0.0001.
+
+## Verificações
+
+| Verificação | Resultado |
+|---|---|
+| Fluxos emitidos pelo extrator = fluxos recebidos pelo classificador + fluxos descartados na fila de saída do extrator | aprovada |
+| Nenhum fluxo descartado na fila de saída do extrator (modo arquivo) | aprovada |
+| Fluxos recebidos = classificados + não classificáveis | aprovada |
+| t0 ≤ t1 ≤ t2 ≤ t3 em todos os fluxos classificados | aprovada |
+| Nenhum pacote chegou a um fluxo já emitido (modo arquivo) | aprovada |
+| Fluxos selecionados = fluxos que a estratégia manda explicar | aprovada |
+| Cada explicação corresponde a um fluxo classificado, pelo número de sequência e pelo `Flow ID` | aprovada |
+| Valor de referência + soma das contribuições = saída explicada, dentro da tolerância | aprovada |
+| Fluxos explicados = fluxos selecionados | aprovada |
+| Marcações dos fluxos explicados na ordem da estratégia: t2 ≤ seleção ≤ explicação ≤ t4 = t3 nas síncronas; t3 ≤ solicitação ≤ retirada da fila ≤ explicação ≤ t4 no modo assíncrono | aprovada |
+| A saída explicada leva à probabilidade registrada na classificação | aprovada |
+| Cada explicação tem uma contribuição por entrada do classificador | aprovada |
+| Classificador, explicador e extrator nas CPUs configuradas | aprovada |
+
+## Conferência com a tabela de referência
+
+O trecho começa no meio da captura. 3.024 fluxos do NIDS pertencem a 1.582 conexões que já tinham pacotes antes do início e ficam fora da conferência, porque não correspondem aos fluxos do CSV.
+
+Fora da borda dos últimos 120 s, 19.438 fluxos do NIDS correspondem a fluxos de `tuesday.csv`. Ficaram 0 fluxos só no CSV e 11 só no NIDS. Destes, 11 têm algum valor `NaN`: são fluxos de um único pacote, que a rotulagem dos autores descartou com `dropna` e que o NIDS registra como não classificáveis.
+
+As entradas inteiras coincidem exatamente com as do CSV. 37.533 valores com fração diferem nos últimos algarismos, com diferença relativa de no máximo 5.6e-15, como na conferência da extração.
+
+O modelo aplicado às linhas da tabela de referência e o NIDS produziram previsões diferentes em 0 de 19.438 fluxos. A maior diferença de probabilidade foi 0, contra a tolerância de 1e-12. A conferência não calcula métricas de detecção.
+
+## Tempos
+
+Os tempos abaixo mostram que a instrumentação funciona. A execução não controla a carga, então eles não são resultados do experimento.
+
+| Medida | Média (ms) | Mediana (ms) | p95 (ms) | p99 (ms) | Máximo (ms) |
+|---|---:|---:|---:|---:|---:|
+| Tempo de inferência, t2 − t1 | 0,286 | 0,226 | 0,649 | 0,949 | 87,872 |
+| Tempo de explicação | 0,601 | 0,519 | 0,901 | 1,447 | 1,650 |
+| Latência de classificação, t3 − t0 | 31,664 | 32,715 | 68,892 | 114,241 | 679,317 |
+| Latência de explicação, t4 − t0 | 30,244 | 32,604 | 70,638 | 81,773 | 83,106 |
+| Espera e preparo da entrada, t1 − t0 | 31,300 | 32,501 | 68,498 | 113,865 | 672,129 |
+| Seleção para explicação | 0,001 | 0,001 | 0,002 | 0,004 | 0,044 |
+| Escrita nos canais de saída | 0,059 | 0,022 | 0,070 | 0,116 | 645,852 |
+
+## Recursos
+
+| Processo | CPUs configuradas | CPUs observadas | CPU usada (s) | Pico de memória (MiB) |
+|---|---|---|---:|---:|
+| classificador | 2 | 2 | 19,0 | 373 |
+| extrator | 4, 5, 6, 7 | 4, 5, 6, 7 | 166,8 | 1.706 |
+
+A máquina tinha 7.270 MiB de memória disponível no início da execução.
+
+O registro da execução está em [training-runs/nids/arquivo/20261115T200826973250Z/report.json](../training-runs/nids/arquivo/20261115T200826973250Z/report.json).

@@ -20,7 +20,7 @@ from typing import Any
 import numpy as np
 
 from core.instrumentation import monotonic_ns
-from core.process_resources import pin_all_threads, self_usage
+from core.process_resources import phase_usage, pin_all_threads, self_usage, start_phase
 
 # Marcações de quem gera a explicação. A retirada da fila só existe no modo assíncrono.
 EXPLANATION_TIMING = ["seq", "dequeued_ns", "explanation_start_ns", "explanation_end_ns", "t4_ns"]
@@ -171,7 +171,8 @@ def read_explanations(run_dir: Path) -> tuple[list[dict[str, Any]], int]:
             except json.JSONDecodeError:
                 # Só a última linha pode ficar incompleta, e ela não tem marcações.
                 continue
-    if any(seq not in {record["seq"] for record in records} for seq in marks):
+    channel = {record["seq"] for record in records}
+    if any(seq not in channel for seq in marks):
         raise ExplanationWorkerError("Há marcações de explicação sem registro no canal de saída das explicações.")
     complete = [{**record, **marks[record["seq"]]} for record in records if record["seq"] in marks]
     return complete, len(records) - len(complete)
@@ -193,6 +194,8 @@ def _serve(factory: Callable[..., Any], factory_args: tuple[Any, ...], run_dir: 
                 table = csv.DictWriter(table_stream, fieldnames=EXPLANATION_TIMING)
                 table.writeheader()
                 results.put(("ready", {**info, "pid": os.getpid(), "monotonic_ns": monotonic_ns()}))
+                # O uso de recursos que interessa é o do atendimento das solicitações, sem a carga do modelo.
+                serving = start_phase()
                 received = 0
                 while True:
                     item = requests.get()
@@ -209,7 +212,8 @@ def _serve(factory: Callable[..., Any], factory_args: tuple[Any, ...], run_dir: 
                     t4 = monotonic_ns()
                     table.writerow({"seq": seq, "dequeued_ns": dequeued, "explanation_start_ns": start,
                                     "explanation_end_ns": end, "t4_ns": t4})
-        results.put(("end", {"received": received, "end_dequeued_ns": dequeued, "process": self_usage()}))
+        results.put(("end", {"received": received, "end_dequeued_ns": dequeued, "process": phase_usage(serving),
+                             "process_total": self_usage()}))
     except BaseException:
         results.put(("error", traceback.format_exc()))
         raise
