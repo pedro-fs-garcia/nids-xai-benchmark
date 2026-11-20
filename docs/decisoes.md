@@ -407,7 +407,7 @@ Por isso, o valor de referência não é a saída média sobre o treino em nenhu
 - Na leitura de arquivo não há captura a perder. A espera por vaga completa a execução e permite comparar as explicações das estratégias fluxo a fluxo.
 - Na medição isolada, o Random Forest gera uma explicação em 7,4 ms, em média. A fila de explicações cheia leva cerca de 74 s para esvaziar, dentro do tempo máximo de 300 s. Uma linha da fila de saída do extrator tem cerca de 1 kB, e a fila cheia ocupa cerca de 10 MB do heap do extrator. Nos ensaios a 1× do trecho `validacao`, a fila de saída do extrator chegou a 392 fluxos.
 - No piloto, as filas só atingiram o limite em execuções do Random Forest com 4 cópias, que já ultrapassam o limite da [decisão 19](#19-limite-da-latência-de-classificação) ([análise do piloto](../relatorios/piloto-2-20261118T101010406495Z.md)). No Síncrono total, a fila de saída do extrator descartou 23.204 fluxos, e no Assíncrono, a fila de explicações pendentes descartou 5.319 solicitações. Um limite maior trocaria esses descartes por mais latência.
-- Nas execuções sem saturação, a maior fila de saída do extrator teve 769 fluxos, e a maior fila de explicações pendentes, 32 solicitações. O limite de 10.000 fica mais de 13 vezes acima da maior delas.
+- Nas execuções do piloto dentro dos limites de latência da [decisão 19](#19-limite-da-latência-de-classificação), a maior fila de saída do extrator teve 769 fluxos, e a maior fila de explicações pendentes, 32 solicitações. O limite de 10.000 fica mais de 13 vezes acima da maior delas.
 - Nas duas execuções do Assíncrono do piloto, o processo explicador concluiu todas as solicitações aceitas antes do tempo máximo de esvaziamento. A última explicação ficou disponível 2 ms depois da última solicitação no XGBoost ([execução](../relatorios/nids-execucao-interface-20261117T224639963550Z.md)) e 10,4 s depois no Random Forest ([execução](../relatorios/nids-execucao-interface-20261117T230929822226Z.md)), bem abaixo dos 300 s.
 
 ### Consequências
@@ -466,8 +466,8 @@ Por isso, o valor de referência não é a saída média sobre o treino em nenhu
 - O `tcpreplay-edit` percorre os pares em ordem a cada pacote. Com a lista ordenada pelo número de pacotes, os endereços mais frequentes são encontrados primeiro.
 - Sem `--no-flow-stats`, o `tcpreplay` mantém uma tabela de fluxos própria a cada pacote, só para o relatório, e avisa em cada quadro que não consegue decodificar.
 - Até 4 cópias, o NIDS captura o trecho sem perder pacotes. Acima disso, o heap do extrator se esgota ([decisão 14](#14-orçamento-de-cpu-e-de-memória)).
-- O Random Forest satura dentro desses níveis. No Síncrono total, ele classifica cerca de 84 fluxos por segundo. Com 2 cópias do trecho `campanha`, o extrator emite até 508 fluxos num segundo, e 186 segundos passam de 84 fluxos.
-- Uma explicação do XGBoost custa 0,43 ms em média, contra 7,4 ms no Random Forest ([medição](../relatorios/treeshap-medicao-20261112T113136395550Z.md)). Com até 4 cópias, o XGBoost deve atender o tráfego em todas as estratégias. A campanha mede o custo do TreeSHAP no XGBoost abaixo da saturação, e não o ponto em que ele satura.
+- Dentro desses níveis, a emissão de fluxos passa do que o Random Forest classifica por segundo. No Síncrono total, ele classifica cerca de 84 fluxos por segundo. Com 2 cópias do trecho `campanha`, o extrator emite até 508 fluxos num segundo, e 186 segundos passam de 84 fluxos.
+- Uma explicação do XGBoost custa 0,43 ms em média, contra 7,4 ms no Random Forest ([medição](../relatorios/treeshap-medicao-20261112T113136395550Z.md)). Com até 4 cópias, o XGBoost deve atender o tráfego em todas as estratégias. A campanha mede o custo do TreeSHAP no XGBoost em cargas que ele atende, e não a carga a partir da qual ele deixa de atender o tráfego.
 
 ### Consequências
 
@@ -508,7 +508,7 @@ Por isso, o valor de referência não é a saída média sobre o treino em nenhu
 - Em ensaios do trecho `validacao` com o notebook na bateria e em uso, a mediana do tempo de inferência do Random Forest subiu de 3,6 ms para 9,1 ms no Síncrono condicional e de 4,3 ms para 11,5 ms no Assíncrono, contra os mesmos ensaios repetidos na tomada e com a máquina ociosa.
 - O registro de cada segundo mostra depois se a frequência caiu, se houve limitação térmica ou se outro programa ocupou as CPUs irmãs do classificador e do processo explicador.
 - A ocupação da máquina sem os ensaios varia com os serviços em segundo plano. Com o navegador e os containers de outros projetos abertos, ela ficou em 12% e 19% em duas janelas de 10 s. Um limite de 10% deixaria ensaios sem começar por oscilações do segundo plano, e o de 25% ainda barra o uso ativo da máquina por outro trabalho.
-- O perfil de energia muda a frequência das CPUs e, com ela, o tempo de inferência e a carga em que o classificador satura. Os limites das decisões [13](#13-limites-das-filas-e-política-de-descarte), [19](#19-limite-da-latência-de-classificação) e [20](#20-limiar-de-fluxos-descartados) vieram de execuções nesse perfil. O perfil gravado em `/var/lib/power-profiles-daemon/state.ini` é `power-saver` e não muda desde 10 de setembro de 2026, antes do piloto. As execuções não registram o perfil.
+- O perfil de energia muda a frequência das CPUs e, com ela, o tempo de inferência e a carga a partir da qual o classificador deixa de atender o tráfego. Os limites das decisões [13](#13-limites-das-filas-e-política-de-descarte), [19](#19-limite-da-latência-de-classificação) e [20](#20-limiar-de-fluxos-descartados) vieram de execuções nesse perfil. O perfil gravado em `/var/lib/power-profiles-daemon/state.ini` é `power-saver` e não muda desde 10 de setembro de 2026, antes do piloto. As execuções não registram o perfil.
 
 ## 18. Número de repetições
 
@@ -530,8 +530,8 @@ Por isso, o valor de referência não é a saída média sobre o treino em nenhu
 
 ### Justificativa
 
-- No piloto, as execuções se dividiram em dois grupos ([análise do piloto](../relatorios/piloto-2-20261118T101010406495Z.md)). Nas que não saturaram, o p99 da latência de classificação ficou em até 1,3 s. São as do XGBoost com 4 cópias, em todas as estratégias, e as do Random Forest no Sem XAI com 1 cópia. Nas saturadas, o p95 passou de 29 s, e a fila de saída do extrator passou de 2.600 fluxos. São as do Random Forest no Síncrono total a partir de 2 cópias e as do Random Forest em todas as estratégias com 4 cópias.
-- Os limites de 1 s e 2 s ficam entre os dois grupos e são os menores valores inteiros, em segundos, que mantêm viáveis todas as execuções sem saturação. Entre elas, a de maior latência foi a do XGBoost no Síncrono total com 4 cópias, com p95 de 714 ms e p99 de 1,3 s.
+- No piloto, as execuções se dividiram em dois grupos ([análise do piloto](../relatorios/piloto-2-20261118T101010406495Z.md)). Nas do primeiro grupo, o p99 da latência de classificação ficou em até 1,3 s. São as do XGBoost com 4 cópias, em todas as estratégias, e as do Random Forest no Sem XAI com 1 cópia. Nas do segundo, o p95 passou de 29 s, e a fila de saída do extrator passou de 2.600 fluxos. São as do Random Forest no Síncrono total a partir de 2 cópias e as do Random Forest em todas as estratégias com 4 cópias.
+- Os limites de 1 s e 2 s ficam entre os dois grupos e são os menores valores inteiros, em segundos, que mantêm viáveis todas as execuções do primeiro grupo. Entre elas, a de maior latência foi a do XGBoost no Síncrono total com 4 cópias, com p95 de 714 ms e p99 de 1,3 s.
 
 ## 20. Limiar de fluxos descartados
 
@@ -572,3 +572,69 @@ Por isso, o valor de referência não é a saída média sobre o treino em nenhu
 - Os critérios de validade detectam falhas da execução, da geração do tráfego e da máquina. Os descartes e as pendências são resultados da carga, e a ocupação das CPUs fica registrada e aparece na análise ([decisão 17](#17-estado-da-máquina-durante-os-ensaios)).
 - No piloto, as 16 execuções foram válidas na primeira tentativa ([análise do piloto](../relatorios/piloto-2-20261118T101010406495Z.md)). A segunda tentativa cobre uma falha isolada. Uma combinação que falha duas vezes indica um problema que a auditoria precisa mostrar.
 - Na campanha, a execução do XGBoost no Síncrono condicional pelo critério de probabilidade com 4 cópias, repetição 1, perdeu na captura 10.231 dos 14.824.604 pacotes, 0,07%. Dos 88.767 fluxos casados com a leitura por arquivo, 1.042 (1,2%) ficaram com entradas diferentes, e 20 tiveram previsão diferente ([auditoria](../relatorios/campanha-auditoria-20261120T125714303006Z.md)). Nas outras 14 execuções do XGBoost com 4 cópias, sem perda na captura, de 4 a 10 fluxos tiveram previsão diferente ([análise da campanha](../relatorios/campanha-20261120T120722710408Z.md)). A perda fica registrada na execução e aparece na auditoria, como os descartes nas filas.
+
+## 23. Critério da fila de explicações pendentes
+
+### Decisão
+
+- Pelo critério da fila da viabilidade, a fila de explicações pendentes de uma execução do Assíncrono cresce até o fim quando atinge o maior tamanho pela primeira vez no último décimo da execução, ou quando está no limite de 10.000 solicitações no último décimo. Nos outros casos, a fila se estabiliza ou esvazia.
+- A execução vai do primeiro fluxo emitido ao último segundo com uma solicitação ou uma retirada da fila.
+
+### Justificativa
+
+- O protocolo não fixou essa regra antes da campanha. Ela foi fixada com os resultados já medidos.
+- Uma fila que cresce até o fim atinge um tamanho novo no fim da execução. Com o limite da [decisão 13](#13-limites-das-filas-e-política-de-descarte), ela pode parar no limite e descartar solicitações até o fim, e a segunda parte da regra cobre esse caso.
+- Uma regra que compara o maior tamanho do último décimo com o maior tamanho da execução reprova a fila que só volta a um pico anterior. Na repetição 3 do XGBoost no Assíncrono com 4 cópias, a fila atingiu 15 solicitações, o maior tamanho da execução, aos 33% da execução e voltou a esse valor no último décimo ([resultados da campanha](../relatorios/campanha-resultados-20261120T173808263579Z.md)).
+- Na campanha, as 18 execuções do Assíncrono atingiram o maior tamanho entre 0% e 58% da execução. No último décimo, nenhuma passou de 5.412 solicitações ([resultados da campanha](../relatorios/campanha-resultados-20261120T173808263579Z.md)).
+
+## 24. Viabilidade de uma combinação
+
+### Decisão
+
+- Cada execução é julgada pelos três critérios de viabilidade do [protocolo](protocolo-experimental.md) (seção 8). Uma combinação de classificador, configuração de explicação e nível de carga é viável quando todas as suas execuções são viáveis.
+- O resultado de cada combinação traz o número de execuções viáveis.
+
+### Justificativa
+
+- O protocolo não fixou essa regra antes da campanha. Ela foi fixada com os resultados já medidos.
+- O protocolo julga a viabilidade numa execução e não diz como juntar as repetições. Exigir todas as execuções impede que uma execução viável compense uma inviável.
+- Na campanha, só uma combinação teve execuções viáveis e inviáveis, o XGBoost no Síncrono condicional pelo critério de probabilidade com 4 cópias, com 2 de 3. A inviável é a da repetição 1, que perdeu 10.231 pacotes na captura ([decisão 22](#22-validade-das-execuções-e-número-de-tentativas)) e teve p99 da latência de classificação de 4.985 ms. As outras 29 combinações tiveram 0 ou 3 execuções viáveis ([resultados da campanha](../relatorios/campanha-resultados-20261120T173808263579Z.md)).
+
+## 25. Sobrecarga de latência
+
+### Decisão
+
+- A sobrecarga de latência de uma estratégia é a diferença entre a mediana das execuções da estratégia e a mediana das execuções do Sem XAI, com o mesmo classificador e o mesmo nível de carga. Ela é calculada para a média, o p95 e o p99 da latência de classificação.
+
+### Justificativa
+
+- O protocolo não fixou esse cálculo antes da campanha. Ele foi fixado com os resultados já medidos.
+- O protocolo resume as repetições de uma combinação pela mediana (seção 10), e a diferença entre as medianas usa esse mesmo resumo.
+- As 30 execuções de uma repetição rodam em ordem sorteada, ao longo de cerca de 12 h. A execução do Sem XAI e a da estratégia na mesma repetição não dividem as mesmas condições da máquina, e pareá-las pela repetição não controla nenhuma variação.
+- Onde a sobrecarga é grande, o pareamento pela repetição dá quase o mesmo valor. No p95 do Random Forest no Síncrono total com 1 cópia, a diferença entre as medianas é de 6.139 ms, e a mediana das diferenças pareadas, de 6.123 ms. Os dois cálculos só divergem quando a sobrecarga fica dentro da variação entre execuções, como no critério de incerteza do Random Forest com 2 cópias, com −238 ms e 144 ms ([resultados da campanha](../relatorios/campanha-resultados-20261120T173808263579Z.md)).
+
+## 26. Diferença entre combinações
+
+### Decisão
+
+- Duas combinações diferem numa medida quando os intervalos do mínimo ao máximo das suas execuções não se sobrepõem. Quando os intervalos se sobrepõem, as combinações não se distinguem nessa medida.
+- A comparação não usa teste estatístico.
+
+### Justificativa
+
+- O protocolo não fixou essa regra antes da campanha. Ela foi fixada com os resultados já medidos.
+- Com 3 execuções por combinação, a regra compara os valores medidos sem supor uma distribuição para eles.
+- Na campanha, na média, no p95 e no p99 da latência de classificação, o Síncrono total e o Assíncrono ficaram acima do Sem XAI nos dois classificadores e nos três níveis de carga. Os dois critérios do Síncrono condicional não se distinguiram do Sem XAI em nenhum caso ([resultados da campanha](../relatorios/campanha-resultados-20261120T173808263579Z.md)).
+
+## 27. Saturação
+
+### Decisão
+
+- O NIDS satura numa execução quando um único intervalo com fluxo pendente de classificação cobre mais da metade do tempo entre o primeiro fluxo emitido e a última classificação.
+- A saturação descreve a execução e não entra na viabilidade.
+
+### Justificativa
+
+- O protocolo não fixou essa definição antes da campanha. Ela foi fixada com os resultados já medidos.
+- Um intervalo que cobre a maior parte da execução mostra que o classificador não acompanha a carga média e só alcança a emissão dos fluxos depois do fim do tráfego.
+- Na campanha, só as 3 execuções do Random Forest no Síncrono total com 4 cópias saturaram, com um intervalo de 99,0% a 99,7% do tempo. A execução seguinte, do Random Forest no Assíncrono com 4 cópias, teve 32,9%, e qualquer limite entre esses dois valores separa as execuções do mesmo jeito ([resultados da campanha](../relatorios/campanha-resultados-20261120T173808263579Z.md)).

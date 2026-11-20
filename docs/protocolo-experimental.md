@@ -84,11 +84,13 @@ Os resultados valem para as condições do experimento. Eles não implicam equiv
 
 Uma estratégia é viável sob uma carga quando, ao longo de uma execução, atende aos três critérios abaixo.
 
-- O tamanho da fila de explicações pendentes não aumenta de forma contínua até o fim da execução, ou seja, a fila se estabiliza ou esvazia. Este critério só se aplica ao modo assíncrono.
+- O tamanho da fila de explicações pendentes não aumenta de forma contínua até o fim da execução, ou seja, a fila se estabiliza ou esvazia. A fila aumenta até o fim quando atinge o maior tamanho pela primeira vez no último décimo da execução, ou quando está no limite no último décimo ([decisão 23](decisoes.md)). Este critério só se aplica ao modo assíncrono.
 - A proporção de fluxos descartados é 0% ([decisão 20](decisoes.md)).
 - A latência de classificação não ultrapassa 1 s no p95 nem 2 s no p99 ([decisão 19](decisoes.md)).
 
 A viabilidade é julgada para cada configuração de explicação, e cada resultado de viabilidade é reportado com a cobertura explicativa da execução ([decisão 21](decisoes.md)).
+
+Uma combinação de classificador, configuração de explicação e nível de carga é viável quando todas as suas execuções são viáveis, e o resultado traz o número de execuções viáveis ([decisão 24](decisoes.md)).
 
 ## 9. Piloto
 
@@ -121,6 +123,8 @@ As métricas secundárias são o tempo de inferência, o tempo de explicação, 
 
 Um fluxo descartado na fila de saída do extrator entra na proporção de descartes e não tem latência. Uma solicitação de explicação descartada ou pendente deixa o fluxo sem explicação. Esse fluxo entra na latência de classificação e reduz a cobertura explicativa. Descartes, pendências e pacotes perdidos na captura são resultados e não invalidam uma execução.
 
-Cada execução produz as próprias estatísticas. As repetições de uma combinação são resumidas pela mediana, com o mínimo e o máximo.
+Cada execução produz as próprias estatísticas. As repetições de uma combinação são resumidas pela mediana, com o mínimo e o máximo. A sobrecarga de latência é a diferença entre a mediana das execuções da estratégia e a das execuções do Sem XAI, na média, no p95 e no p99 ([decisão 25](decisoes.md)). Duas combinações diferem numa medida quando os intervalos do mínimo ao máximo das suas execuções não se sobrepõem ([decisão 26](decisoes.md)).
+
+A saturação descreve uma execução e não entra na viabilidade. O NIDS satura numa execução quando um único intervalo com fluxo pendente de classificação cobre mais da metade do tempo entre o primeiro fluxo emitido e a última classificação ([decisão 27](decisoes.md)).
 
 No piloto e na campanha, uma execução é válida quando termina sem erro, o NIDS passa nas próprias verificações, o `tcpreplay-edit` envia todos os pacotes e a máquina fica na tomada do início ao fim. Uma execução inválida fica registrada com o motivo, e a nova tentativa é outra execução. Cada combinação tem no máximo 2 tentativas ([decisão 22](decisoes.md)).

@@ -187,6 +187,12 @@ python main.py campanha-auditar --matriz ../configs/campanha.json
 Audita uma matriz executada, só lendo os registros. Confere a matriz prevista contra o registro e a coerência entre cada tentativa e os registros da execução. Em cada execução válida, confere que o tcpreplay enviou todos os pacotes de cada cópia, que o extrator parou a pedido do NIDS, o hash e a recontagem dos arquivos brutos e a validação por cópia da análise mais recente da matriz. Também confere as entradas fixas das execuções válidas e lista as tentativas inválidas e as execuções interrompidas fora do registro. Uma validação por cópia reprovada só pela perda de pacotes na captura fica registrada como explicada por essa perda. O relatório vai para `relatorios/<matriz>-auditoria-<execução>.md`, e o registro, para `training-runs/nids/auditoria-<matriz>/`.
 
 ```bash
+python main.py campanha-resultados --matriz ../configs/campanha.json
+```
+
+Recalcula, dos registros brutos de cada execução válida de uma matriz com auditoria aprovada, as latências, a cobertura explicativa, os descartes, a fila de explicações pendentes e os fluxos pendentes de classificação ao longo da execução. Antes, confere o hash da tabela por fluxo e da tabela de explicações, e para se algum valor recalculado diferir do registro do NIDS. Resume as execuções de cada combinação pela mediana, com o mínimo e o máximo, ao lado dos recursos de cada processo, da carga efetiva e do estado da máquina, e desenha as figuras. O comando só lê os registros. O relatório vai para `relatorios/<matriz>-resultados-<execução>.md`, e o registro e as figuras, para `training-runs/nids/resultados-<matriz>/`.
+
+```bash
 python main.py calibrar-selecao
 ```
 
