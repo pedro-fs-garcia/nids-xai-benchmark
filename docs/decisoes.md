@@ -407,7 +407,8 @@ Por isso, o valor de referência não é a saída média sobre o treino em nenhu
 - Na leitura de arquivo não há captura a perder. A espera por vaga completa a execução e permite comparar as explicações das estratégias fluxo a fluxo.
 - Na medição isolada, o Random Forest gera uma explicação em 7,4 ms, em média. A fila de explicações cheia leva cerca de 74 s para esvaziar, dentro do tempo máximo de 300 s. Uma linha da fila de saída do extrator tem cerca de 1 kB, e a fila cheia ocupa cerca de 10 MB do heap do extrator. Nos ensaios a 1× do trecho `validacao`, a fila de saída do extrator chegou a 392 fluxos.
 - No piloto, as filas só atingiram o limite em execuções do Random Forest com 4 cópias, que já ultrapassam o limite da [decisão 19](#19-limite-da-latência-de-classificação) ([análise do piloto](../relatorios/piloto-2-20261118T101010406495Z.md)). No Síncrono total, a fila de saída do extrator descartou 23.204 fluxos, e no Assíncrono, a fila de explicações pendentes descartou 5.319 solicitações. Um limite maior trocaria esses descartes por mais latência.
-- Nas execuções sem saturação, a maior fila de saída do extrator teve 769 fluxos, e a maior fila de explicações pendentes, 32 solicitações. O limite de 10.000 fica mais de 13 vezes acima da maior delas. Nas duas execuções do Assíncrono, o esvaziamento depois da captura levou 0,0 s, abaixo do tempo máximo de 300 s.
+- Nas execuções sem saturação, a maior fila de saída do extrator teve 769 fluxos, e a maior fila de explicações pendentes, 32 solicitações. O limite de 10.000 fica mais de 13 vezes acima da maior delas.
+- Nas duas execuções do Assíncrono do piloto, o processo explicador concluiu todas as solicitações aceitas antes do tempo máximo de esvaziamento. A última explicação ficou disponível 2 ms depois da última solicitação no XGBoost ([execução](../relatorios/nids-execucao-interface-20261117T224639963550Z.md)) e 10,4 s depois no Random Forest ([execução](../relatorios/nids-execucao-interface-20261117T230929822226Z.md)), bem abaixo dos 300 s.
 
 ### Consequências
 
@@ -499,6 +500,7 @@ Por isso, o valor de referência não é a saída média sobre o treino em nenhu
 - Durante o ensaio, uma thread do script, fixa na CPU 11, grava a cada segundo a fonte de energia, a frequência e as contagens de limitação térmica de cada CPU, a ocupação de cada CPU, a memória disponível e o swap livre, no arquivo `machine.jsonl` da execução.
 - Cada ensaio registra o commit do repositório e os arquivos versionados com alterações.
 - O executor da matriz impede a suspensão da máquina com o `systemd-inhibit`, inclusive com a tampa fechada.
+- O piloto e a campanha rodam com o perfil de energia `power-saver` do `power-profiles-daemon`.
 - Os limites da conferência ficam na configuração de cada matriz ([configs/piloto-2.json](../configs/piloto-2.json)). O piloto confirma ou ajusta esses valores.
 
 ### Justificativa
@@ -506,6 +508,7 @@ Por isso, o valor de referência não é a saída média sobre o treino em nenhu
 - Em ensaios do trecho `validacao` com o notebook na bateria e em uso, a mediana do tempo de inferência do Random Forest subiu de 3,6 ms para 9,1 ms no Síncrono condicional e de 4,3 ms para 11,5 ms no Assíncrono, contra os mesmos ensaios repetidos na tomada e com a máquina ociosa.
 - O registro de cada segundo mostra depois se a frequência caiu, se houve limitação térmica ou se outro programa ocupou as CPUs irmãs do classificador e do processo explicador.
 - A ocupação da máquina sem os ensaios varia com os serviços em segundo plano. Com o navegador e os containers de outros projetos abertos, ela ficou em 12% e 19% em duas janelas de 10 s. Um limite de 10% deixaria ensaios sem começar por oscilações do segundo plano, e o de 25% ainda barra o uso ativo da máquina por outro trabalho.
+- O perfil de energia muda a frequência das CPUs e, com ela, o tempo de inferência e a carga em que o classificador satura. Os limites das decisões [13](#13-limites-das-filas-e-política-de-descarte), [19](#19-limite-da-latência-de-classificação) e [20](#20-limiar-de-fluxos-descartados) vieram de execuções nesse perfil. O perfil gravado em `/var/lib/power-profiles-daemon/state.ini` é `power-saver` e não muda desde 10 de setembro de 2026, antes do piloto. As execuções não registram o perfil.
 
 ## 18. Número de repetições
 
@@ -559,7 +562,8 @@ Por isso, o valor de referência não é a saída média sobre o treino em nenhu
 ### Decisão
 
 - Uma execução do piloto ou da campanha é válida quando termina sem erro, o NIDS passa nas próprias verificações, o `tcpreplay-edit` envia todos os pacotes e a máquina fica na tomada do início ao fim.
-- Os descartes de fluxos e de solicitações de explicação, as solicitações pendentes e a ocupação das CPUs durante a execução não invalidam uma execução.
+- Os descartes de fluxos e de solicitações de explicação, as solicitações pendentes, os pacotes perdidos na captura e a ocupação das CPUs durante a execução não invalidam uma execução.
+- A validação por cópia de uma execução com pacotes perdidos na captura reprova, porque exige que nenhum pacote se perca na captura e que o extrator leia todos os pacotes recebidos pela interface. A auditoria registra essa reprovação como explicada pela perda quando nenhuma outra verificação da validação falha e os pacotes lidos pelo extrator, somados aos perdidos no buffer de captura, fecham com os recebidos pela interface.
 - Cada combinação de classificador, configuração de explicação, nível de carga e repetição tem no máximo 2 tentativas. Uma execução inválida fica registrada com o motivo, e a nova tentativa é outra execução. A combinação com 2 tentativas inválidas fica registrada como esgotada.
 - O número máximo de tentativas fica no campo `max_attempts` da configuração de cada matriz.
 
@@ -567,3 +571,4 @@ Por isso, o valor de referência não é a saída média sobre o treino em nenhu
 
 - Os critérios de validade detectam falhas da execução, da geração do tráfego e da máquina. Os descartes e as pendências são resultados da carga, e a ocupação das CPUs fica registrada e aparece na análise ([decisão 17](#17-estado-da-máquina-durante-os-ensaios)).
 - No piloto, as 16 execuções foram válidas na primeira tentativa ([análise do piloto](../relatorios/piloto-2-20261118T101010406495Z.md)). A segunda tentativa cobre uma falha isolada. Uma combinação que falha duas vezes indica um problema que a auditoria precisa mostrar.
+- Na campanha, a execução do XGBoost no Síncrono condicional pelo critério de probabilidade com 4 cópias, repetição 1, perdeu na captura 10.231 dos 14.824.604 pacotes, 0,07%. Dos 88.767 fluxos casados com a leitura por arquivo, 1.042 (1,2%) ficaram com entradas diferentes, e 20 tiveram previsão diferente ([auditoria](../relatorios/campanha-auditoria-20261120T125714303006Z.md)). Nas outras 14 execuções do XGBoost com 4 cópias, sem perda na captura, de 4 a 10 fluxos tiveram previsão diferente ([análise da campanha](../relatorios/campanha-20261120T120722710408Z.md)). A perda fica registrada na execução e aparece na auditoria, como os descartes nas filas.

@@ -1,0 +1,4449 @@
+{
+  "stage": "matrix audit",
+  "run_id": "20261120T125714303006Z",
+  "matrix": "campanha",
+  "matrix_config": "configs/campanha.json",
+  "segment": "campanha",
+  "registry": "training-runs/matrizes/campanha/registro.jsonl",
+  "cells": 90,
+  "attempts": 90,
+  "coverage": {
+    "done": 90,
+    "exhausted": [],
+    "pending": [],
+    "not_started": 0,
+    "issues": []
+  },
+  "analysis": {
+    "run": "training-runs/nids/analise-campanha/20261120T120722710408Z",
+    "attempts": 90
+  },
+  "trials": [
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "sincrono-total",
+        "load": 1,
+        "repetition": 1,
+        "id": "campanha/xgboost/sincrono-total/carga-1/rep-1",
+        "strategy": "sincrono-total",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261118T174902194215Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 24413,
+        "classified": 24396,
+        "errors": 17,
+        "max_seq": 24413,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 24396,
+        "states": {
+          "concluida": 24396
+        },
+        "completed": 24396,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 24396,
+        "explanation_records": 24396
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T114923870421Z",
+        "copies": 1,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 3
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "sincrono-condicional-probabilidade",
+        "load": 1,
+        "repetition": 1,
+        "id": "campanha/random-forest/sincrono-condicional-probabilidade/carga-1/rep-1",
+        "strategy": "sincrono-condicional",
+        "criterion": "probabilidade"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261118T181141738966Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 24413,
+        "classified": 24396,
+        "errors": 17,
+        "max_seq": 24413,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 683,
+        "states": {
+          "nao_selecionada": 23713,
+          "concluida": 683
+        },
+        "completed": 683,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 24396,
+        "explanation_records": 683
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T114929796691Z",
+        "copies": 1,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 4
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "sincrono-condicional-incerteza",
+        "load": 2,
+        "repetition": 1,
+        "id": "campanha/xgboost/sincrono-condicional-incerteza/carga-2/rep-1",
+        "strategy": "sincrono-condicional",
+        "criterion": "incerteza"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261118T183415377513Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 48816,
+        "classified": 48782,
+        "errors": 34,
+        "max_seq": 48816,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 56,
+        "states": {
+          "nao_selecionada": 48726,
+          "concluida": 56
+        },
+        "completed": 56,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 48782,
+        "explanation_records": 56
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T114938846080Z",
+        "copies": 2,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 3
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "sincrono-condicional-probabilidade",
+        "load": 1,
+        "repetition": 1,
+        "id": "campanha/xgboost/sincrono-condicional-probabilidade/carga-1/rep-1",
+        "strategy": "sincrono-condicional",
+        "criterion": "probabilidade"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261118T185655071151Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 24413,
+        "classified": 24396,
+        "errors": 17,
+        "max_seq": 24413,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 695,
+        "states": {
+          "nao_selecionada": 23701,
+          "concluida": 695
+        },
+        "completed": 695,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 24396,
+        "explanation_records": 695
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T114945342660Z",
+        "copies": 1,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 4
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "sem-xai",
+        "load": 1,
+        "repetition": 1,
+        "id": "campanha/random-forest/sem-xai/carga-1/rep-1",
+        "strategy": "sem-xai",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261118T191932597456Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 24413,
+        "classified": 24396,
+        "errors": 17,
+        "max_seq": 24413,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 0,
+        "states": {
+          "nao_selecionada": 24396
+        },
+        "completed": 0,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 24396,
+        "explanation_records": 0
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T114951630677Z",
+        "copies": 1,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 3
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "sincrono-condicional-probabilidade",
+        "load": 4,
+        "repetition": 1,
+        "id": "campanha/xgboost/sincrono-condicional-probabilidade/carga-4/rep-1",
+        "strategy": "sincrono-condicional",
+        "criterion": "probabilidade"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261118T194206328208Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 97889,
+        "classified": 97797,
+        "errors": 92,
+        "max_seq": 97889,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 2767,
+        "states": {
+          "nao_selecionada": 95030,
+          "concluida": 2767
+        },
+        "completed": 2767,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 97797,
+        "explanation_records": 2767
+      },
+      "validation": {
+        "status": "reprovada por perda na captura",
+        "run": "training-runs/nids/validacao/20261120T115011212977Z",
+        "flows_with_different_inputs": 1042,
+        "flows_compared": 88767,
+        "predictions_differing": 20
+      },
+      "capture_lost_packets": 10231
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "sincrono-condicional-incerteza",
+        "load": 4,
+        "repetition": 1,
+        "id": "campanha/random-forest/sincrono-condicional-incerteza/carga-4/rep-1",
+        "strategy": "sincrono-condicional",
+        "criterion": "incerteza"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261118T200447752527Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 97622,
+        "classified": 97554,
+        "errors": 68,
+        "max_seq": 97622,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 130,
+        "states": {
+          "nao_selecionada": 97424,
+          "concluida": 130
+        },
+        "completed": 130,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 97554,
+        "explanation_records": 130
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115031000395Z",
+        "copies": 4,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 15
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "sincrono-total",
+        "load": 2,
+        "repetition": 1,
+        "id": "campanha/random-forest/sincrono-total/carga-2/rep-1",
+        "strategy": "sincrono-total",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261118T202723179446Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 48816,
+        "classified": 48782,
+        "errors": 34,
+        "max_seq": 48816,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 48782,
+        "states": {
+          "concluida": 48782
+        },
+        "completed": 48782,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 48782,
+        "explanation_records": 48782
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115041087986Z",
+        "copies": 2,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 11
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "sem-xai",
+        "load": 2,
+        "repetition": 1,
+        "id": "campanha/xgboost/sem-xai/carga-2/rep-1",
+        "strategy": "sem-xai",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261118T204958450777Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 48816,
+        "classified": 48782,
+        "errors": 34,
+        "max_seq": 48816,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 0,
+        "states": {
+          "nao_selecionada": 48782
+        },
+        "completed": 0,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 48782,
+        "explanation_records": 0
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115051560689Z",
+        "copies": 2,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 5
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "sem-xai",
+        "load": 4,
+        "repetition": 1,
+        "id": "campanha/random-forest/sem-xai/carga-4/rep-1",
+        "strategy": "sem-xai",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261118T211232216531Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 97622,
+        "classified": 97554,
+        "errors": 68,
+        "max_seq": 97622,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 0,
+        "states": {
+          "nao_selecionada": 97554
+        },
+        "completed": 0,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 97554,
+        "explanation_records": 0
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115111441610Z",
+        "copies": 4,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 15
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "assincrono",
+        "load": 4,
+        "repetition": 1,
+        "id": "campanha/xgboost/assincrono/carga-4/rep-1",
+        "strategy": "assincrono",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261118T213508894239Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 97622,
+        "classified": 97554,
+        "errors": 68,
+        "max_seq": 97622,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 97554,
+        "states": {
+          "solicitada": 97554
+        },
+        "completed": 97554,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 97554,
+        "explanation_records": 97554
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115131359710Z",
+        "copies": 4,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 7
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "assincrono",
+        "load": 1,
+        "repetition": 1,
+        "id": "campanha/xgboost/assincrono/carga-1/rep-1",
+        "strategy": "assincrono",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261118T215750394192Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 24413,
+        "classified": 24396,
+        "errors": 17,
+        "max_seq": 24413,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 24396,
+        "states": {
+          "solicitada": 24396
+        },
+        "completed": 24396,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 24396,
+        "explanation_records": 24396
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115137405311Z",
+        "copies": 1,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 1
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "sincrono-condicional-incerteza",
+        "load": 4,
+        "repetition": 1,
+        "id": "campanha/xgboost/sincrono-condicional-incerteza/carga-4/rep-1",
+        "strategy": "sincrono-condicional",
+        "criterion": "incerteza"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261118T222026226226Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 97622,
+        "classified": 97554,
+        "errors": 68,
+        "max_seq": 97622,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 116,
+        "states": {
+          "nao_selecionada": 97438,
+          "concluida": 116
+        },
+        "completed": 116,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 97554,
+        "explanation_records": 116
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115156933899Z",
+        "copies": 4,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 7
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "assincrono",
+        "load": 4,
+        "repetition": 1,
+        "id": "campanha/random-forest/assincrono/carga-4/rep-1",
+        "strategy": "assincrono",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261118T224259977698Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 97622,
+        "classified": 97554,
+        "errors": 68,
+        "max_seq": 97622,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 97554,
+        "states": {
+          "solicitada": 93586,
+          "descartada": 3968
+        },
+        "completed": 93586,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 97554,
+        "explanation_records": 93586
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115216675627Z",
+        "copies": 4,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 14
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "sincrono-condicional-probabilidade",
+        "load": 4,
+        "repetition": 1,
+        "id": "campanha/random-forest/sincrono-condicional-probabilidade/carga-4/rep-1",
+        "strategy": "sincrono-condicional",
+        "criterion": "probabilidade"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261118T230538854468Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 97622,
+        "classified": 97554,
+        "errors": 68,
+        "max_seq": 97622,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 2727,
+        "states": {
+          "nao_selecionada": 94827,
+          "concluida": 2727
+        },
+        "completed": 2727,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 97554,
+        "explanation_records": 2727
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115236205460Z",
+        "copies": 4,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 15
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "sincrono-total",
+        "load": 4,
+        "repetition": 1,
+        "id": "campanha/random-forest/sincrono-total/carga-4/rep-1",
+        "strategy": "sincrono-total",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261118T232813334648Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 76878,
+        "classified": 76815,
+        "errors": 63,
+        "max_seq": 97622,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 76815,
+        "states": {
+          "concluida": 76815
+        },
+        "completed": 76815,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 76815,
+        "explanation_records": 76815
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115252275804Z",
+        "copies": 4,
+        "file_only_inside": 19863,
+        "replay_only_inside": 0,
+        "predictions_differing": 16
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "sem-xai",
+        "load": 2,
+        "repetition": 1,
+        "id": "campanha/random-forest/sem-xai/carga-2/rep-1",
+        "strategy": "sem-xai",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261118T235207123324Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 48816,
+        "classified": 48782,
+        "errors": 34,
+        "max_seq": 48816,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 0,
+        "states": {
+          "nao_selecionada": 48782
+        },
+        "completed": 0,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 48782,
+        "explanation_records": 0
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115302319100Z",
+        "copies": 2,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 5
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "sincrono-condicional-probabilidade",
+        "load": 2,
+        "repetition": 1,
+        "id": "campanha/xgboost/sincrono-condicional-probabilidade/carga-2/rep-1",
+        "strategy": "sincrono-condicional",
+        "criterion": "probabilidade"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T001440501923Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 48816,
+        "classified": 48782,
+        "errors": 34,
+        "max_seq": 48816,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 1388,
+        "states": {
+          "nao_selecionada": 47394,
+          "concluida": 1388
+        },
+        "completed": 1388,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 48782,
+        "explanation_records": 1388
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115312475000Z",
+        "copies": 2,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 4
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "sincrono-total",
+        "load": 1,
+        "repetition": 1,
+        "id": "campanha/random-forest/sincrono-total/carga-1/rep-1",
+        "strategy": "sincrono-total",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T003713764156Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 24413,
+        "classified": 24396,
+        "errors": 17,
+        "max_seq": 24413,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 24396,
+        "states": {
+          "concluida": 24396
+        },
+        "completed": 24396,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 24396,
+        "explanation_records": 24396
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115318586324Z",
+        "copies": 1,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 4
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "sincrono-condicional-incerteza",
+        "load": 1,
+        "repetition": 1,
+        "id": "campanha/random-forest/sincrono-condicional-incerteza/carga-1/rep-1",
+        "strategy": "sincrono-condicional",
+        "criterion": "incerteza"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T005947922064Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 24413,
+        "classified": 24396,
+        "errors": 17,
+        "max_seq": 24413,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 33,
+        "states": {
+          "nao_selecionada": 24363,
+          "concluida": 33
+        },
+        "completed": 33,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 24396,
+        "explanation_records": 33
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115324790681Z",
+        "copies": 1,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 5
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "sincrono-condicional-probabilidade",
+        "load": 2,
+        "repetition": 1,
+        "id": "campanha/random-forest/sincrono-condicional-probabilidade/carga-2/rep-1",
+        "strategy": "sincrono-condicional",
+        "criterion": "probabilidade"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T012221128878Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 48816,
+        "classified": 48782,
+        "errors": 34,
+        "max_seq": 48816,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 1370,
+        "states": {
+          "nao_selecionada": 47412,
+          "concluida": 1370
+        },
+        "completed": 1370,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 48782,
+        "explanation_records": 1370
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115334823992Z",
+        "copies": 2,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 8
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "assincrono",
+        "load": 1,
+        "repetition": 1,
+        "id": "campanha/random-forest/assincrono/carga-1/rep-1",
+        "strategy": "assincrono",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T014454576121Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 24413,
+        "classified": 24396,
+        "errors": 17,
+        "max_seq": 24413,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 24396,
+        "states": {
+          "solicitada": 24396
+        },
+        "completed": 24396,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 24396,
+        "explanation_records": 24396
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115341034188Z",
+        "copies": 1,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 4
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "assincrono",
+        "load": 2,
+        "repetition": 1,
+        "id": "campanha/random-forest/assincrono/carga-2/rep-1",
+        "strategy": "assincrono",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T020731453816Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 48816,
+        "classified": 48782,
+        "errors": 34,
+        "max_seq": 48816,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 48782,
+        "states": {
+          "solicitada": 48782
+        },
+        "completed": 48782,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 48782,
+        "explanation_records": 48782
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115351059174Z",
+        "copies": 2,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 5
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "sincrono-total",
+        "load": 2,
+        "repetition": 1,
+        "id": "campanha/xgboost/sincrono-total/carga-2/rep-1",
+        "strategy": "sincrono-total",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T023008408519Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 48816,
+        "classified": 48782,
+        "errors": 34,
+        "max_seq": 48816,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 48782,
+        "states": {
+          "concluida": 48782
+        },
+        "completed": 48782,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 48782,
+        "explanation_records": 48782
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115401177378Z",
+        "copies": 2,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 3
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "assincrono",
+        "load": 2,
+        "repetition": 1,
+        "id": "campanha/xgboost/assincrono/carga-2/rep-1",
+        "strategy": "assincrono",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T025242817221Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 48816,
+        "classified": 48782,
+        "errors": 34,
+        "max_seq": 48816,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 48782,
+        "states": {
+          "solicitada": 48782
+        },
+        "completed": 48782,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 48782,
+        "explanation_records": 48782
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115411383879Z",
+        "copies": 2,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 4
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "sem-xai",
+        "load": 1,
+        "repetition": 1,
+        "id": "campanha/xgboost/sem-xai/carga-1/rep-1",
+        "strategy": "sem-xai",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T031520026228Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 24413,
+        "classified": 24396,
+        "errors": 17,
+        "max_seq": 24413,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 0,
+        "states": {
+          "nao_selecionada": 24396
+        },
+        "completed": 0,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 24396,
+        "explanation_records": 0
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115417529844Z",
+        "copies": 1,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 1
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "sincrono-condicional-incerteza",
+        "load": 1,
+        "repetition": 1,
+        "id": "campanha/xgboost/sincrono-condicional-incerteza/carga-1/rep-1",
+        "strategy": "sincrono-condicional",
+        "criterion": "incerteza"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T033752892247Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 24413,
+        "classified": 24396,
+        "errors": 17,
+        "max_seq": 24413,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 28,
+        "states": {
+          "nao_selecionada": 24368,
+          "concluida": 28
+        },
+        "completed": 28,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 24396,
+        "explanation_records": 28
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115423930362Z",
+        "copies": 1,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 2
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "sincrono-condicional-incerteza",
+        "load": 2,
+        "repetition": 1,
+        "id": "campanha/random-forest/sincrono-condicional-incerteza/carga-2/rep-1",
+        "strategy": "sincrono-condicional",
+        "criterion": "incerteza"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T040025908978Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 48816,
+        "classified": 48782,
+        "errors": 34,
+        "max_seq": 48816,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 69,
+        "states": {
+          "nao_selecionada": 48713,
+          "concluida": 69
+        },
+        "completed": 69,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 48782,
+        "explanation_records": 69
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115434568235Z",
+        "copies": 2,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 9
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "sem-xai",
+        "load": 4,
+        "repetition": 1,
+        "id": "campanha/xgboost/sem-xai/carga-4/rep-1",
+        "strategy": "sem-xai",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T042259677242Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 97622,
+        "classified": 97554,
+        "errors": 68,
+        "max_seq": 97622,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 0,
+        "states": {
+          "nao_selecionada": 97554
+        },
+        "completed": 0,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 97554,
+        "explanation_records": 0
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115454250025Z",
+        "copies": 4,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 7
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "sincrono-total",
+        "load": 4,
+        "repetition": 1,
+        "id": "campanha/xgboost/sincrono-total/carga-4/rep-1",
+        "strategy": "sincrono-total",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T044535259605Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 97622,
+        "classified": 97554,
+        "errors": 68,
+        "max_seq": 97622,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 97554,
+        "states": {
+          "concluida": 97554
+        },
+        "completed": 97554,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 97554,
+        "explanation_records": 97554
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115514363052Z",
+        "copies": 4,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 7
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "sincrono-condicional-incerteza",
+        "load": 4,
+        "repetition": 2,
+        "id": "campanha/xgboost/sincrono-condicional-incerteza/carga-4/rep-2",
+        "strategy": "sincrono-condicional",
+        "criterion": "incerteza"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T050812293548Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 97622,
+        "classified": 97554,
+        "errors": 68,
+        "max_seq": 97622,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 122,
+        "states": {
+          "nao_selecionada": 97432,
+          "concluida": 122
+        },
+        "completed": 122,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 97554,
+        "explanation_records": 122
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115534038660Z",
+        "copies": 4,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 10
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "assincrono",
+        "load": 4,
+        "repetition": 2,
+        "id": "campanha/xgboost/assincrono/carga-4/rep-2",
+        "strategy": "assincrono",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T053046181231Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 97622,
+        "classified": 97554,
+        "errors": 68,
+        "max_seq": 97622,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 97554,
+        "states": {
+          "solicitada": 97554
+        },
+        "completed": 97554,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 97554,
+        "explanation_records": 97554
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115553993713Z",
+        "copies": 4,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 9
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "sincrono-total",
+        "load": 2,
+        "repetition": 2,
+        "id": "campanha/xgboost/sincrono-total/carga-2/rep-2",
+        "strategy": "sincrono-total",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T055324837208Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 48816,
+        "classified": 48782,
+        "errors": 34,
+        "max_seq": 48816,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 48782,
+        "states": {
+          "concluida": 48782
+        },
+        "completed": 48782,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 48782,
+        "explanation_records": 48782
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115604373461Z",
+        "copies": 2,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 5
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "sincrono-condicional-incerteza",
+        "load": 1,
+        "repetition": 2,
+        "id": "campanha/xgboost/sincrono-condicional-incerteza/carga-1/rep-2",
+        "strategy": "sincrono-condicional",
+        "criterion": "incerteza"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T061559389320Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 24413,
+        "classified": 24396,
+        "errors": 17,
+        "max_seq": 24413,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 30,
+        "states": {
+          "nao_selecionada": 24366,
+          "concluida": 30
+        },
+        "completed": 30,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 24396,
+        "explanation_records": 30
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115610717783Z",
+        "copies": 1,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 2
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "sincrono-condicional-probabilidade",
+        "load": 4,
+        "repetition": 2,
+        "id": "campanha/xgboost/sincrono-condicional-probabilidade/carga-4/rep-2",
+        "strategy": "sincrono-condicional",
+        "criterion": "probabilidade"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T063832156449Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 97622,
+        "classified": 97554,
+        "errors": 68,
+        "max_seq": 97622,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 2774,
+        "states": {
+          "nao_selecionada": 94780,
+          "concluida": 2774
+        },
+        "completed": 2774,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 97554,
+        "explanation_records": 2774
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115630274635Z",
+        "copies": 4,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 10
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "sincrono-condicional-probabilidade",
+        "load": 1,
+        "repetition": 2,
+        "id": "campanha/random-forest/sincrono-condicional-probabilidade/carga-1/rep-2",
+        "strategy": "sincrono-condicional",
+        "criterion": "probabilidade"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T070106911919Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 24413,
+        "classified": 24396,
+        "errors": 17,
+        "max_seq": 24413,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 685,
+        "states": {
+          "nao_selecionada": 23711,
+          "concluida": 685
+        },
+        "completed": 685,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 24396,
+        "explanation_records": 685
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115636413955Z",
+        "copies": 1,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 5
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "assincrono",
+        "load": 1,
+        "repetition": 2,
+        "id": "campanha/random-forest/assincrono/carga-1/rep-2",
+        "strategy": "assincrono",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T072340657090Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 24413,
+        "classified": 24396,
+        "errors": 17,
+        "max_seq": 24413,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 24396,
+        "states": {
+          "solicitada": 24396
+        },
+        "completed": 24396,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 24396,
+        "explanation_records": 24396
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115642720843Z",
+        "copies": 1,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 5
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "sincrono-total",
+        "load": 1,
+        "repetition": 2,
+        "id": "campanha/xgboost/sincrono-total/carga-1/rep-2",
+        "strategy": "sincrono-total",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T074616032654Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 24413,
+        "classified": 24396,
+        "errors": 17,
+        "max_seq": 24413,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 24396,
+        "states": {
+          "concluida": 24396
+        },
+        "completed": 24396,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 24396,
+        "explanation_records": 24396
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115649341340Z",
+        "copies": 1,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 3
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "sincrono-total",
+        "load": 4,
+        "repetition": 2,
+        "id": "campanha/random-forest/sincrono-total/carga-4/rep-2",
+        "strategy": "sincrono-total",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T080849488645Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 86234,
+        "classified": 86172,
+        "errors": 62,
+        "max_seq": 97622,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 86172,
+        "states": {
+          "concluida": 86172
+        },
+        "completed": 86172,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 86172,
+        "explanation_records": 86172
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115707286198Z",
+        "copies": 4,
+        "file_only_inside": 10874,
+        "replay_only_inside": 0,
+        "predictions_differing": 14
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "sincrono-total",
+        "load": 2,
+        "repetition": 2,
+        "id": "campanha/random-forest/sincrono-total/carga-2/rep-2",
+        "strategy": "sincrono-total",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T141246188226Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 48816,
+        "classified": 48782,
+        "errors": 34,
+        "max_seq": 48816,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 48782,
+        "states": {
+          "concluida": 48782
+        },
+        "completed": 48782,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 48782,
+        "explanation_records": 48782
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115717423656Z",
+        "copies": 2,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 6
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "assincrono",
+        "load": 4,
+        "repetition": 2,
+        "id": "campanha/random-forest/assincrono/carga-4/rep-2",
+        "strategy": "assincrono",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T143531944993Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 97622,
+        "classified": 97554,
+        "errors": 68,
+        "max_seq": 97622,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 97554,
+        "states": {
+          "solicitada": 92503,
+          "descartada": 5051
+        },
+        "completed": 92503,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 97554,
+        "explanation_records": 92503
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115737587796Z",
+        "copies": 4,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 12
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "sem-xai",
+        "load": 1,
+        "repetition": 2,
+        "id": "campanha/xgboost/sem-xai/carga-1/rep-2",
+        "strategy": "sem-xai",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T145821985516Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 24413,
+        "classified": 24396,
+        "errors": 17,
+        "max_seq": 24413,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 0,
+        "states": {
+          "nao_selecionada": 24396
+        },
+        "completed": 0,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 24396,
+        "explanation_records": 0
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115743875994Z",
+        "copies": 1,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 3
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "sem-xai",
+        "load": 4,
+        "repetition": 2,
+        "id": "campanha/xgboost/sem-xai/carga-4/rep-2",
+        "strategy": "sem-xai",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T162631261347Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 97622,
+        "classified": 97554,
+        "errors": 68,
+        "max_seq": 97622,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 0,
+        "states": {
+          "nao_selecionada": 97554
+        },
+        "completed": 0,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 97554,
+        "explanation_records": 0
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115803750918Z",
+        "copies": 4,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 6
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "assincrono",
+        "load": 2,
+        "repetition": 2,
+        "id": "campanha/xgboost/assincrono/carga-2/rep-2",
+        "strategy": "assincrono",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T164916219269Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 48816,
+        "classified": 48782,
+        "errors": 34,
+        "max_seq": 48816,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 48782,
+        "states": {
+          "solicitada": 48782
+        },
+        "completed": 48782,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 48782,
+        "explanation_records": 48782
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115814190868Z",
+        "copies": 2,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 2
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "sem-xai",
+        "load": 2,
+        "repetition": 2,
+        "id": "campanha/random-forest/sem-xai/carga-2/rep-2",
+        "strategy": "sem-xai",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T171203239378Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 48816,
+        "classified": 48782,
+        "errors": 34,
+        "max_seq": 48816,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 0,
+        "states": {
+          "nao_selecionada": 48782
+        },
+        "completed": 0,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 48782,
+        "explanation_records": 0
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115825009215Z",
+        "copies": 2,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 7
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "sem-xai",
+        "load": 1,
+        "repetition": 2,
+        "id": "campanha/random-forest/sem-xai/carga-1/rep-2",
+        "strategy": "sem-xai",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T173440889773Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 24413,
+        "classified": 24396,
+        "errors": 17,
+        "max_seq": 24413,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 0,
+        "states": {
+          "nao_selecionada": 24396
+        },
+        "completed": 0,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 24396,
+        "explanation_records": 0
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115830941889Z",
+        "copies": 1,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 3
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "sem-xai",
+        "load": 4,
+        "repetition": 2,
+        "id": "campanha/random-forest/sem-xai/carga-4/rep-2",
+        "strategy": "sem-xai",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T175716215966Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 97622,
+        "classified": 97554,
+        "errors": 68,
+        "max_seq": 97622,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 0,
+        "states": {
+          "nao_selecionada": 97554
+        },
+        "completed": 0,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 97554,
+        "explanation_records": 0
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115850838536Z",
+        "copies": 4,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 15
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "sincrono-condicional-incerteza",
+        "load": 1,
+        "repetition": 2,
+        "id": "campanha/random-forest/sincrono-condicional-incerteza/carga-1/rep-2",
+        "strategy": "sincrono-condicional",
+        "criterion": "incerteza"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T182000026301Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 24413,
+        "classified": 24396,
+        "errors": 17,
+        "max_seq": 24413,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 35,
+        "states": {
+          "nao_selecionada": 24361,
+          "concluida": 35
+        },
+        "completed": 35,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 24396,
+        "explanation_records": 35
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115857688378Z",
+        "copies": 1,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 4
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "sincrono-condicional-probabilidade",
+        "load": 2,
+        "repetition": 2,
+        "id": "campanha/random-forest/sincrono-condicional-probabilidade/carga-2/rep-2",
+        "strategy": "sincrono-condicional",
+        "criterion": "probabilidade"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T184235736938Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 48816,
+        "classified": 48782,
+        "errors": 34,
+        "max_seq": 48816,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 1367,
+        "states": {
+          "nao_selecionada": 47415,
+          "concluida": 1367
+        },
+        "completed": 1367,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 48782,
+        "explanation_records": 1367
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115908608269Z",
+        "copies": 2,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 7
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "sincrono-condicional-probabilidade",
+        "load": 4,
+        "repetition": 2,
+        "id": "campanha/random-forest/sincrono-condicional-probabilidade/carga-4/rep-2",
+        "strategy": "sincrono-condicional",
+        "criterion": "probabilidade"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T190508958074Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 97622,
+        "classified": 97554,
+        "errors": 68,
+        "max_seq": 97622,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 2728,
+        "states": {
+          "nao_selecionada": 94826,
+          "concluida": 2728
+        },
+        "completed": 2728,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 97554,
+        "explanation_records": 2728
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115928664318Z",
+        "copies": 4,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 12
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "sincrono-total",
+        "load": 4,
+        "repetition": 2,
+        "id": "campanha/xgboost/sincrono-total/carga-4/rep-2",
+        "strategy": "sincrono-total",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T192750022400Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 97622,
+        "classified": 97554,
+        "errors": 68,
+        "max_seq": 97622,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 97554,
+        "states": {
+          "concluida": 97554
+        },
+        "completed": 97554,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 97554,
+        "explanation_records": 97554
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115948590727Z",
+        "copies": 4,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 5
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "sincrono-condicional-probabilidade",
+        "load": 2,
+        "repetition": 2,
+        "id": "campanha/xgboost/sincrono-condicional-probabilidade/carga-2/rep-2",
+        "strategy": "sincrono-condicional",
+        "criterion": "probabilidade"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T195035583404Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 48816,
+        "classified": 48782,
+        "errors": 34,
+        "max_seq": 48816,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 1387,
+        "states": {
+          "nao_selecionada": 47395,
+          "concluida": 1387
+        },
+        "completed": 1387,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 48782,
+        "explanation_records": 1387
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T115958633597Z",
+        "copies": 2,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 5
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "assincrono",
+        "load": 2,
+        "repetition": 2,
+        "id": "campanha/random-forest/assincrono/carga-2/rep-2",
+        "strategy": "assincrono",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T201309127986Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 48816,
+        "classified": 48782,
+        "errors": 34,
+        "max_seq": 48816,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 48782,
+        "states": {
+          "solicitada": 48782
+        },
+        "completed": 48782,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 48782,
+        "explanation_records": 48782
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T120008937823Z",
+        "copies": 2,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 11
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "sincrono-condicional-incerteza",
+        "load": 2,
+        "repetition": 2,
+        "id": "campanha/xgboost/sincrono-condicional-incerteza/carga-2/rep-2",
+        "strategy": "sincrono-condicional",
+        "criterion": "incerteza"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T203545380438Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 48816,
+        "classified": 48782,
+        "errors": 34,
+        "max_seq": 48816,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 59,
+        "states": {
+          "nao_selecionada": 48723,
+          "concluida": 59
+        },
+        "completed": 59,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 48782,
+        "explanation_records": 59
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T120018890895Z",
+        "copies": 2,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 5
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "sem-xai",
+        "load": 2,
+        "repetition": 2,
+        "id": "campanha/xgboost/sem-xai/carga-2/rep-2",
+        "strategy": "sem-xai",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T205818930423Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 48816,
+        "classified": 48782,
+        "errors": 34,
+        "max_seq": 48816,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 0,
+        "states": {
+          "nao_selecionada": 48782
+        },
+        "completed": 0,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 48782,
+        "explanation_records": 0
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T120028939391Z",
+        "copies": 2,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 5
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "sincrono-condicional-incerteza",
+        "load": 2,
+        "repetition": 2,
+        "id": "campanha/random-forest/sincrono-condicional-incerteza/carga-2/rep-2",
+        "strategy": "sincrono-condicional",
+        "criterion": "incerteza"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T212052895233Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 48816,
+        "classified": 48782,
+        "errors": 34,
+        "max_seq": 48816,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 67,
+        "states": {
+          "nao_selecionada": 48715,
+          "concluida": 67
+        },
+        "completed": 67,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 48782,
+        "explanation_records": 67
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T120039434237Z",
+        "copies": 2,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 6
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "sincrono-condicional-incerteza",
+        "load": 4,
+        "repetition": 2,
+        "id": "campanha/random-forest/sincrono-condicional-incerteza/carga-4/rep-2",
+        "strategy": "sincrono-condicional",
+        "criterion": "incerteza"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T225402028747Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 97622,
+        "classified": 97554,
+        "errors": 68,
+        "max_seq": 97622,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 131,
+        "states": {
+          "nao_selecionada": 97423,
+          "concluida": 131
+        },
+        "completed": 131,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 97554,
+        "explanation_records": 131
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T120059323853Z",
+        "copies": 4,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 13
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "assincrono",
+        "load": 1,
+        "repetition": 2,
+        "id": "campanha/xgboost/assincrono/carga-1/rep-2",
+        "strategy": "assincrono",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T231650010875Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 24413,
+        "classified": 24396,
+        "errors": 17,
+        "max_seq": 24413,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 24396,
+        "states": {
+          "solicitada": 24396
+        },
+        "completed": 24396,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 24396,
+        "explanation_records": 24396
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T120105898648Z",
+        "copies": 1,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 2
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "sincrono-total",
+        "load": 1,
+        "repetition": 2,
+        "id": "campanha/random-forest/sincrono-total/carga-1/rep-2",
+        "strategy": "sincrono-total",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261119T233926326202Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 24413,
+        "classified": 24396,
+        "errors": 17,
+        "max_seq": 24413,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 24396,
+        "states": {
+          "concluida": 24396
+        },
+        "completed": 24396,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 24396,
+        "explanation_records": 24396
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T120112200605Z",
+        "copies": 1,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 4
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "sincrono-condicional-probabilidade",
+        "load": 1,
+        "repetition": 2,
+        "id": "campanha/xgboost/sincrono-condicional-probabilidade/carga-1/rep-2",
+        "strategy": "sincrono-condicional",
+        "criterion": "probabilidade"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261120T000200010922Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 24413,
+        "classified": 24396,
+        "errors": 17,
+        "max_seq": 24413,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 695,
+        "states": {
+          "nao_selecionada": 23701,
+          "concluida": 695
+        },
+        "completed": 695,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 24396,
+        "explanation_records": 695
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T120118572217Z",
+        "copies": 1,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 3
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "sincrono-condicional-incerteza",
+        "load": 4,
+        "repetition": 3,
+        "id": "campanha/xgboost/sincrono-condicional-incerteza/carga-4/rep-3",
+        "strategy": "sincrono-condicional",
+        "criterion": "incerteza"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261120T002433010974Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 97622,
+        "classified": 97554,
+        "errors": 68,
+        "max_seq": 97622,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 116,
+        "states": {
+          "nao_selecionada": 97438,
+          "concluida": 116
+        },
+        "completed": 116,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 97554,
+        "explanation_records": 116
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T120139004812Z",
+        "copies": 4,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 4
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "assincrono",
+        "load": 2,
+        "repetition": 3,
+        "id": "campanha/xgboost/assincrono/carga-2/rep-3",
+        "strategy": "assincrono",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261120T004709009852Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 48816,
+        "classified": 48782,
+        "errors": 34,
+        "max_seq": 48816,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 48782,
+        "states": {
+          "solicitada": 48782
+        },
+        "completed": 48782,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 48782,
+        "explanation_records": 48782
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T120149337364Z",
+        "copies": 2,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 4
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "sincrono-condicional-probabilidade",
+        "load": 2,
+        "repetition": 3,
+        "id": "campanha/xgboost/sincrono-condicional-probabilidade/carga-2/rep-3",
+        "strategy": "sincrono-condicional",
+        "criterion": "probabilidade"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261120T010945736927Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 48816,
+        "classified": 48782,
+        "errors": 34,
+        "max_seq": 48816,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 1390,
+        "states": {
+          "nao_selecionada": 47392,
+          "concluida": 1390
+        },
+        "completed": 1390,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 48782,
+        "explanation_records": 1390
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T120159534999Z",
+        "copies": 2,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 3
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "sincrono-condicional-incerteza",
+        "load": 4,
+        "repetition": 3,
+        "id": "campanha/random-forest/sincrono-condicional-incerteza/carga-4/rep-3",
+        "strategy": "sincrono-condicional",
+        "criterion": "incerteza"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261120T013218737892Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 97622,
+        "classified": 97554,
+        "errors": 68,
+        "max_seq": 97622,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 134,
+        "states": {
+          "nao_selecionada": 97420,
+          "concluida": 134
+        },
+        "completed": 134,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 97554,
+        "explanation_records": 134
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T120220046261Z",
+        "copies": 4,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 15
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "sem-xai",
+        "load": 1,
+        "repetition": 3,
+        "id": "campanha/random-forest/sem-xai/carga-1/rep-3",
+        "strategy": "sem-xai",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261120T015452834771Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 24413,
+        "classified": 24396,
+        "errors": 17,
+        "max_seq": 24413,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 0,
+        "states": {
+          "nao_selecionada": 24396
+        },
+        "completed": 0,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 24396,
+        "explanation_records": 0
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T120226256648Z",
+        "copies": 1,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 4
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "sincrono-condicional-probabilidade",
+        "load": 4,
+        "repetition": 3,
+        "id": "campanha/random-forest/sincrono-condicional-probabilidade/carga-4/rep-3",
+        "strategy": "sincrono-condicional",
+        "criterion": "probabilidade"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261120T021725955379Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 97622,
+        "classified": 97554,
+        "errors": 68,
+        "max_seq": 97622,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 2721,
+        "states": {
+          "nao_selecionada": 94833,
+          "concluida": 2721
+        },
+        "completed": 2721,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 97554,
+        "explanation_records": 2721
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T120246354167Z",
+        "copies": 4,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 17
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "sincrono-condicional-incerteza",
+        "load": 2,
+        "repetition": 3,
+        "id": "campanha/random-forest/sincrono-condicional-incerteza/carga-2/rep-3",
+        "strategy": "sincrono-condicional",
+        "criterion": "incerteza"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261120T024002411193Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 48816,
+        "classified": 48782,
+        "errors": 34,
+        "max_seq": 48816,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 66,
+        "states": {
+          "nao_selecionada": 48716,
+          "concluida": 66
+        },
+        "completed": 66,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 48782,
+        "explanation_records": 66
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T120256382705Z",
+        "copies": 2,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 10
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "sincrono-condicional-probabilidade",
+        "load": 2,
+        "repetition": 3,
+        "id": "campanha/random-forest/sincrono-condicional-probabilidade/carga-2/rep-3",
+        "strategy": "sincrono-condicional",
+        "criterion": "probabilidade"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261120T030235878610Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 48816,
+        "classified": 48782,
+        "errors": 34,
+        "max_seq": 48816,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 1365,
+        "states": {
+          "nao_selecionada": 47417,
+          "concluida": 1365
+        },
+        "completed": 1365,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 48782,
+        "explanation_records": 1365
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T120306571331Z",
+        "copies": 2,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 7
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "assincrono",
+        "load": 1,
+        "repetition": 3,
+        "id": "campanha/xgboost/assincrono/carga-1/rep-3",
+        "strategy": "assincrono",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261120T032509829271Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 24413,
+        "classified": 24396,
+        "errors": 17,
+        "max_seq": 24413,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 24396,
+        "states": {
+          "solicitada": 24396
+        },
+        "completed": 24396,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 24396,
+        "explanation_records": 24396
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T120312767290Z",
+        "copies": 1,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 3
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "sincrono-total",
+        "load": 1,
+        "repetition": 3,
+        "id": "campanha/random-forest/sincrono-total/carga-1/rep-3",
+        "strategy": "sincrono-total",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261120T034745098409Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 24413,
+        "classified": 24396,
+        "errors": 17,
+        "max_seq": 24413,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 24396,
+        "states": {
+          "concluida": 24396
+        },
+        "completed": 24396,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 24396,
+        "explanation_records": 24396
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T120319031137Z",
+        "copies": 1,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 1
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "assincrono",
+        "load": 1,
+        "repetition": 3,
+        "id": "campanha/random-forest/assincrono/carga-1/rep-3",
+        "strategy": "assincrono",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261120T041018834743Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 24413,
+        "classified": 24396,
+        "errors": 17,
+        "max_seq": 24413,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 24396,
+        "states": {
+          "solicitada": 24396
+        },
+        "completed": 24396,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 24396,
+        "explanation_records": 24396
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T120325388814Z",
+        "copies": 1,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 5
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "sincrono-condicional-incerteza",
+        "load": 2,
+        "repetition": 3,
+        "id": "campanha/xgboost/sincrono-condicional-incerteza/carga-2/rep-3",
+        "strategy": "sincrono-condicional",
+        "criterion": "incerteza"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261120T043254111958Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 48816,
+        "classified": 48782,
+        "errors": 34,
+        "max_seq": 48816,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 61,
+        "states": {
+          "nao_selecionada": 48721,
+          "concluida": 61
+        },
+        "completed": 61,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 48782,
+        "explanation_records": 61
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T120335403762Z",
+        "copies": 2,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 5
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "sem-xai",
+        "load": 2,
+        "repetition": 3,
+        "id": "campanha/random-forest/sem-xai/carga-2/rep-3",
+        "strategy": "sem-xai",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261120T045527337689Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 48816,
+        "classified": 48782,
+        "errors": 34,
+        "max_seq": 48816,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 0,
+        "states": {
+          "nao_selecionada": 48782
+        },
+        "completed": 0,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 48782,
+        "explanation_records": 0
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T120345523109Z",
+        "copies": 2,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 6
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "sincrono-condicional-incerteza",
+        "load": 1,
+        "repetition": 3,
+        "id": "campanha/xgboost/sincrono-condicional-incerteza/carga-1/rep-3",
+        "strategy": "sincrono-condicional",
+        "criterion": "incerteza"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261120T051800318046Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 24413,
+        "classified": 24396,
+        "errors": 17,
+        "max_seq": 24413,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 27,
+        "states": {
+          "nao_selecionada": 24369,
+          "concluida": 27
+        },
+        "completed": 27,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 24396,
+        "explanation_records": 27
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T120351684488Z",
+        "copies": 1,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 2
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "sincrono-total",
+        "load": 4,
+        "repetition": 3,
+        "id": "campanha/xgboost/sincrono-total/carga-4/rep-3",
+        "strategy": "sincrono-total",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261120T054033514209Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 97622,
+        "classified": 97554,
+        "errors": 68,
+        "max_seq": 97622,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 97554,
+        "states": {
+          "concluida": 97554
+        },
+        "completed": 97554,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 97554,
+        "explanation_records": 97554
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T120411580721Z",
+        "copies": 4,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 5
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "sem-xai",
+        "load": 2,
+        "repetition": 3,
+        "id": "campanha/xgboost/sem-xai/carga-2/rep-3",
+        "strategy": "sem-xai",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261120T060311258928Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 48816,
+        "classified": 48782,
+        "errors": 34,
+        "max_seq": 48816,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 0,
+        "states": {
+          "nao_selecionada": 48782
+        },
+        "completed": 0,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 48782,
+        "explanation_records": 0
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T120422071019Z",
+        "copies": 2,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 7
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "sem-xai",
+        "load": 1,
+        "repetition": 3,
+        "id": "campanha/xgboost/sem-xai/carga-1/rep-3",
+        "strategy": "sem-xai",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261120T062544280128Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 24413,
+        "classified": 24396,
+        "errors": 17,
+        "max_seq": 24413,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 0,
+        "states": {
+          "nao_selecionada": 24396
+        },
+        "completed": 0,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 24396,
+        "explanation_records": 0
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T120428221144Z",
+        "copies": 1,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 3
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "sincrono-condicional-probabilidade",
+        "load": 1,
+        "repetition": 3,
+        "id": "campanha/xgboost/sincrono-condicional-probabilidade/carga-1/rep-3",
+        "strategy": "sincrono-condicional",
+        "criterion": "probabilidade"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261120T064817613906Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 24413,
+        "classified": 24396,
+        "errors": 17,
+        "max_seq": 24413,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 693,
+        "states": {
+          "nao_selecionada": 23703,
+          "concluida": 693
+        },
+        "completed": 693,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 24396,
+        "explanation_records": 693
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T120434488733Z",
+        "copies": 1,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 2
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "sincrono-condicional-incerteza",
+        "load": 1,
+        "repetition": 3,
+        "id": "campanha/random-forest/sincrono-condicional-incerteza/carga-1/rep-3",
+        "strategy": "sincrono-condicional",
+        "criterion": "incerteza"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261120T071050476668Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 24413,
+        "classified": 24396,
+        "errors": 17,
+        "max_seq": 24413,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 34,
+        "states": {
+          "nao_selecionada": 24362,
+          "concluida": 34
+        },
+        "completed": 34,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 24396,
+        "explanation_records": 34
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T120440822867Z",
+        "copies": 1,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 4
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "assincrono",
+        "load": 4,
+        "repetition": 3,
+        "id": "campanha/xgboost/assincrono/carga-4/rep-3",
+        "strategy": "assincrono",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261120T073323188183Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 97622,
+        "classified": 97554,
+        "errors": 68,
+        "max_seq": 97622,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 97554,
+        "states": {
+          "solicitada": 97554
+        },
+        "completed": 97554,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 97554,
+        "explanation_records": 97554
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T120501535086Z",
+        "copies": 4,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 9
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "sincrono-total",
+        "load": 2,
+        "repetition": 3,
+        "id": "campanha/random-forest/sincrono-total/carga-2/rep-3",
+        "strategy": "sincrono-total",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261120T075601528749Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 48816,
+        "classified": 48782,
+        "errors": 34,
+        "max_seq": 48816,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 48782,
+        "states": {
+          "concluida": 48782
+        },
+        "completed": 48782,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 48782,
+        "explanation_records": 48782
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T120511847247Z",
+        "copies": 2,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 6
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "sem-xai",
+        "load": 4,
+        "repetition": 3,
+        "id": "campanha/random-forest/sem-xai/carga-4/rep-3",
+        "strategy": "sem-xai",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261120T081836291300Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 97622,
+        "classified": 97554,
+        "errors": 68,
+        "max_seq": 97622,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 0,
+        "states": {
+          "nao_selecionada": 97554
+        },
+        "completed": 0,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 97554,
+        "explanation_records": 0
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T120531724541Z",
+        "copies": 4,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 13
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "sincrono-total",
+        "load": 1,
+        "repetition": 3,
+        "id": "campanha/xgboost/sincrono-total/carga-1/rep-3",
+        "strategy": "sincrono-total",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261120T084109599047Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 24413,
+        "classified": 24396,
+        "errors": 17,
+        "max_seq": 24413,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 24396,
+        "states": {
+          "concluida": 24396
+        },
+        "completed": 24396,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 24396,
+        "explanation_records": 24396
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T120538367527Z",
+        "copies": 1,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 2
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "sincrono-total",
+        "load": 2,
+        "repetition": 3,
+        "id": "campanha/xgboost/sincrono-total/carga-2/rep-3",
+        "strategy": "sincrono-total",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261120T090343259343Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 48816,
+        "classified": 48782,
+        "errors": 34,
+        "max_seq": 48816,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 48782,
+        "states": {
+          "concluida": 48782
+        },
+        "completed": 48782,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 48782,
+        "explanation_records": 48782
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T120548452273Z",
+        "copies": 2,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 3
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "assincrono",
+        "load": 2,
+        "repetition": 3,
+        "id": "campanha/random-forest/assincrono/carga-2/rep-3",
+        "strategy": "assincrono",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261120T092617966950Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 48816,
+        "classified": 48782,
+        "errors": 34,
+        "max_seq": 48816,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 48782,
+        "states": {
+          "solicitada": 48782
+        },
+        "completed": 48782,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 48782,
+        "explanation_records": 48782
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T120558896276Z",
+        "copies": 2,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 9
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "sincrono-condicional-probabilidade",
+        "load": 4,
+        "repetition": 3,
+        "id": "campanha/xgboost/sincrono-condicional-probabilidade/carga-4/rep-3",
+        "strategy": "sincrono-condicional",
+        "criterion": "probabilidade"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261120T094854036022Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 97622,
+        "classified": 97554,
+        "errors": 68,
+        "max_seq": 97622,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 2779,
+        "states": {
+          "nao_selecionada": 94775,
+          "concluida": 2779
+        },
+        "completed": 2779,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 97554,
+        "explanation_records": 2779
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T120618775963Z",
+        "copies": 4,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 6
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "assincrono",
+        "load": 4,
+        "repetition": 3,
+        "id": "campanha/random-forest/assincrono/carga-4/rep-3",
+        "strategy": "assincrono",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261120T101128770640Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 97622,
+        "classified": 97554,
+        "errors": 68,
+        "max_seq": 97622,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 97554,
+        "states": {
+          "solicitada": 97015,
+          "descartada": 539
+        },
+        "completed": 97015,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 97554,
+        "explanation_records": 97015
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T120638916239Z",
+        "copies": 4,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 19
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "sincrono-condicional-probabilidade",
+        "load": 1,
+        "repetition": 3,
+        "id": "campanha/random-forest/sincrono-condicional-probabilidade/carga-1/rep-3",
+        "strategy": "sincrono-condicional",
+        "criterion": "probabilidade"
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261120T103408147141Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 24413,
+        "classified": 24396,
+        "errors": 17,
+        "max_seq": 24413,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 684,
+        "states": {
+          "nao_selecionada": 23712,
+          "concluida": 684
+        },
+        "completed": 684,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 24396,
+        "explanation_records": 684
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T120644971868Z",
+        "copies": 1,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 3
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "sem-xai",
+        "load": 4,
+        "repetition": 3,
+        "id": "campanha/xgboost/sem-xai/carga-4/rep-3",
+        "strategy": "sem-xai",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261120T105640818245Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 97622,
+        "classified": 97554,
+        "errors": 68,
+        "max_seq": 97622,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 0,
+        "states": {
+          "nao_selecionada": 97554
+        },
+        "completed": 0,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 97554,
+        "explanation_records": 0
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T120704729290Z",
+        "copies": 4,
+        "file_only_inside": 0,
+        "replay_only_inside": 0,
+        "predictions_differing": 7
+      },
+      "capture_lost_packets": 0
+    },
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "random-forest",
+        "configuration": "sincrono-total",
+        "load": 4,
+        "repetition": 3,
+        "id": "campanha/random-forest/sincrono-total/carga-4/rep-3",
+        "strategy": "sincrono-total",
+        "criterion": null
+      },
+      "attempt": 1,
+      "valid": true,
+      "reasons": [],
+      "started": true,
+      "run_dir": "training-runs/nids/interface/20261120T111914175507Z",
+      "issues": [],
+      "pending_checks": [],
+      "recount": {
+        "received": 85713,
+        "classified": 85650,
+        "errors": 63,
+        "max_seq": 97622,
+        "unique_sequences": true,
+        "flow_marks_ordered": true,
+        "selected": 85650,
+        "states": {
+          "concluida": 85650
+        },
+        "completed": 85650,
+        "explanation_marks_ordered": true,
+        "explained_without_flow": 0,
+        "explained_not_selected": 0,
+        "classification_records": 85650,
+        "explanation_records": 85650
+      },
+      "validation": {
+        "status": "aprovada",
+        "run": "training-runs/nids/validacao/20261120T120722643110Z",
+        "copies": 4,
+        "file_only_inside": 11383,
+        "replay_only_inside": 0,
+        "predictions_differing": 8
+      },
+      "capture_lost_packets": 0
+    }
+  ],
+  "fixed_inputs": {
+    "rows": [
+      {
+        "input": "model",
+        "scope": "por classificador",
+        "distinct": 1,
+        "equal": true
+      },
+      {
+        "input": "source_kind",
+        "scope": "todas",
+        "distinct": 1,
+        "equal": true
+      },
+      {
+        "input": "traffic",
+        "scope": "todas",
+        "distinct": 1,
+        "equal": true
+      },
+      {
+        "input": "config_sha256",
+        "scope": "todas",
+        "distinct": 1,
+        "equal": true
+      },
+      {
+        "input": "model_sha256",
+        "scope": "por classificador",
+        "distinct": 1,
+        "equal": true
+      },
+      {
+        "input": "tree_shap_config_sha256",
+        "scope": "todas",
+        "distinct": 1,
+        "equal": true
+      },
+      {
+        "input": "explainer",
+        "scope": "todas",
+        "distinct": 1,
+        "equal": true
+      },
+      {
+        "input": "extractor_jars",
+        "scope": "todas",
+        "distinct": 1,
+        "equal": true
+      },
+      {
+        "input": "extractor_options",
+        "scope": "todas",
+        "distinct": 1,
+        "equal": true
+      },
+      {
+        "input": "classifier_threads",
+        "scope": "todas",
+        "distinct": 1,
+        "equal": true
+      },
+      {
+        "input": "cpus",
+        "scope": "todas",
+        "distinct": 1,
+        "equal": true
+      },
+      {
+        "input": "python",
+        "scope": "todas",
+        "distinct": 1,
+        "equal": true
+      },
+      {
+        "input": "libraries",
+        "scope": "todas",
+        "distinct": 1,
+        "equal": true
+      },
+      {
+        "input": "java_version",
+        "scope": "todas",
+        "distinct": 1,
+        "equal": true
+      },
+      {
+        "input": "ring_bytes",
+        "scope": "todas",
+        "distinct": 1,
+        "equal": true
+      },
+      {
+        "input": "platform",
+        "scope": "todas",
+        "distinct": 1,
+        "equal": true
+      },
+      {
+        "input": "stage",
+        "scope": "todas",
+        "distinct": 1,
+        "equal": true
+      },
+      {
+        "input": "segment",
+        "scope": "todas",
+        "distinct": 1,
+        "equal": true
+      },
+      {
+        "input": "pcap",
+        "scope": "todas",
+        "distinct": 1,
+        "equal": true
+      },
+      {
+        "input": "segment_packets",
+        "scope": "todas",
+        "distinct": 1,
+        "equal": true
+      },
+      {
+        "input": "addresses",
+        "scope": "todas",
+        "distinct": 1,
+        "equal": true
+      },
+      {
+        "input": "topology",
+        "scope": "todas",
+        "distinct": 1,
+        "equal": true
+      },
+      {
+        "input": "wait_after_replay_s",
+        "scope": "todas",
+        "distinct": 1,
+        "equal": true
+      },
+      {
+        "input": "tcpreplay_build",
+        "scope": "todas",
+        "distinct": 1,
+        "equal": true
+      },
+      {
+        "input": "replay_cpus",
+        "scope": "todas",
+        "distinct": 1,
+        "equal": true
+      },
+      {
+        "input": "nids_stop_timeout_s",
+        "scope": "por carga",
+        "distinct": 1,
+        "equal": true
+      },
+      {
+        "input": "interface_offloads",
+        "scope": "todas",
+        "distinct": 1,
+        "equal": true
+      },
+      {
+        "input": "git_commit",
+        "scope": "todas",
+        "distinct": 1,
+        "equal": true
+      }
+    ],
+    "issues": [],
+    "git": {
+      "commits": [
+        "4558a3be71a791309db44c71a1fd6c9a25ae6642"
+      ],
+      "modified_tracked_files": [
+        "docs/bibliography/README.md",
+        "docs/decisoes.md",
+        "docs/protocolo-experimental.md"
+      ]
+    }
+  },
+  "exclusions": {
+    "invalid": [],
+    "orphans": [
+      {
+        "run_dir": "training-runs/nids/interface/20261119T083209552578Z",
+        "cell": "campanha/random-forest/sincrono-total/carga-2/rep-2",
+        "attempt": 1,
+        "replay_started_utc": "2026-11-19T08:32:10.047715+00:00",
+        "replay_finished": false
+      },
+      {
+        "run_dir": "training-runs/nids/interface/20261119T214326278631Z",
+        "cell": "campanha/random-forest/sincrono-condicional-incerteza/carga-4/rep-2",
+        "attempt": 1,
+        "replay_started_utc": "2026-11-19T21:43:26.983154+00:00",
+        "replay_finished": false
+      }
+    ],
+    "exhausted": []
+  },
+  "capture_loss": [
+    {
+      "cell": {
+        "block": "campanha",
+        "model": "xgboost",
+        "configuration": "sincrono-condicional-probabilidade",
+        "load": 4,
+        "repetition": 1,
+        "id": "campanha/xgboost/sincrono-condicional-probabilidade/carga-4/rep-1",
+        "strategy": "sincrono-condicional",
+        "criterion": "probabilidade"
+      },
+      "attempt": 1,
+      "run_dir": "training-runs/nids/interface/20261118T194206328208Z",
+      "capture_lost_packets": 10231,
+      "validation": {
+        "status": "reprovada por perda na captura",
+        "run": "training-runs/nids/validacao/20261120T115011212977Z",
+        "flows_with_different_inputs": 1042,
+        "flows_compared": 88767,
+        "predictions_differing": 20
+      }
+    }
+  ],
+  "problems": [],
+  "pending_checks": [],
+  "closed": true,
+  "environment": {
+    "python": "3.12.3",
+    "libraries": {
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "scipy": "1.18.1",
+      "joblib": "1.6.0",
+      "xgboost-cpu": "3.4.1",
+      "shap": "0.54.1",
+      "matplotlib": "3.11.2",
+      "threadpoolctl": "3.8.0",
+      "pandas": "3.1.1"
+    },
+    "platform": "Linux-7.0.0-43-generic-x86_64-desconhecido-with-glibc2.43",
+    "cpu": "13th Gen Intel(R) Core(TM) i5-1334U",
+    "logical_cpus": 12
+  },
+  "passed": true
+}

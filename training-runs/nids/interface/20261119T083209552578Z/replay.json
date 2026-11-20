@@ -1,0 +1,444 @@
+{
+  "stage": "segment replay",
+  "model": "random-forest",
+  "strategy": "sincrono-total",
+  "criterion": null,
+  "copies": 2,
+  "segment": "campanha",
+  "pcap": {
+    "file": "derived-data/pcap/tuesday-campanha/segment-campanha.pcap",
+    "bytes": 4630692199,
+    "sha256": "89abbf3441fbcdb04ba5e29fa4647ea82a714aa18843d046c663e0f4bad5a191"
+  },
+  "segment_packets": 3706151,
+  "addresses": {
+    "file": "derived-data/pcap/tuesday-campanha/addresses-campanha.json",
+    "bytes": 61818,
+    "sha256": "2f7a0266a9f3a3303117def2a31e20fd2270aea5a2caa0d0fadeda1dcd8fac15"
+  },
+  "topology": {
+    "hosts": [
+      "h1",
+      "h2"
+    ],
+    "link": "h1-eth0 <-> h2-eth0, enlace direto (veth)",
+    "switch": null,
+    "mtu": 24860,
+    "ipv6": "desativado"
+  },
+  "wait_after_replay_s": 137.0,
+  "tcpreplay_build": {
+    "version": "4.6.2",
+    "binary": "tcpreplay/build/tcpreplay-edit",
+    "binary_sha256": "4b1bb7506c3ea32cfd64ed4bfe8fad7b4caad4cf2a731106a24e8031df3bdad8",
+    "archive": {
+      "url": "https://github.com/appneta/tcpreplay/releases/download/v4.6.2/tcpreplay-4.6.2.tar.xz",
+      "sha256": "83a7ca2f9daa367949926cfe34d30193e756c233c164b38f84f0d6d272a87e66"
+    }
+  },
+  "replay_cpus": [
+    8,
+    9,
+    10,
+    11
+  ],
+  "nids_stop_timeout_s": 830,
+  "readiness": {
+    "ready": true,
+    "reasons": [],
+    "mains_online": true,
+    "busy_share": 0.06560487122581145,
+    "busy_share_by_cpu": {
+      "0": 0.11099691675231244,
+      "1": 0.10616784630940344,
+      "2": 0.13604060913705585,
+      "3": 0.0642570281124498,
+      "4": 0.05828220858895705,
+      "5": 0.0508130081300813,
+      "6": 0.05055611729019211,
+      "7": 0.03951367781155015,
+      "8": 0.041456016177957536,
+      "9": 0.0455005055611729,
+      "10": 0.044399596367305755,
+      "11": 0.03927492447129909
+    },
+    "memory_kib": {
+      "available": 11602512,
+      "swap_free": 1423156,
+      "swap_total": 4194300
+    },
+    "window_s": 10,
+    "attempts": 1,
+    "settings": {
+      "require_mains": true,
+      "max_busy_share": 0.25,
+      "min_available_mib": 3072,
+      "window_s": 10,
+      "max_wait_s": 600
+    }
+  },
+  "git": {
+    "commit": "4558a3be71a791309db44c71a1fd6c9a25ae6642",
+    "modified_tracked_files": [
+      "M docs/bibliography/README.md",
+      " M docs/decisoes.md"
+    ]
+  },
+  "cell": {
+    "block": "campanha",
+    "model": "random-forest",
+    "configuration": "sincrono-total",
+    "load": 2,
+    "repetition": 2,
+    "id": "campanha/random-forest/sincrono-total/carga-2/rep-2",
+    "strategy": "sincrono-total",
+    "criterion": null,
+    "attempt": 1,
+    "matrix": "campanha"
+  },
+  "interfaces": {
+    "h1-eth0": {
+      "offloads": [
+        "Features for h1-eth0:",
+        "rx-checksumming: off",
+        "tx-checksumming: off",
+        "\ttx-checksum-ipv4: off [fixed]",
+        "\ttx-checksum-ip-generic: off",
+        "\ttx-checksum-ipv6: off [fixed]",
+        "\ttx-checksum-fcoe-crc: off [fixed]",
+        "\ttx-checksum-sctp: off",
+        "scatter-gather: off",
+        "\ttx-scatter-gather: off",
+        "\ttx-scatter-gather-fraglist: off",
+        "tcp-segmentation-offload: off",
+        "\ttx-tcp-segmentation: off",
+        "\ttx-tcp-ecn-segmentation: off",
+        "\ttx-tcp-mangleid-segmentation: off",
+        "\ttx-tcp6-segmentation: off",
+        "\ttx-tcp-accecn-segmentation: off",
+        "generic-segmentation-offload: off",
+        "generic-receive-offload: off",
+        "large-receive-offload: off [fixed]",
+        "rx-vlan-offload: on",
+        "tx-vlan-offload: on",
+        "ntuple-filters: off [fixed]",
+        "receive-hashing: off [fixed]",
+        "highdma: on",
+        "rx-vlan-filter: off [fixed]",
+        "vlan-challenged: off [fixed]",
+        "tx-gso-robust: off [fixed]",
+        "tx-fcoe-segmentation: off [fixed]",
+        "tx-gre-segmentation: on",
+        "tx-gre-csum-segmentation: on",
+        "tx-ipxip4-segmentation: on",
+        "tx-ipxip6-segmentation: on",
+        "tx-udp_tnl-segmentation: on",
+        "tx-udp_tnl-csum-segmentation: on",
+        "tx-gso-partial: off [fixed]",
+        "tx-tunnel-remcsum-segmentation: off [fixed]",
+        "tx-sctp-segmentation: on",
+        "tx-esp-segmentation: off [fixed]",
+        "tx-udp-segmentation: off [requested on]",
+        "tx-gso-list: on",
+        "tx-nocache-copy: off",
+        "loopback: off [fixed]",
+        "rx-fcs: off [fixed]",
+        "rx-all: off [fixed]",
+        "tx-vlan-stag-hw-insert: on",
+        "rx-vlan-stag-hw-parse: on",
+        "rx-vlan-stag-filter: off [fixed]",
+        "l2-fwd-offload: off [fixed]",
+        "hw-tc-offload: off [fixed]",
+        "esp-hw-offload: off [fixed]",
+        "esp-tx-csum-hw-offload: off [fixed]",
+        "rx-udp_tunnel-port-offload: off [fixed]",
+        "tls-hw-tx-offload: off [fixed]",
+        "tls-hw-rx-offload: off [fixed]",
+        "rx-gro-hw: off [fixed]",
+        "tls-hw-record: off [fixed]",
+        "rx-gro-list: off",
+        "macsec-hw-offload: off [fixed]",
+        "rx-udp-gro-forwarding: off",
+        "hsr-tag-ins-offload: off [fixed]",
+        "hsr-tag-rm-offload: off [fixed]",
+        "hsr-fwd-offload: off [fixed]",
+        "hsr-dup-offload: off [fixed]"
+      ],
+      "link": "2: \u001b[1;36mh1-eth0@if2: \u001b[0m<BROADCAST,MULTICAST,UP,LOWER_UP> mtu 24860 qdisc noqueue state \u001b[1;32mUP \u001b[0mmode DEFAULT group default qlen 1000\r\n    link/ether \u001b[1;33m00:00:00:00:00:01\u001b[0m brd \u001b[1;33mff:ff:ff:ff:ff:ff\u001b[0m link-netnsid 0 promiscuity 0 allmulti 0 minmtu 68 maxmtu 65535 \r\n    veth addrgenmode eui64 numtxqueues 12 numrxqueues 12 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 gso_ipv4_max_size 65536 gro_ipv4_max_size 65536"
+    },
+    "h2-eth0": {
+      "offloads": [
+        "Features for h2-eth0:",
+        "rx-checksumming: off",
+        "tx-checksumming: off",
+        "\ttx-checksum-ipv4: off [fixed]",
+        "\ttx-checksum-ip-generic: off",
+        "\ttx-checksum-ipv6: off [fixed]",
+        "\ttx-checksum-fcoe-crc: off [fixed]",
+        "\ttx-checksum-sctp: off",
+        "scatter-gather: off",
+        "\ttx-scatter-gather: off",
+        "\ttx-scatter-gather-fraglist: off",
+        "tcp-segmentation-offload: off",
+        "\ttx-tcp-segmentation: off",
+        "\ttx-tcp-ecn-segmentation: off",
+        "\ttx-tcp-mangleid-segmentation: off",
+        "\ttx-tcp6-segmentation: off",
+        "\ttx-tcp-accecn-segmentation: off",
+        "generic-segmentation-offload: off",
+        "generic-receive-offload: off",
+        "large-receive-offload: off [fixed]",
+        "rx-vlan-offload: on",
+        "tx-vlan-offload: on",
+        "ntuple-filters: off [fixed]",
+        "receive-hashing: off [fixed]",
+        "highdma: on",
+        "rx-vlan-filter: off [fixed]",
+        "vlan-challenged: off [fixed]",
+        "tx-gso-robust: off [fixed]",
+        "tx-fcoe-segmentation: off [fixed]",
+        "tx-gre-segmentation: on",
+        "tx-gre-csum-segmentation: on",
+        "tx-ipxip4-segmentation: on",
+        "tx-ipxip6-segmentation: on",
+        "tx-udp_tnl-segmentation: on",
+        "tx-udp_tnl-csum-segmentation: on",
+        "tx-gso-partial: off [fixed]",
+        "tx-tunnel-remcsum-segmentation: off [fixed]",
+        "tx-sctp-segmentation: on",
+        "tx-esp-segmentation: off [fixed]",
+        "tx-udp-segmentation: off [requested on]",
+        "tx-gso-list: on",
+        "tx-nocache-copy: off",
+        "loopback: off [fixed]",
+        "rx-fcs: off [fixed]",
+        "rx-all: off [fixed]",
+        "tx-vlan-stag-hw-insert: on",
+        "rx-vlan-stag-hw-parse: on",
+        "rx-vlan-stag-filter: off [fixed]",
+        "l2-fwd-offload: off [fixed]",
+        "hw-tc-offload: off [fixed]",
+        "esp-hw-offload: off [fixed]",
+        "esp-tx-csum-hw-offload: off [fixed]",
+        "rx-udp_tunnel-port-offload: off [fixed]",
+        "tls-hw-tx-offload: off [fixed]",
+        "tls-hw-rx-offload: off [fixed]",
+        "rx-gro-hw: off [fixed]",
+        "tls-hw-record: off [fixed]",
+        "rx-gro-list: off",
+        "macsec-hw-offload: off [fixed]",
+        "rx-udp-gro-forwarding: off",
+        "hsr-tag-ins-offload: off [fixed]",
+        "hsr-tag-rm-offload: off [fixed]",
+        "hsr-fwd-offload: off [fixed]",
+        "hsr-dup-offload: off [fixed]"
+      ],
+      "link": "2: \u001b[1;36mh2-eth0@if2: \u001b[0m<BROADCAST,MULTICAST,UP,LOWER_UP> mtu 24860 qdisc noqueue state \u001b[1;32mUP \u001b[0mmode DEFAULT group default qlen 1000\r\n    link/ether \u001b[1;33m00:00:00:00:00:02\u001b[0m brd \u001b[1;33mff:ff:ff:ff:ff:ff\u001b[0m link-netnsid 0 promiscuity 0 allmulti 0 minmtu 68 maxmtu 65535 \r\n    veth addrgenmode eui64 numtxqueues 12 numrxqueues 12 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 gso_ipv4_max_size 65536 gro_ipv4_max_size 65536"
+    }
+  },
+  "nids_command": [
+    "/home/pedro/projects/explicabilidade-ia/src/venv/bin/python",
+    "main.py",
+    "nids-executar",
+    "--modelo",
+    "random-forest",
+    "--estrategia",
+    "sincrono-total",
+    "--trecho",
+    "campanha",
+    "--interface",
+    "h2-eth0",
+    "--sinal-pronto",
+    "/tmp/nids-pronto-216501.json"
+  ],
+  "replay_started_utc": "2026-11-19T08:32:10.047715+00:00",
+  "machine": {
+    "samples": 909,
+    "mains_online_in_every_sample": true,
+    "frequency_khz": {
+      "0": {
+        "min": 400171,
+        "median": 2808582,
+        "max": 4562074
+      },
+      "1": {
+        "min": 394488,
+        "median": 453097,
+        "max": 4600000
+      },
+      "2": {
+        "min": 394925,
+        "median": 2700000,
+        "max": 4200042
+      },
+      "3": {
+        "min": 397265,
+        "median": 400000,
+        "max": 4200000
+      },
+      "4": {
+        "min": 398285,
+        "median": 1441147,
+        "max": 3344042
+      },
+      "5": {
+        "min": 399431,
+        "median": 1330065,
+        "max": 3396231
+      },
+      "6": {
+        "min": 398246,
+        "median": 1290186,
+        "max": 3426485
+      },
+      "7": {
+        "min": 398566,
+        "median": 1264891,
+        "max": 3375982
+      },
+      "8": {
+        "min": 1799952,
+        "median": 2799944,
+        "max": 3399982
+      },
+      "9": {
+        "min": 1799940,
+        "median": 2799917,
+        "max": 3399923
+      },
+      "10": {
+        "min": 400000,
+        "median": 2100244,
+        "max": 3381034
+      },
+      "11": {
+        "min": 400000,
+        "median": 2700051,
+        "max": 3399949
+      }
+    },
+    "throttle_events": {
+      "0": {
+        "core": 0,
+        "package": 0
+      },
+      "1": {
+        "core": 0,
+        "package": 0
+      },
+      "2": {
+        "core": 0,
+        "package": 0
+      },
+      "3": {
+        "core": 0,
+        "package": 0
+      },
+      "4": {
+        "core": 0,
+        "package": 0
+      },
+      "5": {
+        "core": 0,
+        "package": 0
+      },
+      "6": {
+        "core": 0,
+        "package": 0
+      },
+      "7": {
+        "core": 0,
+        "package": 0
+      },
+      "8": {
+        "core": 0,
+        "package": 0
+      },
+      "9": {
+        "core": 0,
+        "package": 0
+      },
+      "10": {
+        "core": 0,
+        "package": 0
+      },
+      "11": {
+        "core": 0,
+        "package": 0
+      }
+    },
+    "busy_share": {
+      "0": {
+        "min": 0.0,
+        "median": 0.020833333333333332,
+        "max": 0.5252525252525253
+      },
+      "1": {
+        "min": 0.0,
+        "median": 0.020202020202020204,
+        "max": 0.5
+      },
+      "2": {
+        "min": 0.0,
+        "median": 0.32673267326732675,
+        "max": 1.0
+      },
+      "3": {
+        "min": 0.0,
+        "median": 0.01,
+        "max": 0.5294117647058824
+      },
+      "4": {
+        "min": 0.0,
+        "median": 0.041237113402061855,
+        "max": 0.6534653465346535
+      },
+      "5": {
+        "min": 0.0,
+        "median": 0.04081632653061224,
+        "max": 0.43434343434343436
+      },
+      "6": {
+        "min": 0.0,
+        "median": 0.04081632653061224,
+        "max": 0.71
+      },
+      "7": {
+        "min": 0.0,
+        "median": 0.041237113402061855,
+        "max": 0.5294117647058824
+      },
+      "8": {
+        "min": 0.93,
+        "median": 1.0,
+        "max": 1.0
+      },
+      "9": {
+        "min": 0.9191919191919192,
+        "median": 1.0,
+        "max": 1.0
+      },
+      "10": {
+        "min": 0.0,
+        "median": 0.020202020202020204,
+        "max": 0.5555555555555556
+      },
+      "11": {
+        "min": 0.0,
+        "median": 0.020202020202020204,
+        "max": 0.5454545454545454
+      }
+    },
+    "memory_available_kib": {
+      "min": 8716948,
+      "median": 10747068,
+      "max": 11107340
+    },
+    "swap_free_kib": {
+      "min": 1423156,
+      "median": 1424092,
+      "max": 1696152
+    },
+    "file": "machine.jsonl"
+  }
+}

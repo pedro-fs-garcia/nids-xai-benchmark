@@ -1,0 +1,817 @@
+{
+  "stage": "segment replay",
+  "model": "xgboost",
+  "strategy": "sincrono-condicional",
+  "criterion": "probabilidade",
+  "copies": 4,
+  "segment": "campanha",
+  "pcap": {
+    "file": "derived-data/pcap/tuesday-campanha/segment-campanha.pcap",
+    "bytes": 4630692199,
+    "sha256": "89abbf3441fbcdb04ba5e29fa4647ea82a714aa18843d046c663e0f4bad5a191"
+  },
+  "segment_packets": 3706151,
+  "addresses": {
+    "file": "derived-data/pcap/tuesday-campanha/addresses-campanha.json",
+    "bytes": 61818,
+    "sha256": "2f7a0266a9f3a3303117def2a31e20fd2270aea5a2caa0d0fadeda1dcd8fac15"
+  },
+  "topology": {
+    "hosts": [
+      "h1",
+      "h2"
+    ],
+    "link": "h1-eth0 <-> h2-eth0, enlace direto (veth)",
+    "switch": null,
+    "mtu": 24860,
+    "ipv6": "desativado"
+  },
+  "wait_after_replay_s": 137.0,
+  "tcpreplay_build": {
+    "version": "4.6.2",
+    "binary": "tcpreplay/build/tcpreplay-edit",
+    "binary_sha256": "4b1bb7506c3ea32cfd64ed4bfe8fad7b4caad4cf2a731106a24e8031df3bdad8",
+    "archive": {
+      "url": "https://github.com/appneta/tcpreplay/releases/download/v4.6.2/tcpreplay-4.6.2.tar.xz",
+      "sha256": "83a7ca2f9daa367949926cfe34d30193e756c233c164b38f84f0d6d272a87e66"
+    }
+  },
+  "replay_cpus": [
+    8,
+    9,
+    10,
+    11
+  ],
+  "nids_stop_timeout_s": 950,
+  "readiness": {
+    "ready": true,
+    "reasons": [],
+    "mains_online": true,
+    "busy_share": 0.0786117924026744,
+    "busy_share_by_cpu": {
+      "0": 0.09979423868312758,
+      "1": 0.08190091001011122,
+      "2": 0.1529051987767584,
+      "3": 0.08442211055276382,
+      "4": 0.11336032388663968,
+      "5": 0.0696969696969697,
+      "6": 0.05953582240161453,
+      "7": 0.0595959595959596,
+      "8": 0.06275303643724696,
+      "9": 0.05465587044534413,
+      "10": 0.05835010060362173,
+      "11": 0.046370967741935484
+    },
+    "memory_kib": {
+      "available": 10140436,
+      "swap_free": 3325840,
+      "swap_total": 4194300
+    },
+    "window_s": 10,
+    "attempts": 1,
+    "settings": {
+      "require_mains": true,
+      "max_busy_share": 0.25,
+      "min_available_mib": 3072,
+      "window_s": 10,
+      "max_wait_s": 600
+    }
+  },
+  "git": {
+    "commit": "4558a3be71a791309db44c71a1fd6c9a25ae6642",
+    "modified_tracked_files": [
+      "M docs/decisoes.md"
+    ]
+  },
+  "cell": {
+    "block": "campanha",
+    "model": "xgboost",
+    "configuration": "sincrono-condicional-probabilidade",
+    "load": 4,
+    "repetition": 1,
+    "id": "campanha/xgboost/sincrono-condicional-probabilidade/carga-4/rep-1",
+    "strategy": "sincrono-condicional",
+    "criterion": "probabilidade",
+    "attempt": 1,
+    "matrix": "campanha"
+  },
+  "interfaces": {
+    "h1-eth0": {
+      "offloads": [
+        "Features for h1-eth0:",
+        "rx-checksumming: off",
+        "tx-checksumming: off",
+        "\ttx-checksum-ipv4: off [fixed]",
+        "\ttx-checksum-ip-generic: off",
+        "\ttx-checksum-ipv6: off [fixed]",
+        "\ttx-checksum-fcoe-crc: off [fixed]",
+        "\ttx-checksum-sctp: off",
+        "scatter-gather: off",
+        "\ttx-scatter-gather: off",
+        "\ttx-scatter-gather-fraglist: off",
+        "tcp-segmentation-offload: off",
+        "\ttx-tcp-segmentation: off",
+        "\ttx-tcp-ecn-segmentation: off",
+        "\ttx-tcp-mangleid-segmentation: off",
+        "\ttx-tcp6-segmentation: off",
+        "\ttx-tcp-accecn-segmentation: off",
+        "generic-segmentation-offload: off",
+        "generic-receive-offload: off",
+        "large-receive-offload: off [fixed]",
+        "rx-vlan-offload: on",
+        "tx-vlan-offload: on",
+        "ntuple-filters: off [fixed]",
+        "receive-hashing: off [fixed]",
+        "highdma: on",
+        "rx-vlan-filter: off [fixed]",
+        "vlan-challenged: off [fixed]",
+        "tx-gso-robust: off [fixed]",
+        "tx-fcoe-segmentation: off [fixed]",
+        "tx-gre-segmentation: on",
+        "tx-gre-csum-segmentation: on",
+        "tx-ipxip4-segmentation: on",
+        "tx-ipxip6-segmentation: on",
+        "tx-udp_tnl-segmentation: on",
+        "tx-udp_tnl-csum-segmentation: on",
+        "tx-gso-partial: off [fixed]",
+        "tx-tunnel-remcsum-segmentation: off [fixed]",
+        "tx-sctp-segmentation: on",
+        "tx-esp-segmentation: off [fixed]",
+        "tx-udp-segmentation: off [requested on]",
+        "tx-gso-list: on",
+        "tx-nocache-copy: off",
+        "loopback: off [fixed]",
+        "rx-fcs: off [fixed]",
+        "rx-all: off [fixed]",
+        "tx-vlan-stag-hw-insert: on",
+        "rx-vlan-stag-hw-parse: on",
+        "rx-vlan-stag-filter: off [fixed]",
+        "l2-fwd-offload: off [fixed]",
+        "hw-tc-offload: off [fixed]",
+        "esp-hw-offload: off [fixed]",
+        "esp-tx-csum-hw-offload: off [fixed]",
+        "rx-udp_tunnel-port-offload: off [fixed]",
+        "tls-hw-tx-offload: off [fixed]",
+        "tls-hw-rx-offload: off [fixed]",
+        "rx-gro-hw: off [fixed]",
+        "tls-hw-record: off [fixed]",
+        "rx-gro-list: off",
+        "macsec-hw-offload: off [fixed]",
+        "rx-udp-gro-forwarding: off",
+        "hsr-tag-ins-offload: off [fixed]",
+        "hsr-tag-rm-offload: off [fixed]",
+        "hsr-fwd-offload: off [fixed]",
+        "hsr-dup-offload: off [fixed]"
+      ],
+      "link": "2: \u001b[1;36mh1-eth0@if2: \u001b[0m<BROADCAST,MULTICAST,UP,LOWER_UP> mtu 24860 qdisc noqueue state \u001b[1;32mUP \u001b[0mmode DEFAULT group default qlen 1000\r\n    link/ether \u001b[1;33m00:00:00:00:00:01\u001b[0m brd \u001b[1;33mff:ff:ff:ff:ff:ff\u001b[0m link-netnsid 0 promiscuity 0 allmulti 0 minmtu 68 maxmtu 65535 \r\n    veth addrgenmode eui64 numtxqueues 12 numrxqueues 12 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 gso_ipv4_max_size 65536 gro_ipv4_max_size 65536"
+    },
+    "h2-eth0": {
+      "offloads": [
+        "Features for h2-eth0:",
+        "rx-checksumming: off",
+        "tx-checksumming: off",
+        "\ttx-checksum-ipv4: off [fixed]",
+        "\ttx-checksum-ip-generic: off",
+        "\ttx-checksum-ipv6: off [fixed]",
+        "\ttx-checksum-fcoe-crc: off [fixed]",
+        "\ttx-checksum-sctp: off",
+        "scatter-gather: off",
+        "\ttx-scatter-gather: off",
+        "\ttx-scatter-gather-fraglist: off",
+        "tcp-segmentation-offload: off",
+        "\ttx-tcp-segmentation: off",
+        "\ttx-tcp-ecn-segmentation: off",
+        "\ttx-tcp-mangleid-segmentation: off",
+        "\ttx-tcp6-segmentation: off",
+        "\ttx-tcp-accecn-segmentation: off",
+        "generic-segmentation-offload: off",
+        "generic-receive-offload: off",
+        "large-receive-offload: off [fixed]",
+        "rx-vlan-offload: on",
+        "tx-vlan-offload: on",
+        "ntuple-filters: off [fixed]",
+        "receive-hashing: off [fixed]",
+        "highdma: on",
+        "rx-vlan-filter: off [fixed]",
+        "vlan-challenged: off [fixed]",
+        "tx-gso-robust: off [fixed]",
+        "tx-fcoe-segmentation: off [fixed]",
+        "tx-gre-segmentation: on",
+        "tx-gre-csum-segmentation: on",
+        "tx-ipxip4-segmentation: on",
+        "tx-ipxip6-segmentation: on",
+        "tx-udp_tnl-segmentation: on",
+        "tx-udp_tnl-csum-segmentation: on",
+        "tx-gso-partial: off [fixed]",
+        "tx-tunnel-remcsum-segmentation: off [fixed]",
+        "tx-sctp-segmentation: on",
+        "tx-esp-segmentation: off [fixed]",
+        "tx-udp-segmentation: off [requested on]",
+        "tx-gso-list: on",
+        "tx-nocache-copy: off",
+        "loopback: off [fixed]",
+        "rx-fcs: off [fixed]",
+        "rx-all: off [fixed]",
+        "tx-vlan-stag-hw-insert: on",
+        "rx-vlan-stag-hw-parse: on",
+        "rx-vlan-stag-filter: off [fixed]",
+        "l2-fwd-offload: off [fixed]",
+        "hw-tc-offload: off [fixed]",
+        "esp-hw-offload: off [fixed]",
+        "esp-tx-csum-hw-offload: off [fixed]",
+        "rx-udp_tunnel-port-offload: off [fixed]",
+        "tls-hw-tx-offload: off [fixed]",
+        "tls-hw-rx-offload: off [fixed]",
+        "rx-gro-hw: off [fixed]",
+        "tls-hw-record: off [fixed]",
+        "rx-gro-list: off",
+        "macsec-hw-offload: off [fixed]",
+        "rx-udp-gro-forwarding: off",
+        "hsr-tag-ins-offload: off [fixed]",
+        "hsr-tag-rm-offload: off [fixed]",
+        "hsr-fwd-offload: off [fixed]",
+        "hsr-dup-offload: off [fixed]"
+      ],
+      "link": "2: \u001b[1;36mh2-eth0@if2: \u001b[0m<BROADCAST,MULTICAST,UP,LOWER_UP> mtu 24860 qdisc noqueue state \u001b[1;32mUP \u001b[0mmode DEFAULT group default qlen 1000\r\n    link/ether \u001b[1;33m00:00:00:00:00:02\u001b[0m brd \u001b[1;33mff:ff:ff:ff:ff:ff\u001b[0m link-netnsid 0 promiscuity 0 allmulti 0 minmtu 68 maxmtu 65535 \r\n    veth addrgenmode eui64 numtxqueues 12 numrxqueues 12 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 gso_ipv4_max_size 65536 gro_ipv4_max_size 65536"
+    }
+  },
+  "nids_command": [
+    "/home/pedro/projects/explicabilidade-ia/src/venv/bin/python",
+    "main.py",
+    "nids-executar",
+    "--modelo",
+    "xgboost",
+    "--estrategia",
+    "sincrono-condicional",
+    "--criterio",
+    "probabilidade",
+    "--trecho",
+    "campanha",
+    "--interface",
+    "h2-eth0",
+    "--sinal-pronto",
+    "/tmp/nids-pronto-216501.json"
+  ],
+  "replay_started_utc": "2026-11-18T19:42:06.823962+00:00",
+  "replay_seconds": 1200.1676215359985,
+  "replay_finished_utc": "2026-11-18T20:02:06.991682+00:00",
+  "replay_commands": [
+    [
+      "/home/pedro/projects/explicabilidade-ia/tcpreplay/build/tcpreplay-edit",
+      "--intf1=h1-eth0",
+      "--multiplier=1",
+      "--no-flow-stats",
+      "--stats=60",
+      "/home/pedro/projects/explicabilidade-ia/derived-data/pcap/tuesday-campanha/segment-campanha.pcap"
+    ],
+    [
+      "/home/pedro/projects/explicabilidade-ia/tcpreplay/build/tcpreplay-edit",
+      "--intf1=h1-eth0",
+      "--multiplier=1",
+      "--no-flow-stats",
+      "--stats=60",
+      "--pnat=<pares da cópia>",
+      "/home/pedro/projects/explicabilidade-ia/derived-data/pcap/tuesday-campanha/segment-campanha.pcap"
+    ],
+    [
+      "/home/pedro/projects/explicabilidade-ia/tcpreplay/build/tcpreplay-edit",
+      "--intf1=h1-eth0",
+      "--multiplier=1",
+      "--no-flow-stats",
+      "--stats=60",
+      "--pnat=<pares da cópia>",
+      "/home/pedro/projects/explicabilidade-ia/derived-data/pcap/tuesday-campanha/segment-campanha.pcap"
+    ],
+    [
+      "/home/pedro/projects/explicabilidade-ia/tcpreplay/build/tcpreplay-edit",
+      "--intf1=h1-eth0",
+      "--multiplier=1",
+      "--no-flow-stats",
+      "--stats=60",
+      "--pnat=<pares da cópia>",
+      "/home/pedro/projects/explicabilidade-ia/derived-data/pcap/tuesday-campanha/segment-campanha.pcap"
+    ]
+  ],
+  "replay_command": [
+    "/home/pedro/projects/explicabilidade-ia/tcpreplay/build/tcpreplay-edit",
+    "--intf1=h1-eth0",
+    "--multiplier=1",
+    "--no-flow-stats",
+    "--stats=60",
+    "/home/pedro/projects/explicabilidade-ia/derived-data/pcap/tuesday-campanha/segment-campanha.pcap"
+  ],
+  "tcpreplay": {
+    "exit_code": 0,
+    "attempted_packets": 14824604,
+    "attempted_bytes": 18285575036,
+    "successful": 14824604,
+    "failed": 0,
+    "truncated": 0,
+    "retried_enobufs": 0,
+    "retried_eagain": 0,
+    "rated_bytes_per_second": 15238106.0,
+    "rated_mbps": 121.88,
+    "rated_packets_per_second": 12353.92,
+    "copies": [
+      {
+        "copy": 1,
+        "cpu": 8,
+        "exit_code": 0,
+        "started_monotonic_ns": 19288923939879,
+        "pnat_pairs": 0,
+        "pnat_sha256": null,
+        "attempted_packets": 3706151,
+        "attempted_bytes": 4571393759,
+        "seconds": 1199.99,
+        "rated_bytes_per_second": 3809526.5,
+        "rated_mbps": 30.47,
+        "rated_packets_per_second": 3088.48,
+        "successful": 3706151,
+        "failed": 0,
+        "truncated": 0,
+        "retried_enobufs": 0,
+        "retried_eagain": 0,
+        "output": [
+          "Test start: 1970-01-01 02:21:29.029218588 ...",
+          "Actual: 14423 packets (5468691 bytes) sent in 60.00 seconds",
+          "Rated: 91132.3 Bps, 0.729 Mbps, 240.35 pps",
+          "Actual: 40829 packets (18260600 bytes) sent in 120.01 seconds",
+          "Rated: 152153.0 Bps, 1.21 Mbps, 340.19 pps",
+          "Actual: 70585 packets (36050077 bytes) sent in 180.04 seconds",
+          "Rated: 200223.9 Bps, 1.60 Mbps, 392.03 pps",
+          "Actual: 76758 packets (37535774 bytes) sent in 240.14 seconds",
+          "Rated: 156302.9 Bps, 1.25 Mbps, 319.62 pps",
+          "Actual: 86120 packets (42516641 bytes) sent in 300.30 seconds",
+          "Rated: 141578.2 Bps, 1.13 Mbps, 286.77 pps",
+          "Actual: 122503 packets (66329345 bytes) sent in 360.30 seconds",
+          "Rated: 184091.1 Bps, 1.47 Mbps, 339.99 pps",
+          "Actual: 155474 packets (90935708 bytes) sent in 420.33 seconds",
+          "Rated: 216340.1 Bps, 1.73 Mbps, 369.87 pps",
+          "Actual: 214153 packets (163124919 bytes) sent in 480.42 seconds",
+          "Rated: 339540.2 Bps, 2.71 Mbps, 445.75 pps",
+          "Actual: 243553 packets (184149879 bytes) sent in 540.43 seconds",
+          "Rated: 340745.4 Bps, 2.72 Mbps, 450.66 pps",
+          "Actual: 441280 packets (425742788 bytes) sent in 600.43 seconds",
+          "Rated: 709055.6 Bps, 5.67 Mbps, 734.93 pps",
+          "Actual: 725005 packets (769696126 bytes) sent in 660.43 seconds",
+          "Rated: 1165432.3 Bps, 9.32 Mbps, 1097.76 pps",
+          "Actual: 986042 packets (1104314797 bytes) sent in 720.44 seconds",
+          "Rated: 1532829.5 Bps, 12.26 Mbps, 1368.66 pps",
+          "Actual: 1277885 packets (1476074157 bytes) sent in 780.44 seconds",
+          "Rated: 1891331.0 Bps, 15.13 Mbps, 1637.38 pps",
+          "Actual: 1714096 packets (2046228991 bytes) sent in 840.44 seconds",
+          "Rated: 2434705.7 Bps, 19.47 Mbps, 2039.51 pps",
+          "Actual: 2146309 packets (2603466826 bytes) sent in 900.44 seconds",
+          "Rated: 2891320.9 Bps, 23.13 Mbps, 2383.61 pps",
+          "Actual: 2539382 packets (3106681093 bytes) sent in 960.45 seconds",
+          "Rated: 3234609.9 Bps, 25.87 Mbps, 2643.95 pps",
+          "Actual: 2970561 packets (3661809744 bytes) sent in 1020.45 seconds",
+          "Rated: 3588415.8 Bps, 28.70 Mbps, 2911.02 pps",
+          "Actual: 3117342 packets (3852579063 bytes) sent in 1080.45 seconds",
+          "Rated: 3565687.4 Bps, 28.52 Mbps, 2885.20 pps",
+          "Actual: 3490285 packets (4321499254 bytes) sent in 1140.45 seconds",
+          "Rated: 3789263.1 Bps, 30.31 Mbps, 3060.42 pps",
+          "Test complete: 1970-01-01 02:41:29.019220884",
+          "Actual: 3706151 packets (4571393759 bytes) sent in 1199.99 seconds",
+          "Rated: 3809526.5 Bps, 30.47 Mbps, 3088.48 pps",
+          "Statistics for network device: h1-eth0",
+          "\tSuccessful packets:        3706151",
+          "\tFailed packets:            0",
+          "\tTruncated packets:         0",
+          "\tRetried packets (ENOBUFS): 0",
+          "\tRetried packets (EAGAIN):  0"
+        ]
+      },
+      {
+        "copy": 2,
+        "cpu": 9,
+        "exit_code": 0,
+        "started_monotonic_ns": 19288935601453,
+        "pnat_pairs": 1661,
+        "pnat_sha256": "87ae0eced2cd632e9e56a3660f7c83f00381c778141484cd89d4f73a5819195b",
+        "attempted_packets": 3706151,
+        "attempted_bytes": 4571393759,
+        "seconds": 1199.99,
+        "rated_bytes_per_second": 3809526.5,
+        "rated_mbps": 30.47,
+        "rated_packets_per_second": 3088.48,
+        "successful": 3706151,
+        "failed": 0,
+        "truncated": 0,
+        "retried_enobufs": 0,
+        "retried_eagain": 0,
+        "output": [
+          "Test start: 1970-01-01 02:21:29.049971033 ...",
+          "Actual: 14423 packets (5468691 bytes) sent in 60.00 seconds",
+          "Rated: 91132.2 Bps, 0.729 Mbps, 240.35 pps",
+          "Actual: 40829 packets (18260600 bytes) sent in 120.01 seconds",
+          "Rated: 152152.9 Bps, 1.21 Mbps, 340.19 pps",
+          "Actual: 70585 packets (36050077 bytes) sent in 180.04 seconds",
+          "Rated: 200223.8 Bps, 1.60 Mbps, 392.03 pps",
+          "Actual: 76758 packets (37535774 bytes) sent in 240.14 seconds",
+          "Rated: 156302.8 Bps, 1.25 Mbps, 319.62 pps",
+          "Actual: 86120 packets (42516641 bytes) sent in 300.30 seconds",
+          "Rated: 141578.2 Bps, 1.13 Mbps, 286.77 pps",
+          "Actual: 122503 packets (66329345 bytes) sent in 360.30 seconds",
+          "Rated: 184091.1 Bps, 1.47 Mbps, 339.99 pps",
+          "Actual: 155474 packets (90935708 bytes) sent in 420.33 seconds",
+          "Rated: 216340.1 Bps, 1.73 Mbps, 369.87 pps",
+          "Actual: 214153 packets (163124919 bytes) sent in 480.42 seconds",
+          "Rated: 339540.1 Bps, 2.71 Mbps, 445.75 pps",
+          "Actual: 243553 packets (184149879 bytes) sent in 540.43 seconds",
+          "Rated: 340745.4 Bps, 2.72 Mbps, 450.66 pps",
+          "Actual: 441280 packets (425742788 bytes) sent in 600.43 seconds",
+          "Rated: 709055.5 Bps, 5.67 Mbps, 734.93 pps",
+          "Actual: 725005 packets (769696126 bytes) sent in 660.43 seconds",
+          "Rated: 1165432.2 Bps, 9.32 Mbps, 1097.76 pps",
+          "Actual: 986042 packets (1104314797 bytes) sent in 720.44 seconds",
+          "Rated: 1532829.5 Bps, 12.26 Mbps, 1368.66 pps",
+          "Actual: 1277885 packets (1476074157 bytes) sent in 780.44 seconds",
+          "Rated: 1891331.0 Bps, 15.13 Mbps, 1637.38 pps",
+          "Actual: 1714096 packets (2046228991 bytes) sent in 840.44 seconds",
+          "Rated: 2434705.7 Bps, 19.47 Mbps, 2039.51 pps",
+          "Actual: 2146309 packets (2603466826 bytes) sent in 900.44 seconds",
+          "Rated: 2891320.9 Bps, 23.13 Mbps, 2383.61 pps",
+          "Actual: 2539382 packets (3106681093 bytes) sent in 960.45 seconds",
+          "Rated: 3234609.9 Bps, 25.87 Mbps, 2643.95 pps",
+          "Actual: 2970598 packets (3661858564 bytes) sent in 1020.66 seconds",
+          "Rated: 3587725.3 Bps, 28.70 Mbps, 2910.45 pps",
+          "Actual: 3117784 packets (3853175109 bytes) sent in 1080.66 seconds",
+          "Rated: 3565546.0 Bps, 28.52 Mbps, 2885.04 pps",
+          "Actual: 3491345 packets (4322827799 bytes) sent in 1140.67 seconds",
+          "Rated: 3789726.9 Bps, 30.31 Mbps, 3060.78 pps",
+          "Test complete: 1970-01-01 02:41:29.040138417",
+          "Actual: 3706151 packets (4571393759 bytes) sent in 1199.99 seconds",
+          "Rated: 3809526.5 Bps, 30.47 Mbps, 3088.48 pps",
+          "Statistics for network device: h1-eth0",
+          "\tSuccessful packets:        3706151",
+          "\tFailed packets:            0",
+          "\tTruncated packets:         0",
+          "\tRetried packets (ENOBUFS): 0",
+          "\tRetried packets (EAGAIN):  0"
+        ]
+      },
+      {
+        "copy": 3,
+        "cpu": 10,
+        "exit_code": 0,
+        "started_monotonic_ns": 19288949137289,
+        "pnat_pairs": 1661,
+        "pnat_sha256": "e6767cb82ad7959d2e212142a0bf537767ed145715fbdf6cfece2c991bc353d9",
+        "attempted_packets": 3706151,
+        "attempted_bytes": 4571393759,
+        "seconds": 1199.99,
+        "rated_bytes_per_second": 3809526.5,
+        "rated_mbps": 30.47,
+        "rated_packets_per_second": 3088.48,
+        "successful": 3706151,
+        "failed": 0,
+        "truncated": 0,
+        "retried_enobufs": 0,
+        "retried_eagain": 0,
+        "output": [
+          "Test start: 1970-01-01 02:21:29.060760743 ...",
+          "Actual: 14423 packets (5468691 bytes) sent in 60.00 seconds",
+          "Rated: 91132.2 Bps, 0.729 Mbps, 240.35 pps",
+          "Actual: 40829 packets (18260600 bytes) sent in 120.01 seconds",
+          "Rated: 152152.9 Bps, 1.21 Mbps, 340.19 pps",
+          "Actual: 70585 packets (36050077 bytes) sent in 180.04 seconds",
+          "Rated: 200223.8 Bps, 1.60 Mbps, 392.03 pps",
+          "Actual: 76758 packets (37535774 bytes) sent in 240.14 seconds",
+          "Rated: 156302.9 Bps, 1.25 Mbps, 319.62 pps",
+          "Actual: 86120 packets (42516641 bytes) sent in 300.30 seconds",
+          "Rated: 141578.2 Bps, 1.13 Mbps, 286.77 pps",
+          "Actual: 122503 packets (66329345 bytes) sent in 360.30 seconds",
+          "Rated: 184091.1 Bps, 1.47 Mbps, 339.99 pps",
+          "Actual: 155474 packets (90935708 bytes) sent in 420.33 seconds",
+          "Rated: 216340.1 Bps, 1.73 Mbps, 369.87 pps",
+          "Actual: 214153 packets (163124919 bytes) sent in 480.42 seconds",
+          "Rated: 339540.2 Bps, 2.71 Mbps, 445.75 pps",
+          "Actual: 243553 packets (184149879 bytes) sent in 540.43 seconds",
+          "Rated: 340745.4 Bps, 2.72 Mbps, 450.66 pps",
+          "Actual: 441280 packets (425742788 bytes) sent in 600.43 seconds",
+          "Rated: 709055.5 Bps, 5.67 Mbps, 734.93 pps",
+          "Actual: 725005 packets (769696126 bytes) sent in 660.43 seconds",
+          "Rated: 1165432.2 Bps, 9.32 Mbps, 1097.76 pps",
+          "Actual: 986042 packets (1104314797 bytes) sent in 720.44 seconds",
+          "Rated: 1532829.5 Bps, 12.26 Mbps, 1368.66 pps",
+          "Actual: 1277885 packets (1476074157 bytes) sent in 780.44 seconds",
+          "Rated: 1891331.0 Bps, 15.13 Mbps, 1637.38 pps",
+          "Actual: 1714096 packets (2046228991 bytes) sent in 840.44 seconds",
+          "Rated: 2434705.7 Bps, 19.47 Mbps, 2039.51 pps",
+          "Actual: 2146309 packets (2603466826 bytes) sent in 900.44 seconds",
+          "Rated: 2891320.9 Bps, 23.13 Mbps, 2383.61 pps",
+          "Actual: 2539382 packets (3106681093 bytes) sent in 960.45 seconds",
+          "Rated: 3234609.9 Bps, 25.87 Mbps, 2643.95 pps",
+          "Actual: 2970598 packets (3661858564 bytes) sent in 1020.65 seconds",
+          "Rated: 3587764.0 Bps, 28.70 Mbps, 2910.49 pps",
+          "Actual: 3117784 packets (3853175109 bytes) sent in 1080.65 seconds",
+          "Rated: 3565579.0 Bps, 28.52 Mbps, 2885.07 pps",
+          "Actual: 3491327 packets (4322807799 bytes) sent in 1140.65 seconds",
+          "Rated: 3789745.9 Bps, 30.31 Mbps, 3060.79 pps",
+          "Test complete: 1970-01-01 02:41:29.050776470",
+          "Actual: 3706151 packets (4571393759 bytes) sent in 1199.99 seconds",
+          "Rated: 3809526.5 Bps, 30.47 Mbps, 3088.48 pps",
+          "Statistics for network device: h1-eth0",
+          "\tSuccessful packets:        3706151",
+          "\tFailed packets:            0",
+          "\tTruncated packets:         0",
+          "\tRetried packets (ENOBUFS): 0",
+          "\tRetried packets (EAGAIN):  0"
+        ]
+      },
+      {
+        "copy": 4,
+        "cpu": 11,
+        "exit_code": 0,
+        "started_monotonic_ns": 19288961879157,
+        "pnat_pairs": 1661,
+        "pnat_sha256": "928808a6481f5cc31fc887b733849efe5e9e508965f8c4ce829d57eb486d0d36",
+        "attempted_packets": 3706151,
+        "attempted_bytes": 4571393759,
+        "seconds": 1199.99,
+        "rated_bytes_per_second": 3809526.5,
+        "rated_mbps": 30.47,
+        "rated_packets_per_second": 3088.48,
+        "successful": 3706151,
+        "failed": 0,
+        "truncated": 0,
+        "retried_enobufs": 0,
+        "retried_eagain": 0,
+        "output": [
+          "Test start: 1970-01-01 02:21:29.077619597 ...",
+          "Actual: 14423 packets (5468691 bytes) sent in 60.00 seconds",
+          "Rated: 91132.3 Bps, 0.729 Mbps, 240.35 pps",
+          "Actual: 40829 packets (18260600 bytes) sent in 120.01 seconds",
+          "Rated: 152153.0 Bps, 1.21 Mbps, 340.19 pps",
+          "Actual: 70585 packets (36050077 bytes) sent in 180.04 seconds",
+          "Rated: 200223.8 Bps, 1.60 Mbps, 392.03 pps",
+          "Actual: 76758 packets (37535774 bytes) sent in 240.14 seconds",
+          "Rated: 156302.9 Bps, 1.25 Mbps, 319.62 pps",
+          "Actual: 86120 packets (42516641 bytes) sent in 300.30 seconds",
+          "Rated: 141578.2 Bps, 1.13 Mbps, 286.77 pps",
+          "Actual: 122503 packets (66329345 bytes) sent in 360.30 seconds",
+          "Rated: 184091.1 Bps, 1.47 Mbps, 339.99 pps",
+          "Actual: 155474 packets (90935708 bytes) sent in 420.33 seconds",
+          "Rated: 216340.1 Bps, 1.73 Mbps, 369.87 pps",
+          "Actual: 214153 packets (163124919 bytes) sent in 480.42 seconds",
+          "Rated: 339540.2 Bps, 2.71 Mbps, 445.75 pps",
+          "Actual: 243553 packets (184149879 bytes) sent in 540.43 seconds",
+          "Rated: 340745.4 Bps, 2.72 Mbps, 450.66 pps",
+          "Actual: 441280 packets (425742788 bytes) sent in 600.43 seconds",
+          "Rated: 709055.6 Bps, 5.67 Mbps, 734.93 pps",
+          "Actual: 725005 packets (769696126 bytes) sent in 660.43 seconds",
+          "Rated: 1165432.3 Bps, 9.32 Mbps, 1097.76 pps",
+          "Actual: 986042 packets (1104314797 bytes) sent in 720.44 seconds",
+          "Rated: 1532829.5 Bps, 12.26 Mbps, 1368.66 pps",
+          "Actual: 1277885 packets (1476074157 bytes) sent in 780.44 seconds",
+          "Rated: 1891331.0 Bps, 15.13 Mbps, 1637.38 pps",
+          "Actual: 1714096 packets (2046228991 bytes) sent in 840.44 seconds",
+          "Rated: 2434705.7 Bps, 19.47 Mbps, 2039.51 pps",
+          "Actual: 2146309 packets (2603466826 bytes) sent in 900.44 seconds",
+          "Rated: 2891320.9 Bps, 23.13 Mbps, 2383.61 pps",
+          "Actual: 2539382 packets (3106681093 bytes) sent in 960.45 seconds",
+          "Rated: 3234609.9 Bps, 25.87 Mbps, 2643.95 pps",
+          "Actual: 2970598 packets (3661858564 bytes) sent in 1020.63 seconds",
+          "Rated: 3587823.8 Bps, 28.70 Mbps, 2910.53 pps",
+          "Actual: 3117784 packets (3853175109 bytes) sent in 1080.64 seconds",
+          "Rated: 3565635.1 Bps, 28.52 Mbps, 2885.12 pps",
+          "Actual: 3491241 packets (4322699259 bytes) sent in 1140.64 seconds",
+          "Rated: 3789697.2 Bps, 30.31 Mbps, 3060.76 pps",
+          "Test complete: 1970-01-01 02:41:29.067995070",
+          "Actual: 3706151 packets (4571393759 bytes) sent in 1199.99 seconds",
+          "Rated: 3809526.5 Bps, 30.47 Mbps, 3088.48 pps",
+          "Statistics for network device: h1-eth0",
+          "\tSuccessful packets:        3706151",
+          "\tFailed packets:            0",
+          "\tTruncated packets:         0",
+          "\tRetried packets (ENOBUFS): 0",
+          "\tRetried packets (EAGAIN):  0"
+        ]
+      }
+    ]
+  },
+  "interface_counters": {
+    "h1-eth0": {
+      "rx_packets": 0,
+      "rx_bytes": 0,
+      "rx_dropped": 0,
+      "tx_packets": 14824604,
+      "tx_bytes": 18285575036,
+      "tx_dropped": 0
+    },
+    "h2-eth0": {
+      "rx_packets": 14824604,
+      "rx_bytes": 18285575036,
+      "rx_dropped": 0,
+      "tx_packets": 0,
+      "tx_bytes": 0,
+      "tx_dropped": 0
+    }
+  },
+  "nids": {
+    "exit_code": 0,
+    "output": [
+      "{\"run_dir\": \"/home/pedro/projects/explicabilidade-ia/training-runs/nids/interface/20261118T194206328208Z\", \"report\": \"/home/pedro/projects/explicabilidade-ia/relatorios/nids-execucao-interface-20261118T194206328208Z.md\", \"passed\": true}"
+    ],
+    "errors": []
+  },
+  "delivered": {
+    "libpcap": {
+      "received": 14824604,
+      "dropped": 10231,
+      "interface_dropped": 0
+    },
+    "flows_emitted": 97889,
+    "flows_per_second": 81.56277360217376
+  },
+  "machine": {
+    "samples": 1329,
+    "mains_online_in_every_sample": true,
+    "frequency_khz": {
+      "0": {
+        "min": 399722,
+        "median": 2502103,
+        "max": 4545965
+      },
+      "1": {
+        "min": 399261,
+        "median": 778947,
+        "max": 4289512
+      },
+      "2": {
+        "min": 395011,
+        "median": 568926,
+        "max": 4573094
+      },
+      "3": {
+        "min": 395070,
+        "median": 400000,
+        "max": 4605757
+      },
+      "4": {
+        "min": 399691,
+        "median": 1586375,
+        "max": 3399799
+      },
+      "5": {
+        "min": 398762,
+        "median": 1535647,
+        "max": 3264732
+      },
+      "6": {
+        "min": 398721,
+        "median": 1500364,
+        "max": 3400200
+      },
+      "7": {
+        "min": 399071,
+        "median": 1402276,
+        "max": 3402232
+      },
+      "8": {
+        "min": 400000,
+        "median": 2299964,
+        "max": 3381608
+      },
+      "9": {
+        "min": 399026,
+        "median": 2299961,
+        "max": 3381776
+      },
+      "10": {
+        "min": 399921,
+        "median": 2299951,
+        "max": 3381748
+      },
+      "11": {
+        "min": 799965,
+        "median": 2299978,
+        "max": 3389706
+      }
+    },
+    "throttle_events": {
+      "0": {
+        "core": 653,
+        "package": 714
+      },
+      "1": {
+        "core": 653,
+        "package": 714
+      },
+      "2": {
+        "core": 61,
+        "package": 714
+      },
+      "3": {
+        "core": 61,
+        "package": 714
+      },
+      "4": {
+        "core": 0,
+        "package": 714
+      },
+      "5": {
+        "core": 0,
+        "package": 714
+      },
+      "6": {
+        "core": 0,
+        "package": 714
+      },
+      "7": {
+        "core": 0,
+        "package": 714
+      },
+      "8": {
+        "core": 0,
+        "package": 714
+      },
+      "9": {
+        "core": 0,
+        "package": 714
+      },
+      "10": {
+        "core": 0,
+        "package": 714
+      },
+      "11": {
+        "core": 0,
+        "package": 714
+      }
+    },
+    "busy_share": {
+      "0": {
+        "min": 0.0,
+        "median": 0.041237113402061855,
+        "max": 1.0
+      },
+      "1": {
+        "min": 0.0,
+        "median": 0.03,
+        "max": 0.97
+      },
+      "2": {
+        "min": 0.0,
+        "median": 0.08,
+        "max": 0.8673469387755102
+      },
+      "3": {
+        "min": 0.0,
+        "median": 0.020202020202020204,
+        "max": 0.9900990099009901
+      },
+      "4": {
+        "min": 0.0,
+        "median": 0.09090909090909091,
+        "max": 1.0
+      },
+      "5": {
+        "min": 0.0,
+        "median": 0.08247422680412371,
+        "max": 1.0
+      },
+      "6": {
+        "min": 0.0,
+        "median": 0.08163265306122448,
+        "max": 1.0
+      },
+      "7": {
+        "min": 0.0,
+        "median": 0.08247422680412371,
+        "max": 1.0
+      },
+      "8": {
+        "min": 0.0,
+        "median": 1.0,
+        "max": 1.0
+      },
+      "9": {
+        "min": 0.0,
+        "median": 1.0,
+        "max": 1.0
+      },
+      "10": {
+        "min": 0.0,
+        "median": 1.0,
+        "max": 1.0
+      },
+      "11": {
+        "min": 0.0,
+        "median": 1.0,
+        "max": 1.0
+      }
+    },
+    "memory_available_kib": {
+      "min": 5749588,
+      "median": 7972952,
+      "max": 11300808
+    },
+    "swap_free_kib": {
+      "min": 1595552,
+      "median": 3325840,
+      "max": 3325948
+    },
+    "file": "machine.jsonl"
+  }
+}

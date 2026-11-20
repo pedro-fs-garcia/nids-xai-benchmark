@@ -119,7 +119,7 @@ As métricas principais são:
 
 As métricas secundárias são o tempo de inferência, o tempo de explicação, a vazão, a carga efetiva, o tempo de CPU e o pico de memória de cada processo, o tamanho da fila de explicações pendentes, o tempo de esvaziamento da fila e os pacotes descartados na captura.
 
-Um fluxo descartado na fila de saída do extrator entra na proporção de descartes e não tem latência. Uma solicitação de explicação descartada ou pendente deixa o fluxo sem explicação. Esse fluxo entra na latência de classificação e reduz a cobertura explicativa. Descartes e pendências são resultados e não invalidam uma execução.
+Um fluxo descartado na fila de saída do extrator entra na proporção de descartes e não tem latência. Uma solicitação de explicação descartada ou pendente deixa o fluxo sem explicação. Esse fluxo entra na latência de classificação e reduz a cobertura explicativa. Descartes, pendências e pacotes perdidos na captura são resultados e não invalidam uma execução.
 
 Cada execução produz as próprias estatísticas. As repetições de uma combinação são resumidas pela mediana, com o mínimo e o máximo.
 

@@ -1,0 +1,408 @@
+{
+  "stage": "nids run",
+  "run_id": "20261119T080849488645Z",
+  "passed": true,
+  "checks": {
+    "emitted_equals_received_plus_dropped": true,
+    "no_dropped_flow_in_file_mode": true,
+    "received_equals_classified_plus_errors": true,
+    "timestamps_ordered": true,
+    "no_packets_after_emission_in_file_mode": true,
+    "selection_follows_strategy": true,
+    "explanations_match_classifications": true,
+    "sum_identity": true,
+    "explained_equals_selected": true,
+    "explanation_marks_ordered": true,
+    "explained_output_matches_classification": true,
+    "contributions_cover_every_input": true,
+    "processes_on_configured_cpus": true
+  },
+  "model": "random-forest",
+  "source": {
+    "kind": "interface",
+    "iface": "h2-eth0"
+  },
+  "segment": {
+    "name": "campanha",
+    "start": "2017-07-04T12:10:00Z",
+    "start_us": 1499170200000000,
+    "stop": "2017-07-04T12:30:00Z",
+    "stop_us": 1499171400000000,
+    "pcap": {
+      "file": "derived-data/pcap/tuesday-campanha/segment-campanha.pcap",
+      "bytes": 4630692199,
+      "sha256": "89abbf3441fbcdb04ba5e29fa4647ea82a714aa18843d046c663e0f4bad5a191"
+    },
+    "reference": {
+      "file": "derived-data/pcap/tuesday-campanha/reference-campanha.csv",
+      "bytes": 13285870,
+      "sha256": "0adbe59662496177cbeb9640eca73b9c67b3e70ee11254b086d53d1e244a59e4"
+    },
+    "carried_over": {
+      "file": "derived-data/pcap/tuesday-campanha/carried-over-campanha.json",
+      "bytes": 119030,
+      "sha256": "80ca161f83741e499afecf5eb9aff5785516f1e197457e47f2efb05ba64e710b"
+    },
+    "addresses": {
+      "file": "derived-data/pcap/tuesday-campanha/addresses-campanha.json",
+      "bytes": 61818,
+      "sha256": "2f7a0266a9f3a3303117def2a31e20fd2270aea5a2caa0d0fadeda1dcd8fac15"
+    },
+    "border_seconds": 120,
+    "manifest": "derived-data/pcap/tuesday-campanha/manifest.json",
+    "manifest_sha256": "80ee6b6d90b17a969f58ede086f5ac318f6f471e862cc1be94378f8dc9247539"
+  },
+  "config": "configs/nids.json",
+  "config_sha256": "d4e0bfe6dd3c3ed55a3748725aa58171c02b66e9d3034551cbb3cf3f5d0e4e26",
+  "selection_calibration_run": "training-runs/nids/calibracao/20261114T204351398308Z",
+  "frozen_run": "training-runs/frozen-models/20261111T181031847482Z",
+  "model_manifest_sha256": "b18708731de1a1901969789a93479a6a4e4b228ea56aff24c65bf4bfd7c71805",
+  "classifier_threads": 1,
+  "extractor_options": {
+    "snaplen": 65535,
+    "read-timeout-ms": 100,
+    "idle-margin-us": 2000000,
+    "buffer-bytes": 268435456,
+    "flow-queue-limit": 10000
+  },
+  "extractor_jvm_options": [
+    "-Dnio.mx=1073741824",
+    "-Dnio.ms=1073741824",
+    "-XX:+ExplicitGCInvokesConcurrent"
+  ],
+  "extractor_build": {
+    "extractor_commit": "13a061520b862d605eea746c79ca4033b30d98fc",
+    "java": "openjdk version \"17.0.21.0.3\" 2026-10-24",
+    "release": 8,
+    "libpcap": "/usr/lib/x86_64-linux-gnu/libpcap.so.0.8",
+    "jars": {
+      "nids-extractor.jar": "75c7b3825a3f3a29827f3bc93ac4b80beed6e73f5f53e4e4d10f943e37a3f96e",
+      "reference-extractor.jar": "a934558afd72f16424a935c3b0ce2334b4733ae845a00b1988b6ee835f9f6338"
+    },
+    "patches": {
+      "01-flow-emission-sweep.patch": "06a76076bed3b391ca5f3d306fc2c4aecd915240296ef73d07b4bc60a8aa9ca1",
+      "02-live-capture.patch": "4fc3091fa0b1791b1de9b0d4d2ad369bf71fa3a939e0e20f882112fb21d3cc48"
+    },
+    "sources": {
+      "NidsExtractor.java": "62992d472cdb6cd31bcb898e3e46060737d024cf79b375f3898ea02b6859814c",
+      "ReferenceExtractor.java": "624309cb3acd7d933381308d23c0f87647a598ae8867608f4ecd49b663cfccec"
+    },
+    "libraries": {
+      "commons-lang3-3.6.jar": "89c27f03fff18d0b06e7afd7ef25e209766df95b6c1269d6c3ebbdea48d5f284",
+      "commons-math3-3.5.jar": "dcf9768726b82e8d7b8a928447b08bca7cfe2773d5120a63a41ec224207c1a29",
+      "jnetpcap.jar": "7dfff1e5abd453293415074dd09e10edbeb00cf37b8db9a07d44108e1a10c163",
+      "slf4j-api-1.7.25.jar": "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
+      "slf4j-nop-1.7.25.jar": "6cb127138f41b5a869f9ecdd061ad17799a0e3fe7204600797154eb0432eeb12",
+      "tika-core-1.17.jar": "77c0a63d7693dc968553f92ef061469979b04d458bb11996d7738c45c5f66b5c"
+    },
+    "native": {
+      "libjnetpcap-pcap100.so": "b758a46ef7ff3cf39b2956de4c08e19a5585cbb6aefd6ce4416566227211aec9",
+      "libjnetpcap.so": "93d8c8c53a63e448f82e778791a0a725d1345a4c80c9d7334f7c9f8067688a49"
+    }
+  },
+  "extractor_start": {
+    "extractor_commit": "13a061520b862d605eea746c79ca4033b30d98fc",
+    "flow_timeout_us": 120000000,
+    "activity_timeout_us": 5000000,
+    "source": "interface",
+    "location": "h2-eth0",
+    "snaplen": 65535,
+    "read_timeout_ms": 100,
+    "idle_sleep_ms": 1,
+    "capture_mode": "non_blocking",
+    "buffer_bytes": 268435456,
+    "ring_bytes": 268435456,
+    "flow_output": "queue",
+    "flow_queue_limit": 10000,
+    "idle_margin_us": 2000000,
+    "java_version": "17.0.21.0.3",
+    "monotonic_ns": 64092021667134
+  },
+  "extractor_end": {
+    "stop_reason": "stop_requested",
+    "packets_read": 14824604,
+    "packets_valid": 14812640,
+    "packets_discarded": 11964,
+    "idle_reads": 1049434,
+    "packets_after_emission": 0,
+    "first_disordered_packet_id": 25101,
+    "open_flows_before_flush": 0,
+    "flows_emitted": 97622,
+    "flows_by_cause": {
+      "tcp_new_connection": 1452,
+      "timeout_sweep": 96170
+    },
+    "output_queue_max": 10000,
+    "flows_dropped": 11388,
+    "process": {
+      "cpu_ns": 304260000000,
+      "max_rss_kib": 5100152,
+      "max_heap_bytes": 4294967296
+    },
+    "pcap_stats": {
+      "received": 14824604,
+      "dropped": 0,
+      "interface_dropped": 0
+    },
+    "monotonic_ns": 65471759572734
+  },
+  "shared_clock_difference_ns": 642198,
+  "flows": {
+    "received": 86234,
+    "classified": 86172,
+    "errors": 62,
+    "by_cause": {
+      "tcp_new_connection": 1452,
+      "timeout_sweep": 84782
+    },
+    "predictions": {
+      "0": 83511,
+      "1": 2661
+    },
+    "error_examples": [
+      {
+        "seq": 713,
+        "flow_id": "208.81.233.32-192.168.10.14-80-49870-6",
+        "error": "Valor não finito em Flow Bytes/s."
+      },
+      {
+        "seq": 714,
+        "flow_id": "100.64.1.132-100.64.0.1-80-49870-6",
+        "error": "Valor não finito em Flow Bytes/s."
+      },
+      {
+        "seq": 727,
+        "flow_id": "100.64.17.132-100.64.16.1-80-49870-6",
+        "error": "Valor não finito em Flow Bytes/s."
+      },
+      {
+        "seq": 730,
+        "flow_id": "100.64.33.132-100.64.32.1-80-49870-6",
+        "error": "Valor não finito em Flow Bytes/s."
+      },
+      {
+        "seq": 1477,
+        "flow_id": "63.241.108.104-192.168.10.14-443-49832-6",
+        "error": "Valor não finito em Flow Bytes/s."
+      }
+    ]
+  },
+  "timings": {
+    "inference_ns": {
+      "count": 86172,
+      "mean": 5279570.9794248715,
+      "median": 5339852.0,
+      "p95": 6743702.75,
+      "p99": 8914182.639999997,
+      "min": 3385172.0,
+      "max": 18608077.0
+    },
+    "classification_latency_ns": {
+      "count": 86172,
+      "mean": 101888295779.86784,
+      "median": 115966206811.5,
+      "p95": 159775168161.65,
+      "p99": 162280338608.47,
+      "min": 12114265.0,
+      "max": 166092256747.0
+    },
+    "wait_before_inference_ns": {
+      "count": 86172,
+      "mean": 101874045292.70541,
+      "median": 115952822971.5,
+      "p95": 159759847272.25,
+      "p99": 162265477710.63998,
+      "min": 607624.0,
+      "max": 166079380209.0
+    },
+    "selection_ns": {
+      "count": 86172,
+      "mean": 829.9463166689876,
+      "median": 750.0,
+      "p95": 1457.0,
+      "p99": 1831.2899999999936,
+      "min": 233.0,
+      "max": 107586.0
+    },
+    "delivery_ns": {
+      "count": 86172,
+      "mean": 151580.52377802535,
+      "median": 143844.0,
+      "p95": 220587.9,
+      "p99": 327963.9099999995,
+      "min": 72207.0,
+      "max": 11452831.0
+    },
+    "classified_per_second": 67.67136036661451,
+    "explanation_ns": {
+      "count": 86172,
+      "mean": 8791427.087638676,
+      "median": 8897418.5,
+      "p95": 11078106.95,
+      "p99": 14830343.22999999,
+      "min": 5780863.0,
+      "max": 27369326.0
+    },
+    "explanation_latency_ns": {
+      "count": 86172,
+      "mean": 101888295779.86784,
+      "median": 115966206811.5,
+      "p95": 159775168161.65,
+      "p99": 162280338608.47,
+      "min": 12114265.0,
+      "max": 166092256747.0
+    }
+  },
+  "artifacts": {
+    "classifications.jsonl": {
+      "file": "training-runs/nids/interface/20261119T080849488645Z/classifications.jsonl",
+      "bytes": 25104272,
+      "sha256": "b9d9ea850e99d7de551113d796a71a1f481f0ea8116057b59a5e6ffd0575a0d8"
+    },
+    "flows.csv": {
+      "file": "training-runs/nids/interface/20261119T080849488645Z/flows.csv",
+      "bytes": 68045329,
+      "sha256": "9cac5798229793c6a2fdeeda79c2a558a3950b079ee352e1fab13ff805a1ba33"
+    },
+    "explanations.jsonl": {
+      "file": "training-runs/nids/interface/20261119T080849488645Z/explanations.jsonl",
+      "bytes": 170605424,
+      "sha256": "259f086ff95faaa1e8c1500b8b62ff6a27a6095d7be6c728a4dc9511f355c6bd"
+    },
+    "explanations.csv": {
+      "file": "training-runs/nids/interface/20261119T080849488645Z/explanations.csv",
+      "bytes": 4556093,
+      "sha256": "750117eca6dd7095e5925554ba88cae747c7bc20f907dccf715e4b0b616f9ed6"
+    }
+  },
+  "cpu_state": {
+    "affinity": [
+      2
+    ],
+    "scaling_governor": {
+      "2": "powersave"
+    },
+    "mains_power_online": true
+  },
+  "environment": {
+    "python": "3.12.3",
+    "libraries": {
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "scipy": "1.18.1",
+      "joblib": "1.6.0",
+      "xgboost-cpu": "3.4.1",
+      "shap": "0.54.1",
+      "matplotlib": "3.11.2",
+      "threadpoolctl": "3.8.0",
+      "pandas": "3.1.1"
+    },
+    "platform": "Linux-7.0.0-43-generic-x86_64-desconhecido-with-glibc2.43",
+    "cpu": "13th Gen Intel(R) Core(TM) i5-1334U",
+    "logical_cpus": 12
+  },
+  "strategy": "Síncrono total",
+  "strategy_key": "sincrono-total",
+  "selection": null,
+  "tree_shap_config": "configs/tree-shap.json",
+  "tree_shap_config_sha256": "4578aea08402859e3054a6848947c80311d65860a74aa52579e5dcb8fc45ee52",
+  "explainer": {
+    "feature_perturbation": "tree_path_dependent",
+    "model_output": "raw",
+    "approximate": false,
+    "check_additivity": false
+  },
+  "warmup": {
+    "explainer_construction_ns": 4336974,
+    "explanation_ns": 4644821,
+    "inference_ns": 4418566
+  },
+  "explanations": {
+    "eligible": 86172,
+    "selected": 86172,
+    "completed": 86172,
+    "selected_share": 1.0,
+    "completed_share": 1.0,
+    "scale": "probability",
+    "sum_identity": {
+      "residual": 5.551115123125783e-16,
+      "tolerance": 1e-09
+    },
+    "explained_output_vs_probability": {
+      "max_difference": 0.0,
+      "tolerance": 1e-12
+    }
+  },
+  "shared_clock_difference_explainer_ns": null,
+  "resources": {
+    "classifier_process": {
+      "user_seconds": 1266.8084059999999,
+      "system_seconds": 3.424966,
+      "max_rss_kib": 365660,
+      "peak_since_phase_start": true,
+      "threads": 1,
+      "thread_affinities": [
+        [
+          2
+        ]
+      ]
+    },
+    "classifier_process_total": {
+      "user_seconds": 1276.479652,
+      "system_seconds": 4.456996,
+      "max_rss_kib": 852060,
+      "threads": 23,
+      "thread_affinities": [
+        [
+          2
+        ]
+      ]
+    },
+    "explainer_process": null,
+    "extractor_process": {
+      "cpu_ns": 304260000000,
+      "max_rss_kib": 5100152,
+      "max_heap_bytes": 4294967296
+    },
+    "children_total": {
+      "user_seconds": 290.831712,
+      "system_seconds": 13.781123000000001,
+      "max_rss_kib": 5100448
+    },
+    "memory_available_kib_at_start": 11498020,
+    "cpus": {
+      "configured": {
+        "classifier": [
+          2
+        ],
+        "explainer": [
+          0
+        ],
+        "extractor": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "replay": [
+          8,
+          9,
+          10,
+          11
+        ]
+      },
+      "classifier": [
+        [
+          2
+        ]
+      ],
+      "explainer": null,
+      "extractor": [
+        4,
+        5,
+        6,
+        7
+      ]
+    }
+  }
+}

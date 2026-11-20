@@ -181,6 +181,12 @@ python main.py matriz-analisar --matriz ../configs/piloto-2.json
 Lê o registro de uma matriz executada por `scripts/executar_matriz.py`, valida cada ensaio válido contra a leitura por arquivo com as mesmas entradas fixas, estratégia, critério e trecho, e resume carga efetiva, descartes, latências, fila de explicações pendentes, recursos de cada processo, estado da máquina e a variação entre ensaios da mesma combinação. O relatório vai para `relatorios/<matriz>-<execução>.md`.
 
 ```bash
+python main.py campanha-auditar --matriz ../configs/campanha.json
+```
+
+Audita uma matriz executada, só lendo os registros. Confere a matriz prevista contra o registro e a coerência entre cada tentativa e os registros da execução. Em cada execução válida, confere que o tcpreplay enviou todos os pacotes de cada cópia, que o extrator parou a pedido do NIDS, o hash e a recontagem dos arquivos brutos e a validação por cópia da análise mais recente da matriz. Também confere as entradas fixas das execuções válidas e lista as tentativas inválidas e as execuções interrompidas fora do registro. Uma validação por cópia reprovada só pela perda de pacotes na captura fica registrada como explicada por essa perda. O relatório vai para `relatorios/<matriz>-auditoria-<execução>.md`, e o registro, para `training-runs/nids/auditoria-<matriz>/`.
+
+```bash
 python main.py calibrar-selecao
 ```
 
