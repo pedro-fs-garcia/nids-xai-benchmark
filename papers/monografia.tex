@@ -378,6 +378,7 @@ deram-me uma vida em que trabalhos como este fossem possíveis. Esse início é 
 \begin{siglas}
   \item[ACK] \emph{Acknowledgment}
   \item[CPU] \emph{Central Processing Unit}
+  \item[CRISP-DM] \emph{CRoss-Industry Standard Process for Data Mining}
   \item[CSV] \emph{Comma-Separated Values}
   \item[CWR] \emph{Congestion Window Reduced}
   \item[ECE] \emph{Explicit Congestion Notification Echo}
@@ -393,7 +394,6 @@ deram-me uma vida em que trabalhos como este fossem possíveis. Esse início é 
   \item[p99] Percentil 99
   \item[PCAP] \emph{Packet Capture}
   \item[PSH] \emph{Push}
-  \item[RF] Random Forest
   \item[ROC-AUC] \emph{Area Under the Receiver Operating Characteristic Curve}
   \item[RST] \emph{Reset}
   \item[SHAP] \emph{SHapley Additive exPlanations}
@@ -426,7 +426,7 @@ tráfego rotulado atribui, então, uma classe a cada fluxo a partir desses atrib
 um dataset público para avaliar sistemas de detecção de intrusão, que descreve por 80 atributos os
 fluxos de um tráfego capturado numa rede de laboratório (SHARAFALDIN; HABIBI LASHKARI; GHORBANI,
 2018). Este trabalho usa o Improved CIC-IDS2017, uma versão do CIC-IDS2017 em que erros de formação
-dos fluxos, de extração de atributos e de rotulagem foram corrigidos (Seção~\ref{sec:fluxos}).
+dos fluxos, de extração de atributos e de rotulagem foram corrigidos (Seção~\ref{sec:dados}).
 
 Os fluxos descritos por atributos formam dados tabulares, um tipo de dado em que modelos de árvores, como o Random Forest
 (BREIMAN, 2001) e o XGBoost (CHEN; GUESTRIN, 2016), têm bom desempenho. No CIC-IDS2017, o ID3 e o
@@ -495,10 +495,10 @@ específicos abaixo:
 
 \section{Conteúdo do trabalho}
 
-O Capítulo~\ref{cap:fundamentacao} apresenta o CIC-IDS2017 e a formação dos \termo{fluxo}{fluxos}, as
-medidas de desempenho de detecção, as árvores de decisão, o Random Forest e o XGBoost, os valores de
+O Capítulo~\ref{cap:fundamentacao} apresenta as medidas de desempenho de detecção, as árvores de decisão, o Random Forest e o XGBoost, os valores de
 Shapley e o TreeSHAP, a latência num NIDS e os trabalhos relacionados. O
-Capítulo~\ref{cap:metodologia} descreve a arquitetura do sistema, os dados, os
+Capítulo~\ref{cap:metodologia} descreve a arquitetura do sistema, o processo de desenvolvimento, que
+segue o CRISP-DM, o entendimento e a preparação dos dados, os
 \termo{classificador}{classificadores}, a configuração do TreeSHAP, o NIDS, as
 \termo{estrategia}{estratégias de explicação}, o ambiente emulado, a matriz experimental e as
 medidas e a disponibilidade do código e dos arquivos de saída. O
@@ -510,32 +510,6 @@ um link para o verbete.
 \chapter{Fundamentação técnica}
 \label{cap:fundamentacao}
 
-\section{O CIC-IDS2017 e a formação dos fluxos}
-\label{sec:fluxos}
-
-O CIC-IDS2017 reúne cinco dias de tráfego de uma rede de laboratório, com tráfego benigno gerado a
-partir do comportamento de usuários e ataques de sete famílias (SHARAFALDIN; HABIBI LASHKARI;
-GHORBANI, 2018). Os \termo{fluxo}{fluxos} do dataset e seus atributos vêm do CICFlowMeter, um
-extrator de atributos de fluxos distribuído pelo mesmo instituto que criou o dataset. O
-CICFlowMeter lê os pacotes de uma captura em formato PCAP (\emph{Packet Capture}), o formato de
-arquivo em que as ferramentas de captura de tráfego gravam cada pacote de uma interface de rede com
-o instante da captura. Em seguida, ele agrupa num fluxo os pacotes com os mesmos endereços, portas
-e protocolo e calcula 80 atributos de cada fluxo (Apêndice~\ref{ap:atributos}), como a duração, os intervalos entre pacotes e as
-estatísticas de cada sentido da comunicação (SHARAFALDIN; HABIBI LASHKARI; GHORBANI, 2018).
-
-O CIC-IDS2017 original, porém, tem erros. Engelen, Rimmer e Joosen (2021) encontraram erros na
-geração do tráfego, na formação dos fluxos, na extração de atributos e na rotulagem do dataset. Eles
-corrigiram o extrator, refizeram a extração e marcaram como \emph{Attempted} os fluxos de ataque
-que não exibem comportamento malicioso. Liu et al. (2022) fizeram novas correções no extrator e
-publicaram a versão usada neste trabalho, o Improved CIC-IDS2017.
-
-No CICFlowMeter corrigido, um fluxo termina por tempo limite, por um encerramento TCP seguido de
-uma nova conexão, por um pacote ICMP com código e tipo diferentes do código e do tipo do fluxo ou
-no fim da captura (ENGELEN, 2022). Esse modo de encerramento atrasa a classificação num NIDS que usa
-os mesmos atributos dos dados de treino, porque esse NIDS só pode classificar um fluxo depois que o
-fluxo termina. Pelo tempo limite, essa espera pode chegar a 120~s depois do primeiro pacote do fluxo
-(ENGELEN, 2022).
-
 \section{Medidas de desempenho de detecção}
 \label{sec:medidas-deteccao}
 
@@ -543,151 +517,80 @@ As medidas de desempenho de detecção comparam a classe que o
 \termo{classificador}{classificador} atribui a cada registro com o rótulo do registro. O
 classificador calcula a probabilidade de ataque de cada registro. O
 \termo{limiar-classificacao}{limiar de classificação} é o valor dessa probabilidade acima do qual o
-classificador atribui a classe ataque (FAWCETT, 2006). Neste trabalho, o limiar de classificação é 0,5
-(Seção~\ref{sec:classificadores}). Ataque é a classe positiva.
-Benigno é a classe negativa. Cada registro classificado pertence a um de quatro casos. Um verdadeiro
-positivo (VP) é um registro de ataque classificado como ataque. Um falso positivo (FP) é um registro
-benigno classificado como ataque. Um verdadeiro negativo (VN) é um registro benigno classificado
-como benigno. Um falso negativo (FN) é um registro de ataque classificado como benigno, ou seja, um
-ataque não detectado. Os quatro casos formam a matriz de confusão do classificador (FAWCETT, 2006),
-apresentada na Tabela~\ref{tab:matriz-confusao}.
+classificador atribui a classe ataque (FAWCETT, 2006). Neste trabalho, o limiar de classificação é
+0,5 (Seção~\ref{sec:classificadores}). Com ataque como classe positiva, cada registro classificado
+pertence a um de quatro casos. Um verdadeiro positivo (VP) é um registro de ataque classificado como
+ataque. Um falso negativo (FN) é um ataque não detectado. Um verdadeiro negativo (VN) é um registro
+benigno classificado como benigno. Um falso positivo (FP) é um registro benigno classificado como
+ataque (FAWCETT, 2006).
 
-\begin{table}[htbp]
-  \centering
-  \caption{Matriz de confusão}
-  \label{tab:matriz-confusao}
-  \begin{tabular}{lll}
-    \toprule
-    & \multicolumn{2}{c}{Rótulo do registro} \\
-    \cmidrule(lr){2-3}
-    Classe atribuída & Ataque & Benigno \\
-    \midrule
-    Ataque & VP (verdadeiro positivo) & FP (falso positivo) \\
-    Benigno & FN (falso negativo) & VN (verdadeiro negativo) \\
-    \bottomrule
-  \end{tabular}
-  \fonte{Elaborada pelo autor com base em Fawcett (2006).}
-\end{table}
-
-
-A acurácia é a proporção de registros classificados corretamente, $(\mathrm{VP}+\mathrm{VN})/(\mathrm{VP}+\mathrm{FP}+\mathrm{VN}+\mathrm{FN})$. Como
-75,93\% dos registros do Improved CIC-IDS2017 são benignos (Seção~\ref{sec:dados}), um
-classificador que atribuísse a classe benigno a todos os registros teria acurácia próxima de 0,76
-sem detectar nenhum ataque. Por isso, este trabalho também usa medidas que separam os falsos
-positivos dos falsos negativos. A precisão, $\mathrm{VP}/(\mathrm{VP}+\mathrm{FP})$, é a proporção de registros de ataque
-entre os registros classificados como ataque. O recall, $\mathrm{VP}/(\mathrm{VP}+\mathrm{FN})$, é a proporção dos registros
-de ataque classificados como ataque. A taxa de falsos positivos, $\mathrm{FP}/(\mathrm{FP}+\mathrm{VN})$, é a proporção dos
-registros benignos classificados como ataque. O F1, que Fawcett (2006) chama de \emph{F-measure}, é a média
-harmônica entre a precisão $P$ e o recall $R$, $2PR/(P+R)$. Como a média harmônica fica próxima do menor dos dois valores, o F1 só é
-alto quando a precisão e o recall são altos.
-
-Essas cinco medidas dependem do limiar de classificação. A curva ROC (\emph{Receiver Operating
-Characteristic}), ao contrário, considera todos os limiares e mostra o recall em função da taxa de falsos positivos quando o limiar varia de 0 a
-1. A ROC-AUC é a área sob a curva ROC. Ela vale 1 quando algum limiar separa todos os registros de
-ataque de todos os registros benignos e 0,5 quando a probabilidade de ataque não distingue as duas
-classes (FAWCETT, 2006).
-
-Este trabalho usa o F1 na validação para escolher a configuração de cada classificador
-(Seção~\ref{sec:classificadores}) e apresenta as seis medidas no conjunto de teste
-(Capítulo~\ref{cap:resultados}).
+A acurácia, $(\mathrm{VP}+\mathrm{VN})/(\mathrm{VP}+\mathrm{FP}+\mathrm{VN}+\mathrm{FN})$, é a
+proporção de registros classificados corretamente. Como 75,93\% dos registros do Improved
+CIC-IDS2017 são benignos (Seção~\ref{sec:dados}), um classificador que atribuísse a classe benigno a
+todos os registros teria acurácia próxima de 0,76 sem detectar nenhum ataque. Por isso, este
+trabalho também usa a precisão, $\mathrm{VP}/(\mathrm{VP}+\mathrm{FP})$, o recall,
+$\mathrm{VP}/(\mathrm{VP}+\mathrm{FN})$, a taxa de falsos positivos,
+$\mathrm{FP}/(\mathrm{FP}+\mathrm{VN})$, e o F1, que Fawcett (2006) chama de \emph{F-measure}. O F1
+é a média harmônica $2PR/(P+R)$ entre a precisão $P$ e o recall $R$. Essas medidas dependem do
+limiar de classificação. A ROC-AUC, ao contrário, é a área sob a curva ROC (\emph{Receiver Operating
+Characteristic}), que mostra o recall em função da taxa de falsos positivos quando o limiar varia de
+0 a 1. Ela vale 1 quando algum limiar separa todos os registros de ataque de todos os registros
+benignos e 0,5 quando a probabilidade de ataque não distingue as duas classes (FAWCETT, 2006).
 
 \section{Árvores de decisão, Random Forest e XGBoost}
 \label{sec:arvores}
 
 Os dois \termo{classificador}{classificadores} deste trabalho combinam árvores de decisão. Uma
 árvore de decisão classifica um \termo{fluxo}{fluxo} por uma sequência de testes. Cada nó interno
-compara um atributo do fluxo com um valor de corte e envia o fluxo a um de dois ramos, conforme o
-resultado da comparação. O fluxo desce da raiz até um nó sem ramos, a folha, que guarda o valor de
-saída da árvore para todos os fluxos que a alcançam (CHEN; GUESTRIN, 2016). A profundidade de uma
-árvore é o maior número de testes entre a raiz e uma folha. Como cada nó interno tem dois ramos, uma
-árvore de profundidade $D$ tem no máximo $2^D$ folhas.
+compara um atributo do fluxo com um valor de corte e envia o fluxo a um de dois ramos. O fluxo desce
+da raiz até uma folha, que guarda o valor de saída da árvore (CHEN; GUESTRIN, 2016). A profundidade
+de uma árvore é o maior número de testes entre a raiz e uma folha. Como cada nó interno tem dois
+ramos, uma árvore de profundidade $D$ tem no máximo $2^D$ folhas.
 
-O Random Forest combina muitas árvores treinadas de forma independente (BREIMAN, 2001). Duas fontes
-de aleatoriedade diferenciam as árvores. Cada árvore é treinada com registros de treino sorteados
-com reposição. Em cada nó, o teste é escolhido entre um subconjunto de atributos sorteado para
-aquele nó. Essa aleatoriedade busca reduzir a correlação entre as árvores sem reduzir a força de cada árvore,
-isto é, a sua capacidade de classificar corretamente. Como o limite superior do erro de
-generalização do Random Forest cresce com essa correlação e diminui com essa força, a aleatoriedade
-melhora a acurácia do Random Forest (BREIMAN, 2001). Na formulação original, o Random Forest escolhe a classe que recebe mais votos das
-árvores (BREIMAN, 2001). A implementação do scikit-learn, usada neste trabalho, faz, porém, a média
-das probabilidades de ataque dadas pelas árvores no lugar da votação (SCIKIT-LEARN DEVELOPERS, [2026]).
-Numa árvore, a probabilidade de ataque é a proporção de registros de ataque entre os
-registros de treino que chegaram à folha, de modo que a saída do Random Forest já é uma probabilidade.
+O Random Forest combina árvores treinadas de forma independente. Cada árvore é treinada com
+registros de treino sorteados com reposição. Em cada nó, o teste é escolhido entre um subconjunto
+de atributos sorteado para aquele nó. Esse sorteio reduz a correlação entre as árvores e, com ela, o
+limite superior do erro de generalização do Random Forest (BREIMAN, 2001). Na implementação do
+scikit-learn, usada neste trabalho, a saída do Random Forest é a média das probabilidades de ataque
+dadas pelas árvores. Numa árvore, essa probabilidade é a proporção de registros de ataque entre os
+registros de treino que chegaram à folha (SCIKIT-LEARN DEVELOPERS, [2026]).
 
-O XGBoost também combina árvores, mas as treina em sequência (CHEN; GUESTRIN, 2016). Para treinar
-cada nova árvore, o XGBoost usa uma função de perda, que mede a diferença entre a previsão do
-classificador e o rótulo de um registro de treino. Cada nova árvore é ajustada para minimizar a soma
-dessa função nos registros de treino, a partir das previsões das árvores anteriores, com um termo de
-regularização que penaliza a complexidade da árvore (CHEN; GUESTRIN, 2016). Chen e Guestrin (2016) definem a saída do
-XGBoost para um fluxo como a soma dos valores das folhas que o fluxo alcança em todas as árvores.
-A implementação da biblioteca acrescenta a essa soma um valor inicial, comum a todos os fluxos, o
-\texttt{base\_score}, que a biblioteca estima antes do treino (XGBOOST DEVELOPERS, [2026]). O \emph{shrinkage} reduz a influência de cada árvore, porque multiplica os valores das folhas
-de cada nova árvore por um fator $\eta$, de 0,1 neste
-trabalho (CHEN; GUESTRIN, 2016). O objetivo logístico binário
-define a função de perda do XGBoost neste trabalho e trata a saída,
-isto é, o valor inicial somado aos valores das folhas, como um escore na escala de log-odds, o logaritmo da razão $p/(1-p)$, em que $p$ é a probabilidade de
-ataque. A função logística converte esse escore na probabilidade de ataque (XGBOOST DEVELOPERS, [2026]).
-
-O número de árvores, o número de folhas e a profundidade, definidos nesta seção, determinam o custo
-do TreeSHAP (Seção~\ref{sec:treeshap}).
+O XGBoost treina as árvores em sequência. Cada nova árvore é ajustada para minimizar, a partir das
+previsões das árvores anteriores, a soma de uma função de perda nos registros de treino, com um termo
+de regularização que penaliza a complexidade da árvore. A função de perda mede a diferença entre a
+previsão do classificador e o rótulo de um registro. O \emph{shrinkage} multiplica os valores das
+folhas de cada nova árvore por um fator $\eta$ e, assim, reduz a influência de cada árvore. A saída
+do XGBoost para um fluxo é a soma dos valores das folhas que o fluxo alcança em todas as árvores
+(CHEN; GUESTRIN, 2016). A biblioteca acrescenta a essa soma um valor inicial comum a todos os fluxos,
+o \texttt{base\_score}. Com o objetivo logístico binário, usado neste trabalho, a saída é um escore
+na escala de log-odds, o logaritmo da razão $p/(1-p)$, em que $p$ é a probabilidade de ataque. A
+função logística converte esse escore na probabilidade de ataque (XGBOOST DEVELOPERS, [2026]).
 
 \section{Valores de Shapley e TreeSHAP}
 \label{sec:treeshap}
 
 Os valores de Shapley vêm da teoria dos jogos cooperativos e repartem o resultado de um jogo entre
-os jogadores (SHAPLEY, 1953). A contribuição marginal de um jogador é a mudança no resultado quando
-ele entra num grupo de jogadores. O valor de Shapley de cada jogador é a média dessa contribuição
-marginal sobre todas as ordens em que os jogadores podem entrar (LUNDBERG et al., 2020). Na previsão
-de um \termo{classificador}{classificador}, os jogadores são os atributos da entrada
-explicada, e o resultado é a saída do classificador para essa entrada. Antes de qualquer atributo
-entrar, a saída é o \termo{valor-referencia}{valor de referência}, a saída esperada do classificador
-quando nenhum atributo é conhecido (LUNDBERG et al., 2020). Neste trabalho, a contribuição de um atributo para a
-saída explicada é o seu valor de Shapley.
+os jogadores (SHAPLEY, 1953). O valor de Shapley de um jogador é a média da sua contribuição
+marginal, a mudança no resultado quando ele entra num grupo de jogadores, sobre todas as ordens em
+que os jogadores podem entrar (LUNDBERG et al., 2020). Na previsão de um
+\termo{classificador}{classificador}, os jogadores são os atributos da entrada explicada, e o
+resultado é a saída do classificador para essa entrada. Antes de qualquer atributo entrar, a saída é
+o \termo{valor-referencia}{valor de referência}, a saída esperada do classificador quando nenhum
+atributo é conhecido (LUNDBERG et al., 2020). Neste trabalho, a contribuição de um atributo para a
+saída explicada é o seu valor de Shapley. Pela acurácia local (\emph{local accuracy}), as
+contribuições somadas ao valor de referência reproduzem a saída explicada. Entre os métodos que
+atribuem uma contribuição a cada atributo, só os valores de Shapley satisfazem essa propriedade e
+outras duas, a consistência e a ausência de efeito (LUNDBERG; LEE, 2017; LUNDBERG et al., 2020).
 
-A Tabela~\ref{tab:shapley} mostra o cálculo num exemplo com dois atributos, A e B. O valor de
-referência é 0,2. A saída é 0,5 quando só A é conhecido, 0,3 quando só B é conhecido e 0,9 quando
-os dois são conhecidos. Na ordem em que A entra antes de B, A acrescenta 0,3 à saída e B acrescenta
-0,4. Na ordem inversa, B acrescenta 0,1 e A acrescenta 0,6. A média das duas ordens dá a A o valor
-de Shapley de 0,45 e a B o de 0,25. O valor de referência somado aos dois valores de Shapley,
-$0{,}2 + 0{,}45 + 0{,}25$, reproduz a saída de 0,9.
-
-\begin{table}[htbp]
-  \centering
-  \caption{Exemplo de cálculo dos valores de Shapley com dois atributos}
-  \label{tab:shapley}
-  \begin{tabular}{lcc}
-    \toprule
-    Ordem de entrada & Contribuição marginal de A & Contribuição marginal de B \\
-    \midrule
-    A, depois B & $0{,}5 - 0{,}2 = 0{,}3$ & $0{,}9 - 0{,}5 = 0{,}4$ \\
-    B, depois A & $0{,}9 - 0{,}3 = 0{,}6$ & $0{,}3 - 0{,}2 = 0{,}1$ \\
-    \midrule
-    Média (valor de Shapley) & 0,45 & 0,25 \\
-    \bottomrule
-  \end{tabular}
-  \fonte{Elaborada pelo autor.}
-  \nota{Valores ilustrativos. A saída do classificador é 0,2 sem atributos conhecidos (valor de
-  referência), 0,5 só com A, 0,3 só com B e 0,9 com A e B.}
-\end{table}
-
-Essa soma corresponde à primeira de três propriedades que, entre os métodos que atribuem uma
-contribuição a cada atributo, só os valores de Shapley satisfazem (LUNDBERG; LEE, 2017; LUNDBERG et
-al., 2020). Pela acurácia local (\emph{local accuracy}), as contribuições somadas ao valor de
-referência reproduzem a saída explicada. Pela consistência (\emph{consistency}), se o classificador
-mudar de modo que o efeito de um atributo sobre a saída aumente ou se mantenha, independentemente
-dos demais atributos, o valor de Shapley desse atributo não diminui. Pela ausência de efeito
-(\emph{missingness}), um atributo sem efeito sobre a saída recebe contribuição nula.
-
-O cálculo exato desses valores é exponencial no número de atributos (LUNDBERG et al., 2020). O
-exemplo da Tabela~\ref{tab:shapley} usa quatro saídas, uma para cada subconjunto de atributos
-conhecidos. Com $M$ atributos, são $2^M$ subconjuntos. Para cada um, o cálculo precisa da saída do
-classificador quando só os atributos do subconjunto são conhecidos. Com os 80 atributos deste
-trabalho, seriam $2^{80}$ subconjuntos. O TreeSHAP, que Lundberg et al. (2020) chamam de Tree SHAP, é
-o algoritmo que calcula exatamente os valores de Shapley de modelos de árvores. O nome vem do SHAP
-(\emph{SHapley Additive exPlanations}), o conjunto de métodos de explicação proposto por Lundberg e
-Lee (2017). Em vez de enumerar os subconjuntos de atributos, o TreeSHAP percorre a estrutura das
-árvores, o que reduz o custo a $O(TLD^2)$, em que $T$ é o número de árvores, $L$ o maior número
-de folhas de uma árvore e $D$ a maior profundidade (LUNDBERG et al., 2020).
+O cálculo exato desses valores é exponencial no número de atributos, porque precisa da saída do
+classificador para cada subconjunto de atributos conhecidos (LUNDBERG et al., 2020). Com os 80
+atributos deste trabalho, seriam $2^{80}$ subconjuntos. O TreeSHAP, que Lundberg et al. (2020)
+chamam de Tree SHAP, é o algoritmo que calcula exatamente os valores de Shapley de modelos de
+árvores. O nome vem do SHAP (\emph{SHapley Additive exPlanations}), o conjunto de métodos de
+explicação proposto por Lundberg e Lee (2017). Em vez de enumerar os subconjuntos de atributos, o
+TreeSHAP percorre a estrutura das árvores, o que reduz o custo a $O(TLD^2)$, em que $T$ é o número
+de árvores, $L$ o maior número de folhas de uma árvore e $D$ a maior profundidade (LUNDBERG et al.,
+2020).
 
 As duas variantes do TreeSHAP diferem no tratamento dos atributos desconhecidos. Na variante
 \emph{path-dependent}, num nó que testa um atributo desconhecido, o cálculo segue os dois ramos e
@@ -701,33 +604,26 @@ o tamanho desse conjunto (LUNDBERG et al., 2020).
 \section{Latência num NIDS}
 \label{sec:latencia-nids}
 
-Dash e Acken (2026) tratam a latência de detecção como a rapidez com que um sistema de detecção de
-intrusão identifica as intrusões. Eles observam que os trabalhos da área a definem de modos
+Dash e Acken (2026) observam que os trabalhos da área definem a latência de detecção de modos
 diferentes, como \termo{tempo-inferencia}{tempo de inferência}, tempo de comunicação ou tempo de
-computação, o que torna os resultados incomparáveis. A definição que propõem soma três componentes,
-a latência controlada pelo atacante, a latência determinada pelo sistema de detecção e a latência
-posterior à detecção. A segunda componente é decomposta em partes que dependem da topologia da rede
-e do método de detecção.
-
-Como essa definição não inclui a explicação, este trabalho mede três tempos por
-\termo{fluxo}{fluxo} dentro do NIDS. O tempo de inferência é a duração da chamada ao
-\termo{classificador}{classificador}. A \termo{latencia-classificacao}{latência de classificação}
-vai do fim da extração dos atributos do fluxo ao momento em que a classificação fica disponível a
-quem a consome. A \termo{latencia-explicacao}{latência de explicação} vai do mesmo instante, o fim
-da extração dos atributos, ao momento em que a explicação fica disponível. A diferença entre a
-latência de classificação de uma \termo{estrategia}{estratégia de explicação} e a latência de
-classificação sem explicação, sob a mesma \termo{carga}{carga} e o mesmo classificador, é a
+computação, o que torna os resultados incomparáveis. A definição que eles propõem, porém, não inclui
+a explicação. Por isso, este trabalho mede três tempos por \termo{fluxo}{fluxo} dentro do NIDS. O
+tempo de inferência é a duração da chamada ao \termo{classificador}{classificador}. A
+\termo{latencia-classificacao}{latência de classificação} vai do fim da extração dos atributos do
+fluxo ao momento em que a classificação fica disponível a quem a consome. A
+\termo{latencia-explicacao}{latência de explicação} vai do mesmo instante, o fim da extração dos
+atributos, ao momento em que a explicação fica disponível. A diferença entre a latência de
+classificação de uma \termo{estrategia}{estratégia de explicação} e a latência de classificação sem
+explicação, sob a mesma \termo{carga}{carga} e o mesmo classificador, é a
 \termo{sobrecarga}{sobrecarga de latência} da estratégia.
 
 A Tabela~\ref{tab:tempos-fluxo} mostra esses tempos para um fluxo em três das estratégias de
-explicação da Seção~\ref{sec:estrategias}. O fluxo espera 3~ms antes de chegar ao \termo{processo-classificador}{processo classificador}, a
-inferência leva 5~ms e a explicação, 7~ms. No \termo{sem-xai}{Sem XAI}, a classificação é entregue
-sem explicação, e a latência de classificação é de 8~ms. No \termo{sincrono-total}{Síncrono total},
-a classificação só é entregue depois da explicação, de modo que a latência de classificação e a
-latência de explicação são de 15~ms e a sobrecarga de latência é de 7~ms. No
-\termo{assincrono}{Assíncrono}, a classificação é entregue aos 8~ms, e o pedido de explicação
-espera 10~ms numa fila antes de ser atendido. A latência de explicação chega a 25~ms, mas a latência
-de classificação não muda, e a sobrecarga de latência é nula neste exemplo.
+explicação da Seção~\ref{sec:estrategias}. No \termo{sem-xai}{Sem XAI}, a classificação é entregue
+sem explicação. No \termo{sincrono-total}{Síncrono total}, a classificação só é entregue depois da
+explicação, de modo que o tempo da explicação entra na latência de classificação. No
+\termo{assincrono}{Assíncrono}, a classificação é entregue sem esperar a explicação, enquanto o
+pedido de explicação espera numa fila antes de ser atendido. Por isso, a latência de explicação cresce, mas a
+sobrecarga de latência é nula neste exemplo.
 
 \begin{table}[htbp]
   \centering
@@ -752,35 +648,22 @@ de classificação não muda, e a sobrecarga de latência é nula neste exemplo.
 \label{sec:relacionados}
 
 Bertoli et al. (2020) mostram que o desempenho de um \termo{classificador}{classificador} medido no
-sistema em funcionamento difere do medido sobre o dataset. Eles treinaram uma árvore de decisão
-sobre 12 atributos do cabeçalho TCP/IP para detectar varreduras TCP e a implementaram como módulo
-do núcleo do Linux num Raspberry Pi, com o tráfego de ataque passando pelo sistema. A árvore de
-profundidade 11, com F1 de 0,96 na análise do dataset, detectou 68\% dos ataques avaliados no
-sistema. A de profundidade 6, com F1 de 0,92, detectou 82\%. Este trabalho adota a mesma avaliação
-de ponta a ponta e a estende ao custo das explicações, que Bertoli et al. não medem.
+sistema em funcionamento difere do medido sobre o dataset. Uma árvore de decisão que detecta
+varreduras TCP, implementada como módulo do núcleo do Linux num Raspberry Pi, teve F1 de 0,96 na
+análise do dataset, mas detectou 68\% dos ataques avaliados no sistema. Este trabalho adota a mesma
+avaliação de ponta a ponta e a estende ao custo das explicações, que Bertoli et al. não medem.
 
-Nugraha, Jnanashree e Bauschert (2025) propõem um arcabouço de detecção explicável em duas etapas.
-A primeira etapa combina um teste estatístico com a importância global dos atributos calculada pelo
-SHAP e mantém os dez atributos mais informativos. A segunda etapa treina um classificador XGBoost e
-explica cada decisão com SHAP e LIME, comparando as duas explicações. A avaliação usa três
-datasets, entre eles o CICIoT2023, e mede o tempo de cada explicação sobre registros desses
-datasets, numa estação de trabalho com AMD Ryzen 7 3800X. O TreeSHAP levou de 0,02~s a 0,08~s por
-explicação. No ataque SYN Flood, o LIME levou 36,38~s com todos os atributos e 9,48~s com os dez
-atributos escolhidos. Esses tempos medem cada explicação isolada, fora de um sistema que recebe
-tráfego.
+Nugraha, Jnanashree e Bauschert (2025) explicam cada decisão de um classificador XGBoost com SHAP e
+LIME e medem o tempo de cada explicação sobre registros de três datasets, entre eles o CICIoT2023.
+Numa estação de trabalho com AMD Ryzen 7 3800X, o TreeSHAP levou de 0,02~s a 0,08~s por explicação.
+Esses tempos medem cada explicação isolada, fora de um sistema que recebe tráfego.
 
 Le et al. (2026) tratam a explicação como um serviço com custo num NIDS com recursos limitados. O
-mecanismo que propõem escolhe entre sete ações de explicação, como suprimir, adiar, gerar a
-explicação local completa ou transferi-la para outro nível da rede. A escolha depende, entre outros
-fatores, da pressão de pacotes, da dívida de explicações e de um orçamento de exposição. A dívida de
-explicações cresce quando explicações são adiadas ou geradas com menos detalhe e pesa mais para os
-alertas de maior risco. O orçamento de exposição limita quanto as explicações liberadas revelam
-sobre as fronteiras de decisão do classificador e diminui a cada explicação liberada (LE et al.,
-2026). A avaliação usa processos de chegada sintéticos ou reproduzidos e sequências de escores
-calibradas em três datasets. Nela, o custo de cada ação é um peso relativo, normalizado a partir de
-medições num equipamento comum, e não uma latência medida num NIDS. No regime em que um adversário
-infla a demanda por explicações, o mecanismo reduziu a dívida média de explicações em 57,3\% em
-relação a políticas de limiar.
+mecanismo que propõem escolhe entre sete ações de explicação, como suprimir, adiar ou gerar a
+explicação local completa. A escolha depende, entre outros fatores, da pressão de pacotes e da
+dívida de explicações, que cresce quando explicações são adiadas ou geradas com menos detalhe. Na
+avaliação, porém, o custo de cada ação é um peso relativo, normalizado a partir de medições num
+equipamento comum, e não uma latência medida num NIDS (LE et al., 2026).
 
 Tolay (2026) mede o tempo do TreeSHAP em Random Forest e XGBoost treinados no CICIoT2023, em lotes
 de 1 a 5.000 registros, num computador com processador Intel Core 7 240H, e projeta a economia de
@@ -821,29 +704,132 @@ CIC-IDS2017 em uma ou mais cópias ao mesmo tempo. O número de cópias é o
 das \termo{execucao}{execuções} (Seções~\ref{sec:dados} e~\ref{sec:classificadores}). O TreeSHAP
 recebe uma única configuração para os dois classificadores (Seção~\ref{sec:explicacoes}).
 
-\section{Dados e rótulos}
+\section{Processo de desenvolvimento com CRISP-DM}
+\label{sec:crisp-dm}
+
+O desenvolvimento deste trabalho segue o CRISP-DM (\emph{CRoss-Industry Standard Process for Data
+Mining}), modelo de processo que divide o ciclo de vida de um projeto de mineração de dados em seis
+fases (CHAPMAN et al., 2000). O entendimento do negócio converte os objetivos do projeto na
+definição de um problema de mineração de dados. O entendimento dos dados coleta, descreve e explora
+os dados e verifica a sua qualidade. A preparação dos dados constrói, a partir dos
+dados brutos, o conjunto que a modelagem recebe. A modelagem escolhe as técnicas e calibra os seus
+parâmetros. A avaliação verifica se o modelo atinge os objetivos do negócio antes da implantação. A
+implantação põe o modelo em operação. A ordem das fases não é rígida, porque o resultado de cada
+fase decide qual fase vem em seguida (CHAPMAN et al., 2000).
+
+A Tabela~\ref{tab:crisp-dm} relaciona cada fase às seções deste trabalho. A implantação concentra a
+maior parte do desenvolvimento, porque o custo medido é o de explicar as classificações do
+\termo{classificador}{classificador} em operação num NIDS. A verificação da qualidade dos dados,
+por exemplo, encontrou valores negativos nos comprimentos de cabeçalho. Por
+isso, a preparação dos dados excluiu esses atributos (Seção~\ref{sec:dados}).
+
+\begin{table}[htbp]
+  \centering
+  \caption{Fases do CRISP-DM neste trabalho}
+  \label{tab:crisp-dm}
+  \begin{tabular}{>{\raggedright\arraybackslash}p{3.3cm}>{\raggedright\arraybackslash}p{8.2cm}>{\raggedright\arraybackslash}p{3.2cm}}
+    \toprule
+    Fase & Conteúdo neste trabalho & Onde \\
+    \midrule
+    Entendimento do negócio & Custo de gerar explicações TreeSHAP num NIDS em operação, convertido em
+    medidas de latência, uso de recursos e cobertura explicativa & Capítulo~\ref{cap:introducao} \\
+    Entendimento dos dados & Descrição do Improved CIC-IDS2017, distribuição dos rótulos, qualidade
+    dos valores e registros repetidos & Seção~\ref{sec:dados} \\
+    Preparação dos dados & Rótulo binário, seleção dos atributos e divisão em treino, validação e
+    teste & Seção~\ref{sec:dados} \\
+    Modelagem & Escolha e treino dos classificadores e configuração do TreeSHAP &
+    Seções~\ref{sec:classificadores} e~\ref{sec:explicacoes} \\
+    Avaliação & Desempenho de detecção e custo isolado da inferência e da explicação &
+    Seções~\ref{sec:res-deteccao} e~\ref{sec:res-custo-isolado} \\
+    Implantação & NIDS, estratégias de explicação, rede emulada e medições sob carga &
+    Seções~\ref{sec:arquitetura} e~\ref{sec:nids} a~\ref{sec:disponibilidade} e Capítulo~\ref{cap:resultados} \\
+    \bottomrule
+  \end{tabular}
+  \fonte{Elaborada pelo autor com base em Chapman et al. (2000).}
+\end{table}
+
+\section{Entendimento e preparação dos dados}
 \label{sec:dados}
 
-Os dados são os cinco arquivos diários do Improved CIC-IDS2017 (LIU et al., 2022), com 2.099.976
-registros de \termo{fluxo}{fluxo}. A classificação é binária. Os registros com rótulo
-\emph{BENIGN} e os registros \emph{Attempted}, cujos fluxos não exibem comportamento malicioso, são
-benignos. Os demais registros são de ataque. Com essa regra, o dataset tem 1.594.545 registros
-benignos (75,93\%) e 505.431 de ataque (24,07\%).
+O CIC-IDS2017 reúne cinco dias de tráfego de uma rede de laboratório, com tráfego benigno gerado a
+partir do comportamento de usuários e ataques de sete famílias (SHARAFALDIN; HABIBI LASHKARI;
+GHORBANI, 2018). Os \termo{fluxo}{fluxos} do dataset e seus atributos vêm do CICFlowMeter, um
+extrator de atributos de fluxos distribuído pelo mesmo instituto que criou o dataset. O
+CICFlowMeter lê os pacotes de uma captura em formato PCAP (\emph{Packet Capture}), que grava cada
+pacote com o instante da captura. Em seguida, ele agrupa num fluxo os pacotes com os mesmos
+endereços, portas e protocolo e calcula 80 atributos de cada fluxo, como a duração, os intervalos
+entre pacotes e as estatísticas de cada sentido da comunicação (SHARAFALDIN; HABIBI LASHKARI;
+GHORBANI, 2018).
 
-O \termo{classificador}{classificador} recebe 80 atributos de cada fluxo, descritos no
+Engelen, Rimmer e Joosen (2021) encontraram erros na geração do tráfego, na formação dos fluxos, na
+extração de atributos e na rotulagem do CIC-IDS2017. Eles corrigiram o extrator, refizeram a
+extração e marcaram como \emph{Attempted} os fluxos de ataque que não exibem comportamento
+malicioso. Liu et al. (2022) fizeram novas correções no extrator e publicaram o Improved
+CIC-IDS2017, usado neste trabalho.
+
+Os cinco arquivos diários do Improved CIC-IDS2017 (LIU et al., 2022), em formato CSV, têm 2.099.976
+registros de fluxo e 91 colunas, descritas no Apêndice~\ref{ap:atributos}. Além de 84 atributos de tráfego, entre eles as portas e o
+protocolo, as colunas guardam um identificador do registro, um identificador do fluxo, os
+endereços, o instante de início do fluxo e duas anotações, o rótulo e a categoria
+\emph{Attempted}. Cada arquivo cobre cerca de oito horas de um dia, de 3 a 7 de julho de 2017.
+
+A Tabela~\ref{tab:rotulos-dia} mostra a distribuição dos rótulos por dia. Cada dia concentra
+famílias de ataque diferentes. Só a segunda-feira não tem ataques. Os registros com rótulo
+\emph{BENIGN} são 75,36\% do total. Algumas classes de ataque têm poucos registros. O Heartbleed
+tem 11, o Web Attack -- SQL Injection tem 13 e o Web Attack -- XSS tem 18.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Registros do Improved CIC-IDS2017 por dia}
+  \label{tab:rotulos-dia}
+  \begin{tabular}{llrrr}
+    \toprule
+    Dia & Famílias de ataque & \emph{BENIGN} & Ataque & \emph{Attempted} \\
+    \midrule
+    Segunda & --- & 371.624 & 0 & 0 \\
+    Terça & FTP-Patator, SSH-Patator & 315.106 & 6.933 & 39 \\
+    Quarta & DoS, Heartbleed & 319.120 & 171.645 & 5.876 \\
+    Quinta & Web Attack, Infiltration & 288.172 & 71.907 & 1.997 \\
+    Sexta & Botnet, Portscan, DDoS & 288.544 & 254.946 & 4.067 \\
+    \midrule
+    Total & & 1.582.566 & 505.431 & 11.979 \\
+    \bottomrule
+  \end{tabular}
+  \fonte{Elaborada pelo autor com dados de Liu et al. (2022).}
+  \nota{A coluna Ataque conta os registros de ataque sem a marcação \emph{Attempted}. A família DoS
+  reúne Hulk, GoldenEye, Slowloris e Slowhttptest. Na quinta-feira, 71.767 registros de ataque são
+  de Infiltration -- Portscan.}
+\end{table}
+
+A verificação da qualidade não encontrou valores ausentes nem colunas constantes. Cinco registros
+têm valor infinito em \texttt{Flow Bytes/s} e em \texttt{Flow Packets/s}. Os comprimentos de
+cabeçalho \texttt{Fwd Header Length} e \texttt{Bwd Header Length} têm 309 e 472 valores negativos.
+Todos os valores dessas duas colunas ficam entre $-32.768$ e $32.767$, o intervalo de um inteiro de
+16 bits com sinal. Nos 80 atributos que o \termo{classificador}{classificador} recebe,
+447.899 registros (21,33\%) pertencem a 63.136 grupos de registros com as
+80 entradas idênticas.
+
+A preparação constrói, a partir dos cinco arquivos, o conjunto que os classificadores recebem. A
+classificação é binária. Os registros com rótulo \emph{BENIGN} e os registros \emph{Attempted},
+cujos fluxos não exibem comportamento malicioso, são benignos. Os demais registros são de ataque.
+Com essa regra, o dataset tem 1.594.545 registros benignos (75,93\%) e 505.431 de ataque (24,07\%).
+
+O classificador recebe 80 atributos de cada fluxo, descritos no
 Apêndice~\ref{ap:atributos}. Os endereços, as portas e o instante do fluxo ficam fora dos atributos,
 para que o classificador não aprenda as máquinas e os horários do laboratório em que o dataset foi
-gerado. Os dois comprimentos de cabeçalho também são excluídos, porque o extrator os calcula em
-inteiros de 64 bits (ENGELEN, 2022), mas a rotulagem do dataset os gravou em inteiros de 16 bits
-(ENGELEN, 2023). Quando o valor calculado passa de 32.767, o inteiro de 16 bits transborda, de modo
+gerado. Os dois comprimentos de cabeçalho também são excluídos. Os seus valores negativos
+vêm de um transbordamento, porque o extrator calcula esses
+comprimentos em inteiros de 64 bits (ENGELEN, 2022), mas a rotulagem do dataset os gravou em
+inteiros de 16 bits (ENGELEN, 2023). Quando o valor calculado passa de 32.767, o inteiro de 16 bits transborda, de modo
 que o valor gravado difere do que o extrator calcula em operação. Nos atributos
 \texttt{Flow Bytes/s} e \texttt{Flow Packets/s}, o valor infinito é substituído por $-1$.
 
-Os registros são divididos em 70\% para treino, 15\% para validação e 15\% para teste. Como 447.899
-registros (21,33\%) pertencem a 63.136 grupos de registros com as 80 entradas idênticas, uma divisão
+Os registros são divididos em 70\% para treino, 15\% para validação e 15\% para teste. Como há
+grupos de registros com as 80 entradas idênticas, uma divisão
 registro a registro poria cópias de registros de treino no teste. Por isso, a divisão coloca cada
 grupo inteiro em um único conjunto. A divisão também é estratificada pelos 27 rótulos originais, com
-semente fixa, para que cada tipo de ataque apareça nos três conjuntos. O treino ajusta os
+semente fixa, para que cada tipo de ataque, inclusive os de poucos registros, apareça nos três
+conjuntos. O treino ajusta os
 classificadores, e a validação escolhe as configurações e calibra os
 \termo{criterio-selecao}{critérios de seleção}. O teste só é usado na avaliação final da detecção,
 depois que os classificadores estão congelados.
@@ -950,9 +936,10 @@ CIC-IDS2017 (ENGELEN, 2022). A documentação do dataset não informa a versão 
 os CSVs. Além disso, a versão atual do extrator calcula atributos diferentes dos atributos desses
 CSVs. Por
 isso, o NIDS usa a última versão anterior à data dos CSVs. Nessa versão, um \termo{fluxo}{fluxo}
-termina pelo tempo limite de 120~s desde o primeiro pacote (Seção~\ref{sec:fluxos}), e um
+termina pelo tempo limite de 120~s desde o primeiro pacote (ENGELEN, 2022), e um
 intervalo de 5~s entre pacotes separa um período ativo de um período ocioso do fluxo
-(Apêndice~\ref{ap:atributos}).
+(Apêndice~\ref{ap:atributos}). Como o NIDS só classifica um fluxo depois que o fluxo termina, a
+classificação pode esperar até 120~s depois do primeiro pacote do fluxo.
 
 Este trabalho fez no extrator duas alterações que não mudam os atributos calculados. Na primeira,
 o extrator emite cada fluxo quando o \termo{relogio}{relógio da captura} passa de 120~s desde o
@@ -1005,9 +992,8 @@ se o \termo{fluxo}{fluxo} é explicado e se a entrega da classificação espera 
   \item \textbf{\termo{sem-xai}{Sem XAI}}: a classificação é entregue sem explicação. Essa
   estratégia é a referência da \termo{sobrecarga}{sobrecarga de latência} das demais.
   \item \textbf{\termo{sincrono-total}{Síncrono total}}: todo fluxo é explicado antes da entrega
-  da classificação. O NIDS escreve a linha da explicação e, em seguida, a linha da classificação.
-  Uma única leitura do relógio, depois das duas escritas, vale por $t_3$ e por $t_4$. Por isso, a
-  classificação e a explicação ficam disponíveis juntas, com $t_3 = t_4$.
+  da classificação. O NIDS escreve a explicação e a classificação e lê o relógio uma única vez
+  depois das duas escritas, de modo que $t_3 = t_4$.
   \item \textbf{\termo{sincrono-condicional}{Síncrono condicional}}: só os fluxos que atendem a um
   \termo{criterio-selecao}{critério de seleção} são explicados antes da entrega, com as mesmas
   escritas e a mesma leitura do relógio do Síncrono total.
@@ -1017,19 +1003,16 @@ se o \termo{fluxo}{fluxo} é explicado e se a entrega da classificação espera 
   \termo{fila-explicacoes}{fila de explicações pendentes}. Um
   \termo{processo-explicador}{processo explicador}, com a própria cópia do
   \termo{modelo-congelado}{modelo congelado}, retira as solicitações da fila, gera as explicações e
-  marca $t_4$. O processo explicador é separado do processo classificador porque uma
-  \emph{thread} no mesmo processo disputaria com a classificação o bloqueio global do
-  interpretador Python, que deixa só uma \emph{thread} do processo executar código Python de cada
-  vez.
+  marca $t_4$. Uma \emph{thread} no processo classificador, em vez de um processo separado,
+  disputaria com a classificação o bloqueio global do interpretador Python.
 \end{itemize}
 
 Os dois critérios de seleção do Síncrono condicional usam a probabilidade de ataque que o
 classificador já calculou para o fluxo. Por isso, a seleção não chama o classificador de novo. Pelo
 critério de probabilidade, o fluxo é selecionado para explicação quando a probabilidade de ataque é
-maior ou igual a 0,5. Como esse valor coincide com o
-\termo{limiar-classificacao}{limiar de classificação}, o critério seleciona os fluxos classificados
-como ataque e os fluxos de probabilidade igual a 0,5, que são classificados como benignos. Na
-validação, nenhum registro teve probabilidade igual a 0,5. O critério de incerteza seleciona os
+maior ou igual a 0,5, o \termo{limiar-classificacao}{limiar de classificação}. Na prática, o
+critério seleciona os fluxos classificados como ataque, porque nenhum registro da validação teve
+probabilidade igual a 0,5. O critério de incerteza seleciona os
 fluxos de maior \termo{incerteza}{incerteza da classificação}. Por esse critério, o fluxo é
 selecionado quando a distância entre a probabilidade de ataque e 0,5 é menor ou igual a 0,4, isto
 é, quando a probabilidade fica entre 0,1 e 0,9.
@@ -1040,27 +1023,22 @@ registros no Random Forest e 0,04\% no XGBoost. Esses registros contêm 187 dos 
 classificação do Random Forest e 15 dos 32 erros do XGBoost.
 
 O critério de incerteza se aproxima da classificação com rejeição, em que o classificador se abstém
-das previsões em que tende a errar. Uma das medidas de confiança dessa forma de classificação é a
-maior probabilidade de classe (HENDRICKX et al., 2024), que, com duas classes, fica em até 0,9 nos
-fluxos que o critério seleciona. Ao contrário da classificação com rejeição, porém, o NIDS
-classifica esses fluxos e só acrescenta a explicação deles, para apoiar a revisão das classificações
-mais sujeitas a erro.
+das previsões em que tende a errar (HENDRICKX et al., 2024). O NIDS, porém, classifica esses fluxos
+e só acrescenta a explicação deles, para apoiar a revisão das classificações mais sujeitas a erro.
 
 A \termo{fila-extrator}{fila de saída do extrator} comporta até 10.000 fluxos. A fila de explicações
 pendentes comporta até 10.000 solicitações de explicação. Sem limite, uma fila cresceria até
 esgotar a memória enquanto o processo que a consome fosse mais lento que a chegada dos itens. Com o
 limite, a falta de capacidade aparece como \termo{descarte}{descarte}, porque o fluxo ou a
-solicitação que encontra a fila cheia é descartado e contado. Nas execuções do
-\termo{piloto}{piloto} que ficaram dentro dos limites de latência, as duas filas ficaram mais de 13
-vezes abaixo desse limite.
+solicitação que encontra a fila cheia é descartado e contado.
 
 No Assíncrono, a classificação de um fluxo já foi entregue quando a solicitação de explicação entra
 na fila. Por isso, o descarte da solicitação deixa o fluxo sem explicação, sem atrasar a
 classificação. Depois do último fluxo, o processo explicador esvazia a fila de explicações
 pendentes. O \termo{esvaziamento}{tempo de esvaziamento} tem limite de 300~s, acima dos cerca de 74~s que a
 fila cheia levaria para esvaziar com os 7,4~ms por explicação do Random Forest
-(Tabela~\ref{tab:custo-isolado}). Quando o limite se esgota, o
-processo explicador é encerrado. As solicitações que restam na fila ficam pendentes.
+(Tabela~\ref{tab:custo-isolado}). Esgotado o limite, o processo explicador é encerrado e deixa
+pendentes as solicitações que restam na fila.
 
 \section{Ambiente emulado e carga}
 \label{sec:ambiente}
@@ -1080,43 +1058,34 @@ tamanho dos fluxos deixariam de corresponder aos do PCAP. Por isso, a GRO e os d
 A máquina que executa a rede emulada tem um Intel Core i5-1334U, com dois núcleos de desempenho, de
 dois núcleos lógicos cada, e oito núcleos de eficiência. O
 \termo{processo-classificador}{processo classificador} e o
-\termo{processo-explicador}{processo explicador} rodam em núcleos de desempenho diferentes, com
-uma \emph{thread} por processo. O outro núcleo lógico de cada um desses núcleos físicos fica sem
-processo do experimento. Assim, o processo explicador não toma CPU do processo classificador. Além
-disso, nenhum dos dois divide um núcleo físico com outro processo do experimento. O extrator roda em
-quatro núcleos de eficiência. O envio do tráfego roda nos quatro núcleos de eficiência restantes,
-fora dos núcleos do NIDS, para que o envio dos pacotes não dispute CPU com a captura e a
-classificação. Nas execuções da campanha, a mediana da frequência do núcleo do processo
+\termo{processo-explicador}{processo explicador} rodam, com uma \emph{thread} cada, em núcleos de
+desempenho diferentes, sem outro processo do experimento no mesmo núcleo físico. O extrator e o
+envio do tráfego rodam em dois grupos separados de quatro núcleos de eficiência, para que o envio
+dos pacotes não dispute CPU com a captura e a classificação. Nas execuções da campanha, a mediana da frequência do núcleo do processo
 classificador, lida a cada segundo, ficou entre 400 e 2.500~MHz.
 
 O trecho reproduzido tem 20 minutos da captura de terça-feira do CIC-IDS2017, das 12:10 às 12:30
-UTC, com 3.706.151 pacotes e 24.413 \termo{fluxo}{fluxos}. A terça-feira tem cerca de 8~h de
-tráfego. Como a campanha tem 90 execuções, reproduzir o dia inteiro em cada execução ocuparia a
-máquina por semanas. Com o trecho de 20 minutos, cada execução leva cerca de 23 minutos. O trecho
-contém os 689 fluxos de ataque que a captura tem até 12:30 UTC, todos de FTP-Patator.
+UTC, com 3.706.151 pacotes e 24.413 \termo{fluxo}{fluxos}. Com esse trecho, em vez do dia inteiro,
+cada uma das 90 execuções da campanha leva cerca de 23 minutos. O trecho contém os 689 fluxos de ataque que a captura tem até 12:30 UTC, todos de FTP-Patator.
 
 Antes da reprodução, a captura passa pelas duas correções de arquivo que os autores do Improved
 CIC-IDS2017 aplicaram antes de gerar os CSVs, o reparo dos pacotes corrompidos e a reordenação dos
 pacotes pelo instante de captura (ENGELEN, 2023). Repetir essas correções é a condição para que os
 fluxos do NIDS correspondam aos fluxos dos dados de treino. Os fluxos que o extrator forma ao ler o
-trecho do arquivo foram comparados com os fluxos rotulados do dataset. Ficam fora dessa comparação
-os fluxos que começam nos últimos 120~s, que o fim do trecho interrompe. Também ficam fora os fluxos
-das conexões que já existiam antes do início do trecho, cujo primeiro fluxo começa no meio da
-conexão. Fora desses fluxos, cada um dos 19.438 fluxos encontrados também no dataset tem os 80
+trecho do arquivo foram comparados com os fluxos rotulados do dataset, exceto os fluxos que o
+início ou o fim do trecho cortam. Fora desses fluxos, cada um dos 19.438 fluxos encontrados também no dataset tem os 80
 atributos iguais aos do fluxo rotulado correspondente.
 
 O \termo{nivel-carga}{nível de carga} é o número de \termo{copia}{cópias do trecho} reproduzidas
 ao mesmo tempo. A cópia 1 é o trecho sem alteração. Nas cópias seguintes, cada endereço IPv4 do
 trecho é trocado por um endereço reservado à cópia, sem alteração no restante dos pacotes. Assim, os
 fluxos de cópias diferentes não se misturam. Além disso, cada fluxo de cada cópia tem os mesmos
-atributos do fluxo correspondente do trecho. Acelerar a reprodução seria a alternativa mais simples
-para aumentar a carga. Porém, a aceleração encurta os intervalos entre pacotes e, com eles, muda os
-fluxos, os atributos e as previsões (Seção~\ref{sec:validade}).
+atributos do fluxo correspondente do trecho. Acelerar a reprodução, ao contrário, encurtaria os
+intervalos entre pacotes e mudaria os atributos e as previsões (Seção~\ref{sec:validade}).
 
-Antes de cada \termo{execucao}{execução}, o programa que inicia as execuções confere, numa janela de
-10~s, se a máquina está na tomada, se a ocupação média dos núcleos fica em até 25\% e se há pelo
-menos 3.072~MiB de memória disponível. Enquanto essas condições não são atendidas, a execução não
-começa, para que a fonte de energia e outros programas não alterem o tempo de inferência.
+Uma \termo{execucao}{execução} só começa quando, numa janela de 10~s, a máquina está na tomada, a
+ocupação média dos núcleos fica em até 25\% e há pelo menos 3.072~MiB de memória disponível, para
+que a fonte de energia e outros programas não alterem o tempo de inferência.
 
 \section{Matriz experimental e medidas}
 \label{sec:matriz}
@@ -1144,31 +1113,14 @@ frequência e a ocupação de cada núcleo lógico e a memória disponível. As 
 pelo p95 e pelo p99. Cada medida de uma combinação é resumida pela mediana das suas 3 execuções, com
 o mínimo e o máximo.
 
-O número de repetições e os limites de latência vieram de um \termo{piloto}{piloto} de 16
-execuções, no mesmo trecho e na mesma máquina da campanha. O piloto cobriu as cinco configurações
-nos dois classificadores com 4 cópias. Além disso, ele repetiu três vezes o Sem XAI do Random Forest
-com 1 cópia e três vezes o Síncrono total do Random Forest com 2 cópias. Nessas duas combinações, a
-amplitude das três execuções, dividida pela mediana, foi de 3,3\% e 4,1\% na média do tempo de
-inferência e de 11,9\% e 16,9\% no p95 da latência de classificação. Essa variação é pequena perto
-da diferença entre estratégias. No XGBoost com 4 cópias, por exemplo, o p95 da
-\termo{latencia-classificacao}{latência de classificação} foi de 54~ms no Sem XAI e de 714~ms no
-Síncrono total. Por isso, a campanha usa 3 repetições por combinação.
-
 Uma execução é viável quando atende a três critérios. A latência de classificação não passa de 1~s
 no p95 nem de 2~s no p99. Nenhum fluxo é descartado na \termo{fila-extrator}{fila de saída do
 extrator}. No Assíncrono, a fila de explicações pendentes se estabiliza ou esvazia, em vez de crescer
-até o fim da execução. Os limites de latência vieram do piloto, cujas execuções se dividiram em dois
-grupos. No primeiro grupo, formado pelas execuções do XGBoost com 4 cópias e pelas do Random Forest
-no Sem XAI com 1 cópia, o p99 da latência de classificação ficou em até 1,3~s. No segundo grupo,
-formado pelas execuções do Random Forest no Síncrono total a partir de 2 cópias e pelas do Random
-Forest com 4 cópias, o p95 passou de 29~s. Nesse grupo, a fila de saída do extrator também passou de
-2.600 fluxos. Os limites de 1~s e 2~s ficam entre os dois grupos. Eles são os menores valores
-inteiros, em segundos, que mantêm viáveis todas as execuções do primeiro grupo. No piloto, a única
-execução que descartou fluxos também passou dos limites de latência. Por isso, o critério de
-descartes não tem tolerância, já que uma tolerância não mudaria a viabilidade de nenhuma execução do
-piloto. As filas também só chegaram ao limite de 10.000 em execuções do segundo grupo. Por isso, o
-piloto manteve esse limite. Como uma configuração que explica poucos fluxos atende a esses critérios
-com pouco custo, cada resultado de viabilidade vem com a cobertura explicativa da execução.
+até o fim da execução. Como uma configuração que explica poucos fluxos atende a esses critérios
+com pouco custo, cada resultado de viabilidade vem com a cobertura explicativa da execução. O
+número de repetições, os limites de latência e o limite de 10.000 solicitações das filas vieram de
+um \termo{piloto}{piloto} de 16 execuções, no mesmo trecho e na mesma máquina da campanha
+(Apêndice~\ref{ap:piloto}).
 
 Cinco regras da análise não estavam fixadas antes da campanha e foram fixadas com os resultados já
 medidos (Seção~\ref{sec:limitacoes}).
@@ -1176,23 +1128,20 @@ medidos (Seção~\ref{sec:limitacoes}).
   \item \textbf{Fila que cresce até o fim}: a fila de explicações pendentes cresce até o fim quando
   atinge o maior tamanho pela primeira vez no último décimo da execução ou quando está no limite de
   10.000 solicitações no último décimo. Nessa regra, a execução vai do primeiro fluxo emitido ao
-  último segundo com uma solicitação ou uma retirada da fila. Uma fila que cresce até o fim atinge
-  um tamanho novo no fim da execução ou para no limite e descarta solicitações até o fim.
+  último segundo com uma solicitação ou uma retirada da fila.
   \item \textbf{Viabilidade de uma combinação}: uma combinação é viável quando as suas 3 execuções
-  são viáveis. Assim, uma execução viável não compensa uma inviável.
+  são viáveis.
   \item \textbf{Sobrecarga de latência}: a \termo{sobrecarga}{sobrecarga de latência} de uma
   estratégia é a diferença entre a mediana das execuções da estratégia e a mediana das execuções do
   Sem XAI, com o mesmo classificador e o mesmo nível de carga, na média, no p95 e no p99. As
   execuções não são pareadas pela repetição, porque as de uma mesma repetição rodam em ordem
-  sorteada ao longo de cerca de 12~h, em condições diferentes da máquina.
+  sorteada ao longo de cerca de 12~h.
   \item \textbf{Diferença entre combinações}: duas combinações diferem numa medida quando os
-  intervalos entre o mínimo e o máximo das suas execuções não se sobrepõem. Com 3 execuções por
-  combinação, essa regra compara os valores medidos sem supor uma distribuição para eles e sem teste
+  intervalos entre o mínimo e o máximo das suas execuções não se sobrepõem. A regra não usa teste
   estatístico.
-  \item \textbf{Saturação}: um fluxo fica pendente de classificação de $t_0$ a $t_3$. O NIDS
-  \termo{saturacao}{satura} numa execução quando um único intervalo com algum
-  \termo{fluxo-pendente}{fluxo pendente de classificação} cobre mais da metade do tempo entre o
-  primeiro fluxo emitido e a última classificação. Um intervalo assim mostra que o
+  \item \textbf{Saturação}: o NIDS \termo{saturacao}{satura} numa execução quando um único
+  intervalo com algum \termo{fluxo-pendente}{fluxo pendente de classificação} cobre mais da metade
+  do tempo entre o primeiro fluxo emitido e a última classificação. Nesse caso, o
   \termo{processo-classificador}{processo classificador} não acompanha a carga média e só alcança a
   emissão dos fluxos depois do fim do tráfego. A saturação descreve a execução e não entra na
   viabilidade.
@@ -1201,28 +1150,24 @@ medidos (Seção~\ref{sec:limitacoes}).
 Uma execução é válida quando termina sem erro, o NIDS passa nas próprias verificações, o
 \texttt{tcpreplay-edit} envia todos os pacotes e a máquina fica na tomada do início ao fim. Uma
 execução inválida fica registrada com o motivo. A combinação dessa execução tem uma segunda
-tentativa, que é outra execução. Os critérios de validade detectam falhas da execução, do envio do
-tráfego e da máquina. Já os descartes, as \termo{solicitacao}{solicitações de explicação} pendentes
-e os pacotes perdidos na captura são efeitos da carga. Por isso, esses eventos não invalidam uma
-execução e entram nos resultados.
+tentativa, que é outra execução. Os descartes, as \termo{solicitacao}{solicitações de explicação}
+pendentes e os pacotes perdidos na captura, ao contrário, são efeitos da carga. Por isso, esses
+eventos não invalidam uma execução e entram nos resultados.
 
 \section{Disponibilidade do código e dos arquivos de saída}
 \label{sec:disponibilidade}
 
 O código do experimento está no repositório
-\url{https://github.com/pedro-fs-garcia/nids-xai-benchmark}, com as configurações, as decisões do
-delineamento experimental e suas justificativas e os relatórios de cada etapa. Cada \termo{execucao}{execução} grava o \emph{commit} do
-repositório, as versões do Python e das ferramentas e os \emph{hashes} dos arquivos de entrada,
-resumos que mudam sempre que o conteúdo do arquivo muda. Com esse registro, cada arquivo de saída
-fica ligado ao código e às entradas que o produziram. Os arquivos de saída brutos das execuções da
-campanha, porém, ocupam 18~GB e por isso não são publicados. Como esses arquivos são reproduzíveis,
-o guia \texttt{docs/reproducao.md}, no mesmo repositório, descreve os comandos de cada etapa e
-como gerar esses arquivos novamente a partir do CIC-IDS2017 e do Improved CIC-IDS2017.
+\url{https://github.com/pedro-fs-garcia/nids-xai-benchmark}, com as configurações e os relatórios de cada etapa. Cada \termo{execucao}{execução} grava o \emph{commit} do
+repositório, as versões do Python e das ferramentas e os \emph{hashes} dos arquivos de entrada. Os arquivos de saída brutos da campanha,
+com 18~GB, não são publicados, mas o guia \texttt{docs/reproducao.md} descreve como gerá-los
+novamente.
 
-\chapter{Resultados e discussão}
+\chapter{Resultados}
 \label{cap:resultados}
 
 \section{Desempenho de detecção}
+\label{sec:res-deteccao}
 
 A Tabela~\ref{tab:deteccao} mostra as seis medidas de desempenho de detecção
 (Seção~\ref{sec:medidas-deteccao}) dos dois \termo{classificador}{classificadores} no conjunto de
@@ -1255,6 +1200,7 @@ teste, porque a campanha mede o custo de classificar e explicar.
 \end{table}
 
 \section{Custo isolado da inferência e da explicação}
+\label{sec:res-custo-isolado}
 
 A Tabela~\ref{tab:custo-isolado} mostra o \termo{tempo-inferencia}{tempo de inferência} e o
 \termo{tempo-explicacao}{tempo de explicação} de um \termo{fluxo}{fluxo} na medição isolada, feita
@@ -1753,6 +1699,11 @@ SEGURANÇA DA INFORMAÇÃO E DE SISTEMAS COMPUTACIONAIS, 20., 2020, Petrópolis.
 BREIMAN, Leo. Random forests. \textbf{Machine Learning}, [\emph{s. l.}], v. 45, n. 1, p. 5--32,
 2001. DOI: 10.1023/A:1010933404324.\par
 
+CHAPMAN, Pete \emph{et al.} \textbf{CRISP-DM 1.0}: step-by-step data mining guide. [\emph{S. l.}]:
+SPSS, 2000. Disponível em:
+\url{https://www.kde.cs.uni-kassel.de/wp-content/uploads/lehre/ws2012-13/kdd/files/CRISPWP-0800.pdf}.
+Acesso em: 23 nov. 2026.\par
+
 CHEN, Tianqi; GUESTRIN, Carlos. XGBoost: a scalable tree boosting system. \emph{In}: ACM SIGKDD
 INTERNATIONAL CONFERENCE ON KNOWLEDGE DISCOVERY AND DATA MINING, 22., 2016, San Francisco.
 \textbf{Proceedings} [\ldots]. New York: ACM, 2016. p. 785--794. DOI: 10.1145/2939672.2939785.\par
@@ -2037,6 +1988,38 @@ da classificação.
 \end{longtable}
 \fonte{Elaborada pelo autor com base em Engelen (2022).}
 \endgroup
+
+
+\chapter{Piloto}
+\label{ap:piloto}
+
+O \termo{piloto}{piloto} teve 16 \termo{execucao}{execuções}, no mesmo trecho e na mesma máquina da
+\termo{campanha}{campanha experimental}. Ele cobriu as cinco \termo{configuracao}{configurações de
+explicação} nos dois \termo{classificador}{classificadores} com 4 cópias. Além disso, ele repetiu
+três vezes o \termo{sem-xai}{Sem XAI} do Random Forest com 1 cópia e três vezes o
+\termo{sincrono-total}{Síncrono total} do Random Forest com 2 cópias.
+
+Nessas duas combinações repetidas, a amplitude das três execuções, dividida pela mediana, foi de
+3,3\% e 4,1\% na média do \termo{tempo-inferencia}{tempo de inferência} e de 11,9\% e 16,9\% no p95
+da \termo{latencia-classificacao}{latência de classificação}. Essa variação é pequena perto da
+diferença entre estratégias. No XGBoost com 4 cópias, por exemplo, o p95 da latência de
+classificação foi de 54~ms no Sem XAI e de 714~ms no Síncrono total. Por isso, a campanha usa 3
+\termo{repeticao}{repetições} por combinação.
+
+As execuções do piloto se dividiram em dois grupos. No primeiro grupo, formado pelas execuções do
+XGBoost com 4 cópias e pelas do Random Forest no Sem XAI com 1 cópia, o p99 da latência de
+classificação ficou em até 1,3~s. No segundo grupo, formado pelas execuções do Random Forest no
+Síncrono total a partir de 2 cópias e pelas do Random Forest com 4 cópias, o p95 passou de 29~s.
+Nesse grupo, a \termo{fila-extrator}{fila de saída do extrator} também passou de 2.600
+\termo{fluxo}{fluxos}. Os limites de 1~s no p95 e de 2~s no p99 ficam entre os dois grupos. Eles
+são os menores valores inteiros, em segundos, que mantêm viáveis todas as execuções do primeiro
+grupo.
+
+No piloto, a única execução que descartou fluxos também passou dos limites de latência. Por isso,
+o critério de \termo{descarte}{descartes} não tem tolerância, já que uma tolerância não mudaria a
+viabilidade de nenhuma execução do piloto. As filas também só chegaram ao limite de 10.000 em
+execuções do segundo grupo. Nas execuções do primeiro grupo, as duas filas ficaram mais de 13
+vezes abaixo desse limite. Por isso, o piloto manteve esse limite.
 
 \end{apendicesenv}
 
