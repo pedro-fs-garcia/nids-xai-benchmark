@@ -266,8 +266,8 @@
   \end{center}
 
   \setlength{\ABNTEXsignwidth}{14cm}
-  \assinatura{\textbf{[TODO: titulação], [TODO: membro da banca] -- [TODO: sigla da instituição]}}
-  \assinatura{\textbf{[TODO: titulação], [TODO: membro da banca] -- [TODO: sigla da instituição]}}
+  \assinatura{\textbf{Prof. Me. Antonio Egydio São Thiago Graça -- FATEC}}
+  \assinatura{\textbf{Prof. Me. Carlos Henrique Loureiro Feichas -- FATEC}}
   \assinatura{\textbf{\imprimirorientador{} -- FATEC}}
 
   \vspace*{\fill}
@@ -423,22 +423,18 @@ normal (ZUECH; KHOSHGOFTAAR; WALD, 2015). Num NIDS baseado em aprendizado de má
 podem ser agrupados em \termo{fluxo}{fluxos}. Cada fluxo é descrito por atributos como a duração, o
 tamanho dos pacotes e o intervalo entre pacotes. Um \termo{classificador}{classificador} treinado em
 tráfego rotulado atribui, então, uma classe a cada fluxo a partir desses atributos. O CIC-IDS2017 é
-um dataset público para avaliar sistemas de detecção de intrusão, criado pelo Canadian
-Institute for Cybersecurity (CIC), da University of New Brunswick, no Canadá, a partir de tráfego
-capturado numa rede de laboratório (SHARAFALDIN; HABIBI LASHKARI; GHORBANI, 2018). Esse dataset
-adota a representação por fluxos. Ele descreve cada fluxo por 80 atributos e avalia sete algoritmos
-de aprendizado de máquina (SHARAFALDIN; HABIBI LASHKARI; GHORBANI, 2018). Este trabalho usa o Improved
-CIC-IDS2017, uma versão do CIC-IDS2017 em que erros de formação dos fluxos, de extração de atributos
-e de rotulagem foram corrigidos (Seção~\ref{sec:fluxos}).
+um dataset público para avaliar sistemas de detecção de intrusão, que descreve por 80 atributos os
+fluxos de um tráfego capturado numa rede de laboratório (SHARAFALDIN; HABIBI LASHKARI; GHORBANI,
+2018). Este trabalho usa o Improved CIC-IDS2017, uma versão do CIC-IDS2017 em que erros de formação
+dos fluxos, de extração de atributos e de rotulagem foram corrigidos (Seção~\ref{sec:fluxos}).
 
 Os fluxos descritos por atributos formam dados tabulares, um tipo de dado em que modelos de árvores, como o Random Forest
 (BREIMAN, 2001) e o XGBoost (CHEN; GUESTRIN, 2016), têm bom desempenho. No CIC-IDS2017, o ID3 e o
-Random Forest tiveram os dois maiores valores de F1 (Seção~\ref{sec:medidas-deteccao}) entre os sete algoritmos avaliados, 0,98 e 0,97
-(SHARAFALDIN; HABIBI LASHKARI; GHORBANI, 2018). Em comparações com vários datasets tabulares, o
-XGBoost superou modelos de aprendizado profundo recentes propostos para esse tipo de dado e exigiu
-menos ajuste de hiperparâmetros (SHWARTZ-ZIV; ARMON, 2022). Em datasets de cerca de 10 mil
-registros, os modelos de árvores também continuaram à frente dos modelos de aprendizado profundo
-(GRINSZTAJN; OYALLON; VAROQUAUX, 2022).
+Random Forest tiveram os dois maiores valores de F1 (Seção~\ref{sec:medidas-deteccao}) entre os
+algoritmos avaliados pelos autores do dataset (SHARAFALDIN; HABIBI LASHKARI; GHORBANI, 2018). Em
+comparações com vários datasets tabulares, o XGBoost superou modelos de aprendizado profundo
+recentes propostos para esse tipo de dado e exigiu menos ajuste de hiperparâmetros (SHWARTZ-ZIV;
+ARMON, 2022).
 
 O Random Forest e o XGBoost, porém, combinam muitas árvores de decisão. Em modelos com muitas
 árvores, o relato do caminho de decisão não ajuda a explicar uma previsão (LUNDBERG et al., 2020).
@@ -459,13 +455,10 @@ intrusão com aprendizado profundo explicável analisados, apenas 12 relatam alg
 eficiência. Nenhum desses estudos compara quantitativamente a latência antes e depois da
 explicação.
 
-Quatro trabalhos recentes tratam da latência de detecção ou do custo das explicações. Dash e Acken
-(2026) definem a latência de detecção de ponta a ponta como a soma de três componentes, sem incluir
-a explicação. Nugraha, Jnanashree e Bauschert (2025) explicam cada decisão de um classificador
-XGBoost com SHAP e LIME e medem o tempo de geração das explicações. Le et al. (2026) propõem um
-mecanismo que escolhe entre sete ações de explicação sob restrição de recursos e comparam esse
-mecanismo com políticas de limiar. Tolay (2026) mede o tempo do TreeSHAP em lotes de registros e
-projeta o custo de explicar só parte das previsões. Nenhum desses trabalhos mede, num NIDS sob carga
+Os trabalhos recentes sobre a latência de detecção e o custo das explicações medem o TreeSHAP em
+chamadas isoladas, definem a latência de detecção sem incluir a explicação ou tratam o custo das
+explicações com valores simulados (Seções~\ref{sec:latencia-nids} e~\ref{sec:relacionados}).
+Nenhum desses trabalhos mede, num NIDS sob carga
 controlada, a \termo{latencia-classificacao}{latência de classificação} e a
 \termo{latencia-explicacao}{latência de explicação} de cada fluxo em
 \termo{estrategia}{estratégias de explicação} diferentes.
@@ -492,27 +485,13 @@ específicos abaixo:
   \item Treinar e avaliar \termo{classificador}{classificadores} Random Forest e XGBoost com o Improved CIC-IDS2017.
   \item Implementar um NIDS que classifique cada \termo{fluxo}{fluxo} e gere a explicação TreeSHAP da classificação
   nas quatro \termo{estrategia}{estratégias de explicação}.
-  \item Construir uma rede emulada que reproduza o tráfego em níveis de carga controlados, sem
+  \item Emular uma rede que reproduza o tráfego em níveis de carga controlados, sem
   alterar as entradas dos fluxos.
   \item Medir, em cada estratégia e nível de carga, a \termo{latencia-classificacao}{latência de classificação}, a \termo{latencia-explicacao}{latência de
   explicação}, o uso de recursos, os \termo{descarte}{descartes} e a cobertura explicativa.
   \item Determinar em que combinações de classificador, estratégia e nível de carga a explicação é
   viável.
 \end{itemize}
-
-\section{Conteúdo do trabalho}
-
-O Capítulo~\ref{cap:fundamentacao} apresenta o CIC-IDS2017 e a formação dos \termo{fluxo}{fluxos}, as
-medidas de desempenho de detecção, as árvores de decisão, o Random Forest e o XGBoost, os valores de
-Shapley e o TreeSHAP, a latência num NIDS e os trabalhos relacionados. O
-Capítulo~\ref{cap:metodologia} descreve a arquitetura do sistema, os dados, os
-\termo{classificador}{classificadores}, a configuração do TreeSHAP, o NIDS, as
-\termo{estrategia}{estratégias de explicação}, o ambiente emulado, a matriz experimental e as
-medidas e a disponibilidade do código e dos arquivos de saída. O
-Capítulo~\ref{cap:resultados} apresenta e discute os resultados, e o Capítulo~\ref{cap:conclusao}
-responde à pergunta nos limites do experimento e aponta as contribuições e os trabalhos futuros.
-Em cada seção, a primeira ocorrência de cada termo definido no Glossário aparece em itálico, com
-um link para o verbete.
 
 \chapter{Fundamentação técnica}
 \label{cap:fundamentacao}
@@ -551,9 +530,7 @@ As medidas de desempenho de detecção comparam a classe que o
 classificador calcula a probabilidade de ataque de cada registro. O
 \termo{limiar-classificacao}{limiar de classificação} é o valor dessa probabilidade acima do qual o
 classificador atribui a classe ataque (FAWCETT, 2006). Neste trabalho, o limiar de classificação é 0,5
-(Seção~\ref{sec:classificadores}). Com esse
-limiar, um registro com probabilidade de ataque de 0,73 é classificado como ataque. Um registro com
-probabilidade de ataque de 0,31 é classificado como benigno. Ataque é a classe positiva.
+(Seção~\ref{sec:classificadores}). Ataque é a classe positiva.
 Benigno é a classe negativa. Cada registro classificado pertence a um de quatro casos. Um verdadeiro
 positivo (VP) é um registro de ataque classificado como ataque. Um falso positivo (FP) é um registro
 benigno classificado como ataque. Um verdadeiro negativo (VN) é um registro benigno classificado
@@ -588,36 +565,10 @@ entre os registros classificados como ataque. O recall, $\mathrm{VP}/(\mathrm{VP
 de ataque classificados como ataque. A taxa de falsos positivos, $\mathrm{FP}/(\mathrm{FP}+\mathrm{VN})$, é a proporção dos
 registros benignos classificados como ataque. O F1, que Fawcett (2006) chama de \emph{F-measure}, é a média
 harmônica entre a precisão $P$ e o recall $R$, $2PR/(P+R)$. Como a média harmônica fica próxima do menor dos dois valores, o F1 só é
-alto quando a precisão e o recall são altos. A Tabela~\ref{tab:medidas-deteccao} resume as cinco
-medidas.
+alto quando a precisão e o recall são altos.
 
-\begin{table}[htbp]
-  \centering
-  \caption{Medidas de desempenho de detecção}
-  \label{tab:medidas-deteccao}
-  \begin{tabular}{>{\raggedright\arraybackslash}p{3.1cm}>{$}l<{$}>{\raggedright\arraybackslash}p{5.3cm}}
-    \toprule
-    Medida & \multicolumn{1}{l}{Fórmula} & Significado \\
-    \midrule
-    Acurácia & (\mathrm{VP}+\mathrm{VN})/(\mathrm{VP}+\mathrm{FP}+\mathrm{VN}+\mathrm{FN}) & Proporção de registros classificados corretamente \\
-    \addlinespace
-    Precisão ($P$) & \mathrm{VP}/(\mathrm{VP}+\mathrm{FP}) & Proporção de registros de ataque entre os registros classificados como ataque \\
-    \addlinespace
-    Recall ($R$) & \mathrm{VP}/(\mathrm{VP}+\mathrm{FN}) & Proporção dos registros de ataque classificados como ataque \\
-    \addlinespace
-    Taxa de falsos positivos & \mathrm{FP}/(\mathrm{FP}+\mathrm{VN}) & Proporção dos registros benignos classificados como ataque \\
-    \addlinespace
-    F1 & 2PR/(P+R) & Média harmônica entre a precisão e o recall \\
-    \bottomrule
-  \end{tabular}
-  \fonte{Elaborada pelo autor com base em Fawcett (2006).}
-\end{table}
-
-Essas cinco medidas dependem do limiar de classificação. Com um limiar de 0,8, por exemplo, o
-registro com probabilidade de ataque de 0,73 passaria a ser classificado como benigno. Se esse
-registro for de ataque, ele deixa de ser um verdadeiro positivo e passa a ser um falso negativo, o
-que reduz o recall. A curva ROC (\emph{Receiver Operating
-Characteristic}) mostra o recall em função da taxa de falsos positivos quando o limiar varia de 0 a
+Essas cinco medidas dependem do limiar de classificação. A curva ROC (\emph{Receiver Operating
+Characteristic}), ao contrário, considera todos os limiares e mostra o recall em função da taxa de falsos positivos quando o limiar varia de 0 a
 1. A ROC-AUC é a área sob a curva ROC. Ela vale 1 quando algum limiar separa todos os registros de
 ataque de todos os registros benignos e 0,5 quando a probabilidade de ataque não distingue as duas
 classes (FAWCETT, 2006).
@@ -734,6 +685,7 @@ cada registro de um conjunto de referência e faz a média das saídas, de modo 
 o tamanho desse conjunto (LUNDBERG et al., 2020).
 
 \section{Latência num NIDS}
+\label{sec:latencia-nids}
 
 Dash e Acken (2026) tratam a latência de detecção como a rapidez com que um sistema de detecção de
 intrusão identifica as intrusões. Eles observam que os trabalhos da área a definem de modos
@@ -783,6 +735,7 @@ de classificação não muda, e a sobrecarga de latência é nula neste exemplo.
 \end{table}
 
 \section{Trabalhos relacionados}
+\label{sec:relacionados}
 
 Bertoli et al. (2020) mostram que o desempenho de um \termo{classificador}{classificador} medido no
 sistema em funcionamento difere do medido sobre o dataset. Eles treinaram uma árvore de decisão
@@ -853,15 +806,6 @@ CIC-IDS2017 em uma ou mais cópias ao mesmo tempo. O número de cópias é o
 \termo{classificador}{classificadores} são treinados com o Improved CIC-IDS2017 e congelados antes
 das \termo{execucao}{execuções} (Seções~\ref{sec:dados} e~\ref{sec:classificadores}). O TreeSHAP
 recebe uma única configuração para os dois classificadores (Seção~\ref{sec:explicacoes}).
-
-Cada execução grava uma linha por fluxo, com as marcações de tempo, a classificação e a situação da
-explicação do fluxo. Essa situação indica se a explicação foi gerada e, se não foi, se o fluxo não
-foi selecionado para explicação, se a solicitação foi descartada ou se a explicação ficou pendente.
-A cada segundo, a execução também grava a fonte de energia, a frequência e a ocupação de cada núcleo
-e a memória da máquina (Seção~\ref{sec:ambiente}). A análise recalcula as medidas a partir dessas
-linhas. Para conferir cada execução, a análise compara os fluxos e as previsões da execução com os
-da leitura do mesmo trecho feita diretamente do arquivo PCAP, sem a rede emulada
-(Seções~\ref{sec:matriz} e~\ref{sec:validade}).
 
 \section{Dados e rótulos}
 \label{sec:dados}
@@ -1008,16 +952,13 @@ Na segunda alteração, o extrator lê a interface de rede em modo não bloquean
 retorna de imediato quando não há pacotes. Na leitura bloqueante, uma interface sem pacotes prende
 a leitura até a chegada do próximo pacote. Por isso, depois do último pacote, o extrator deixaria
 de emitir os fluxos pelo tempo limite. A mesma alteração aumenta de 2~MiB para 256~MiB o
-\emph{buffer} de captura, que guarda os pacotes ainda não lidos pelo extrator. Com 2~MiB, o
-\emph{buffer} comporta cerca de 170~ms do maior volume de tráfego por segundo do trecho
-reproduzido, de 12,2~MB. Uma pausa do extrator dessa duração, portanto, já faria o sistema
-operacional descartar pacotes. Com 256~MiB, o \emph{buffer} comporta cerca de 20~s desse volume. A
-segunda alteração também cria a \termo{fila-extrator}{fila de saída do extrator}, em que o extrator
-guarda as linhas dos fluxos emitidos até que uma \emph{thread} própria as escreva no \emph{pipe}.
-Sem essa fila, a \emph{thread} que lê os pacotes também escreveria as linhas no \emph{pipe}, que
-comporta cerca de 90 fluxos. Com o \emph{pipe} cheio, essa \emph{thread} pararia de ler pacotes até
-que o processo classificador consumisse algum fluxo. Nessa pausa, os pacotes que chegam se
-acumulam no \emph{buffer} de captura e podem exceder sua capacidade.
+\emph{buffer} de captura, que guarda os pacotes ainda não lidos pelo extrator. Com 2~MiB, uma pausa
+de cerca de 170~ms do extrator no maior volume de tráfego do trecho já faria o sistema operacional
+descartar pacotes. Com 256~MiB, o \emph{buffer} comporta cerca de 20~s desse volume. A segunda
+alteração também cria a \termo{fila-extrator}{fila de saída do extrator}, em que o extrator guarda
+as linhas dos fluxos emitidos até que uma \emph{thread} própria as escreva no \emph{pipe}. Sem essa
+fila, a \emph{thread} que lê os pacotes pararia sempre que o \emph{pipe}, que comporta cerca de 90
+fluxos, enchesse. Nessas pausas, os pacotes se acumulariam no \emph{buffer} de captura.
 
 Do outro lado do \emph{pipe}, o \termo{processo-classificador}{processo classificador}, escrito em
 Python, lê a linha de cada fluxo, monta com ela o vetor dos 80 atributos, chama o
@@ -1082,33 +1023,29 @@ selecionado quando a distância entre a probabilidade de ataque e 0,5 é menor o
 Os limiares dos dois critérios, 0,5 e 0,4, foram escolhidos com o conjunto de validação, nos dois
 classificadores. Na validação, o critério de incerteza com limiar 0,4 selecionou 0,21\% dos 315.000
 registros no Random Forest e 0,04\% no XGBoost. Esses registros contêm 187 dos 204 erros de
-classificação do Random Forest e 15 dos 32 erros do XGBoost. Acima de 0,4, porém, a seleção cresce
-depressa no Random Forest. Com limiar 0,45, ela passaria a 0,31\% dos registros e, com 0,49, a
-4,33\%.
+classificação do Random Forest e 15 dos 32 erros do XGBoost.
 
 O critério de incerteza se aproxima da classificação com rejeição, em que o classificador se abstém
-das previsões em que tende a errar e pode passar a decisão a um especialista humano. Uma das medidas
-de confiança dessa forma de classificação é a maior probabilidade de classe (HENDRICKX et al.,
-2024). Com duas classes, os fluxos com probabilidade de ataque entre 0,1 e 0,9 são os de confiança
-menor ou igual a 0,9 por essa medida. Ao contrário da classificação com rejeição, o NIDS classifica
-esses fluxos. O critério de incerteza só acrescenta a explicação deles, para apoiar a revisão das
-classificações mais sujeitas a erro.
+das previsões em que tende a errar. Uma das medidas de confiança dessa forma de classificação é a
+maior probabilidade de classe (HENDRICKX et al., 2024), que, com duas classes, fica em até 0,9 nos
+fluxos que o critério seleciona. Ao contrário da classificação com rejeição, porém, o NIDS
+classifica esses fluxos e só acrescenta a explicação deles, para apoiar a revisão das classificações
+mais sujeitas a erro.
 
 A \termo{fila-extrator}{fila de saída do extrator} comporta até 10.000 fluxos. A fila de explicações
-pendentes comporta até 10.000 solicitações de explicação. Sem limite, uma fila cresceria enquanto o
-processo que a consome fosse mais lento que a chegada dos itens, até esgotar a memória. Com o
-limite, o fluxo ou a solicitação que encontra a fila cheia é descartado e contado. A falta de
-capacidade passa, assim, a aparecer como \termo{descarte}{descarte}. No \termo{piloto}{piloto}, nas
-execuções que ficaram dentro dos limites de latência, a fila de saída do extrator chegou a no máximo
-769 fluxos. A fila de explicações pendentes chegou a no máximo 32 solicitações. O limite de 10.000
-fica, portanto, mais de 13 vezes acima da maior dessas filas.
+pendentes comporta até 10.000 solicitações de explicação. Sem limite, uma fila cresceria até
+esgotar a memória enquanto o processo que a consome fosse mais lento que a chegada dos itens. Com o
+limite, a falta de capacidade aparece como \termo{descarte}{descarte}, porque o fluxo ou a
+solicitação que encontra a fila cheia é descartado e contado. Nas execuções do
+\termo{piloto}{piloto} que ficaram dentro dos limites de latência, as duas filas ficaram mais de 13
+vezes abaixo desse limite.
 
 No Assíncrono, a classificação de um fluxo já foi entregue quando a solicitação de explicação entra
 na fila. Por isso, o descarte da solicitação deixa o fluxo sem explicação, sem atrasar a
 classificação. Depois do último fluxo, o processo explicador esvazia a fila de explicações
-pendentes. O \termo{esvaziamento}{tempo de esvaziamento} tem limite de 300~s. Na medição isolada
-(Tabela~\ref{tab:custo-isolado}), o Random Forest gera uma explicação em 7,4~ms, em média. A fila
-cheia levaria, então, cerca de 74~s para esvaziar, dentro desse limite. Quando o limite se esgota, o
+pendentes. O \termo{esvaziamento}{tempo de esvaziamento} tem limite de 300~s, acima dos cerca de 74~s que a
+fila cheia levaria para esvaziar com os 7,4~ms por explicação do Random Forest
+(Tabela~\ref{tab:custo-isolado}). Quando o limite se esgota, o
 processo explicador é encerrado. As solicitações que restam na fila ficam pendentes.
 
 \section{Ambiente emulado e carga}
@@ -1164,14 +1101,10 @@ fluxos, os atributos e as previsões (Seção~\ref{sec:validade}).
 Antes de cada \termo{execucao}{execução}, o programa que inicia as execuções confere, numa janela de
 10~s, se a máquina está na tomada, se a ocupação média dos núcleos fica em até 25\% e se há pelo
 menos 3.072~MiB de memória disponível. Enquanto essas condições não são atendidas, a execução não
-começa. Em ensaios com a máquina na bateria e em uso, a mediana do tempo de inferência do Random
-Forest no Síncrono condicional subiu de 3,6~ms para 9,1~ms, em comparação com os mesmos ensaios na
-tomada e com a máquina ociosa. Todas as execuções usam o perfil de energia \texttt{power-saver} do
-Linux. Como o perfil de energia muda a frequência dos núcleos e, com ela, o tempo de inferência, o
-perfil é o mesmo em todas as execuções. Durante a execução, o mesmo programa grava, a cada segundo,
-a fonte de energia, a frequência e a ocupação de cada núcleo lógico e a memória disponível. Esse
-registro mostra depois se a frequência caiu ou se outro programa ocupou os núcleos lógicos que
-dividem os núcleos físicos do processo classificador e do processo explicador.
+começa, para que a fonte de energia e outros programas não alterem o tempo de inferência. Todas as
+execuções usam o perfil de energia \texttt{power-saver} do Linux. Como o perfil de energia muda a
+frequência dos núcleos e, com ela, o tempo de inferência, o perfil é o mesmo em todas as
+execuções.
 
 \section{Matriz experimental e medidas}
 \label{sec:matriz}
@@ -1189,11 +1122,13 @@ configuração de explicação e nível de carga tem 3 \termo{repeticao}{repeti�
 \termo{execucao}{execuções}. A campanha roda primeiro a repetição 1 de todas as combinações, depois
 a repetição 2 e depois a repetição 3, cada vez em ordem sorteada com semente fixa.
 
-Cada execução registra, além das marcações de tempo de cada \termo{fluxo}{fluxo}, a
-\termo{carga-efetiva}{carga efetiva}, a \termo{vazao}{vazão}, os pacotes perdidos na captura, os
-\termo{descarte}{descartes} nas filas, a \termo{cobertura-explicativa}{cobertura explicativa}, o
-tamanho da \termo{fila-explicacoes}{fila de explicações pendentes} ao longo da execução e o tempo
-de CPU e o pico de memória de cada processo. As latências de cada execução são resumidas pela média,
+Cada execução registra, além das marcações de tempo, da classificação e da situação da explicação
+de cada \termo{fluxo}{fluxo} (gerada, não selecionada, descartada ou pendente), a \termo{carga-efetiva}{carga efetiva}, a \termo{vazao}{vazão}, os
+pacotes perdidos na captura, os \termo{descarte}{descartes} nas filas, a
+\termo{cobertura-explicativa}{cobertura explicativa}, o tamanho da
+\termo{fila-explicacoes}{fila de explicações pendentes} ao longo da execução e o tempo de CPU e o
+pico de memória de cada processo. A cada segundo, a execução também grava a fonte de energia, a
+frequência e a ocupação de cada núcleo lógico e a memória disponível. As latências de cada execução são resumidas pela média,
 pelo p95 e pelo p99. Cada medida de uma combinação é resumida pela mediana das suas 3 execuções, com
 o mínimo e o máximo.
 
@@ -1236,9 +1171,8 @@ medidos (Seção~\ref{sec:limitacoes}).
   \item \textbf{Sobrecarga de latência}: a \termo{sobrecarga}{sobrecarga de latência} de uma
   estratégia é a diferença entre a mediana das execuções da estratégia e a mediana das execuções do
   Sem XAI, com o mesmo classificador e o mesmo nível de carga, na média, no p95 e no p99. As
-  execuções de uma repetição rodam em ordem sorteada ao longo de cerca de 12~h. Por isso, a execução
-  do Sem XAI e a da estratégia na mesma repetição não rodam nas mesmas condições da máquina. Parear
-  as execuções pela repetição, portanto, não controlaria nenhuma variação.
+  execuções não são pareadas pela repetição, porque as de uma mesma repetição rodam em ordem
+  sorteada ao longo de cerca de 12~h, em condições diferentes da máquina.
   \item \textbf{Diferença entre combinações}: duas combinações diferem numa medida quando os
   intervalos entre o mínimo e o máximo das suas execuções não se sobrepõem. Com 3 execuções por
   combinação, essa regra compara os valores medidos sem supor uma distribuição para eles e sem teste
@@ -1265,39 +1199,13 @@ execução e entram nos resultados.
 
 O código do experimento está no repositório
 \url{https://github.com/pedro-fs-garcia/nids-xai-benchmark}, com as configurações, as decisões do
-delineamento experimental e suas justificativas e os relatórios de cada etapa. A
-Tabela~\ref{tab:comandos} lista os comandos que executam cada etapa. Os comandos são chamados por
-\texttt{python main.py <comando>}, exceto o das execuções do piloto e da campanha, que é o script
-\texttt{scripts/executar\_matriz.py}. Cada \termo{execucao}{execução} grava o \emph{commit} do
+delineamento experimental e suas justificativas e os relatórios de cada etapa. Cada \termo{execucao}{execução} grava o \emph{commit} do
 repositório, as versões do Python e das ferramentas e os \emph{hashes} dos arquivos de entrada,
 resumos que mudam sempre que o conteúdo do arquivo muda. Com esse registro, cada arquivo de saída
 fica ligado ao código e às entradas que o produziram. Os arquivos de saída brutos das execuções da
 campanha, porém, ocupam 18~GB e por isso não são publicados. Como esses arquivos são reproduzíveis,
-o guia \texttt{docs/reproducao.md}, no mesmo repositório, descreve como gerá-los novamente a partir
-do CIC-IDS2017 e do Improved CIC-IDS2017.
-
-\begin{table}[htbp]
-  \centering
-  \caption{Comandos de cada etapa do experimento}
-  \label{tab:comandos}
-  \begin{tabular}{p{6cm}p{9cm}}
-    \toprule
-    Etapa & Comando \\
-    \midrule
-    Preparação dos dados & \texttt{preparar-dados} \\
-    Escolha, treino e congelamento dos classificadores & \texttt{comparar-rf}, \texttt{treinar-xgboost},
-    \texttt{congelar-modelos} \\
-    Validação e custo isolado do TreeSHAP & \texttt{validar-treeshap}, \texttt{medir-treeshap} \\
-    Calibração dos critérios de seleção & \texttt{calibrar-selecao} \\
-    Preparação e conferência do tráfego & \texttt{preparar-pcap}, \texttt{preparar-trecho},
-    \texttt{conferir-extracao} \\
-    Execuções do piloto e da campanha & \texttt{scripts/executar\_matriz.py} \\
-    Validação, auditoria e resultados & \texttt{matriz-analisar}, \texttt{campanha-auditar},
-    \texttt{campanha-resultados} \\
-    \bottomrule
-  \end{tabular}
-  \fonte{Elaborada pelo autor.}
-\end{table}
+o guia \texttt{docs/reproducao.md}, no mesmo repositório, descreve os comandos de cada etapa e
+como gerar esses arquivos novamente a partir do CIC-IDS2017 e do Improved CIC-IDS2017.
 
 \chapter{Resultados e discussão}
 \label{cap:resultados}
@@ -1614,98 +1522,75 @@ carga a 4 cópias (Seção~\ref{sec:matriz}).
 
 Pelos critérios de viabilidade da Seção~\ref{sec:matriz}, 18 das 30 combinações de
 \termo{classificador}{classificador}, \termo{configuracao}{configuração de explicação} e \termo{nivel-carga}{nível de
-carga} foram viáveis. No XGBoost, as cinco configurações foram viáveis com 1, 2 e 4 cópias, com uma
-exceção. O \termo{sincrono-condicional}{Síncrono condicional} pelo critério de probabilidade com 4
-cópias foi viável em 2 das 3 \termo{execucao}{execuções}. A execução inviável é a que perdeu 10.231
-pacotes na captura, com p99 da \termo{latencia-classificacao}{latência de classificação} de 5,0~s.
-Como uma combinação só é viável quando as suas 3 execuções são viáveis, essa combinação é inviável.
-No Random Forest, só houve combinações viáveis com 1 cópia, no \termo{sem-xai}{Sem XAI}, nos dois
-critérios do Síncrono condicional e no \termo{assincrono}{Assíncrono}. O
-\termo{sincrono-total}{Síncrono total} do Random Forest não foi viável em nenhum nível de carga. A
-partir de 2 cópias, nenhuma configuração do Random Forest foi viável, nem o Sem XAI.
+carga} foram viáveis. No XGBoost, as cinco configurações foram viáveis com 1, 2 e 4 cópias, exceto o
+\termo{sincrono-condicional}{Síncrono condicional} pelo critério de probabilidade com 4 cópias. Essa
+combinação foi viável em 2 das 3 \termo{execucao}{execuções}, e uma combinação só é viável quando as
+suas 3 execuções são viáveis. No Random Forest, só houve combinações viáveis com 1 cópia, no
+\termo{sem-xai}{Sem XAI}, nos dois critérios do Síncrono condicional e no
+\termo{assincrono}{Assíncrono}. O \termo{sincrono-total}{Síncrono total} do Random Forest não foi
+viável em nenhum nível de carga.
 
 Os resultados sustentam a primeira parte da hipótese, segundo a qual a explicação acrescenta um
 custo que varia com a estratégia de explicação e com a \termo{carga}{carga}. A
 \termo{sobrecarga}{sobrecarga de latência} cresceu com a carga no Síncrono total e no Assíncrono, nos
 dois classificadores. No p95 do XGBoost, a sobrecarga do Síncrono total foi de 8,6, 20 e 318~ms com
 1, 2 e 4 cópias. No Assíncrono, ela foi de 2,4, 6,0 e 30~ms. No Random Forest com 1 cópia, o
-Síncrono total acrescentou 6,1~s ao p95. O Assíncrono acrescentou 110~ms. Essas sobrecargas atendem
-à regra de diferença da Seção~\ref{sec:matriz}. Nas duas estratégias, o intervalo entre o mínimo e o
-máximo das execuções ficou acima do intervalo do Sem XAI em todas as combinações, na média, no p95 e
-no p99.
+Síncrono total acrescentou 6,1~s ao p95, e o Assíncrono, 110~ms. Essas sobrecargas atendem à regra
+de diferença da Seção~\ref{sec:matriz}.
 
 Os resultados também sustentam a segunda parte da hipótese, segundo a qual explicar só alguns
 \termo{fluxo}{fluxos}, ou explicar fora do caminho da classificação, reduz esse custo. Com o
-Síncrono condicional, os intervalos entre o mínimo e o máximo das execuções se sobrepuseram aos do
-Sem XAI em todas as combinações. Pela regra da Seção~\ref{sec:matriz}, a latência de classificação
-não se distinguiu da do Sem XAI. Em troca, o Síncrono condicional explicou poucos fluxos. O critério
-de probabilidade explicou 2,8\% dos fluxos classificados. O critério de incerteza explicou cerca de
-0,1\%. Como o critério de probabilidade explica os fluxos classificados como ataque, a
+Síncrono condicional, a \termo{latencia-classificacao}{latência de classificação} não se distinguiu
+da do Sem XAI pela regra da Seção~\ref{sec:matriz}. Em troca, o critério de probabilidade explicou
+2,8\% dos fluxos classificados, e o de incerteza, cerca de 0,1\%. Como o
+critério de probabilidade explica os fluxos classificados como ataque, a
 \termo{cobertura-explicativa}{cobertura explicativa} desse critério acompanha a proporção de fluxos
-de ataque do trecho, de cerca de 2,8\%. Tolay (2026) observa essa dependência da proporção de ataques
-no CICIoT2023. Na medição desse autor, uma política que explica todos os ataques previstos e parte
-dos benignos economizou de 15\% a 23\% do trabalho de explicação num conjunto de teste balanceado e
-de 1,7\% a 2,6\% no conjunto com a distribuição original, dominada por ataques. Num tráfego com mais
-ataques, portanto, o critério de probabilidade explicaria mais fluxos. Por isso, o custo desse
-critério se aproximaria do custo do Síncrono total. A campanha não mediu essa condição.
+de ataque do trecho, de cerca de 2,8\%. Tolay (2026) observa essa dependência no CICIoT2023. Na
+medição desse autor, uma política que explica todos os ataques previstos e parte dos benignos
+economizou de 15\% a 23\% do trabalho de explicação num conjunto de teste balanceado e de 1,7\% a
+2,6\% no conjunto com a distribuição original, dominada por ataques. Num tráfego com mais ataques,
+portanto, o custo do critério de probabilidade se aproximaria do custo do Síncrono total. A campanha
+não mediu essa condição.
 
-O Assíncrono tirou a explicação do \termo{caminho}{caminho da classificação} e manteve a cobertura
-de 100\% enquanto a \termo{fila-explicacoes}{fila de explicações pendentes} teve vaga
-(Tabela~\ref{tab:explicacoes} e Figura~\ref{fig:fila}). O custo passou para a
-\termo{latencia-explicacao}{latência de explicação} e para o
-\termo{processo-explicador}{processo explicador}. No Random Forest com 1 cópia, o p95 da latência de
-explicação foi de 1,6~s, contra 237~ms da latência de classificação. Com 4 cópias, a fila encheu.
-Com isso, a proporção de fluxos explicados caiu para 94,8\% a 99,4\%. No XGBoost, o p95 da latência
-de explicação ficou menos de 2~ms acima do p95 da latência de classificação.
+O Assíncrono tirou a explicação do \termo{caminho}{caminho da classificação} e explicou todos os
+fluxos enquanto a \termo{fila-explicacoes}{fila de explicações pendentes} teve vaga
+(Tabela~\ref{tab:explicacoes} e Figura~\ref{fig:fila}). O custo passou para a \termo{latencia-explicacao}{latência de
+explicação} e para o \termo{processo-explicador}{processo explicador}. Mesmo sem esperar a
+explicação, porém, o Assíncrono elevou a latência de classificação. No Random Forest com 1 cópia, o
+p95 passou de 126~ms para 237~ms. Quase toda essa diferença ocorreu antes de $t_1$, na espera dos
+fluxos pelo \termo{processo-classificador}{processo classificador}. Essa espera cresceu porque a média do
+\termo{tempo-inferencia}{tempo de inferência} passou de 3,9~ms para 4,2~ms. Como o processo
+explicador roda em outro núcleo de desempenho, esse aumento não vem da divisão do núcleo do
+processo classificador. O experimento não mede a causa. Uma explicação possível é a disputa dos
+recursos que os núcleos compartilham, como a memória cache de último nível. O tempo de CPU mostra,
+além disso, que o Assíncrono não reduz o trabalho de explicar (Tabela~\ref{tab:cpu}). No Random
+Forest com 1 cópia, ele dividiu o custo entre 4,7~ms no processo classificador e 6,8~ms no processo
+explicador por fluxo, contra 11,7~ms no processo classificador do Síncrono total. O Assíncrono,
+portanto, leva esse trabalho para outro núcleo, que precisa estar livre.
 
-Mesmo sem esperar a explicação, o Assíncrono elevou a latência de classificação. No Random Forest com
-1 cópia, o p95 da latência de classificação passou de 126~ms para 237~ms. Quase toda essa diferença
-ocorreu antes de $t_1$, na espera dos fluxos pelo processo classificador. Essa espera cresceu porque
-o processo classificador passou a levar mais tempo por fluxo. A média do
-\termo{tempo-inferencia}{tempo de inferência} passou de 3,9~ms para 4,2~ms. Além disso, o envio de
-cada solicitação ao processo explicador, feito depois de $t_3$, acrescentou cerca de 0,05~ms antes
-do fluxo seguinte. Como o processo explicador roda em outro núcleo de desempenho, o aumento do tempo
-de inferência não vem da divisão do núcleo do processo classificador. O experimento não mede a causa
-desse aumento. Uma explicação possível é a disputa dos recursos que os núcleos compartilham, como a
-memória cache de último nível.
-
-No Random Forest, a classificação sozinha já passou do limite de latência com 2 cópias. Nesse nível
-de carga, o p95 do Sem XAI ficou entre 2,3 e 5,1~s. A carga média dessas execuções, de 40,7 fluxos
-por segundo, com 4,7~ms por inferência, ocupou o \termo{processo-classificador}{processo
-classificador} por cerca de 19\% do tempo. Houve \termo{fluxo-pendente}{fluxo pendente} de
-classificação em 21\% do tempo. Esses fluxos se acumularam nos picos de \termo{emissao}{emissão}, em
-que o extrator chegou a emitir 508 fluxos num segundo. Entre os picos, o acúmulo se desfez.
-Portanto, a inviabilidade veio da concentração da emissão nos picos, e não da carga média. Só o
-Síncrono total com 4 cópias \termo{saturacao}{saturou} o NIDS. Nessas execuções, um único
-intervalo com fluxo pendente cobriu 99\% da execução. O processo classificador só alcançou a emissão
-depois do fim do tráfego. A \termo{fila-extrator}{fila de saída do extrator} encheu. Com isso, o NIDS
-descartou de 11,7\% a 21,2\% dos fluxos.
-
-O tempo de CPU mostra para onde vai o custo da explicação (Tabela~\ref{tab:cpu}). No Random Forest
-com 1 cópia, o processo classificador usou 11,7~ms de CPU por fluxo classificado no Síncrono total,
-contra 4,3~ms no Sem XAI. No Assíncrono, o custo se dividiu entre 4,7~ms no processo classificador e
-6,8~ms no processo explicador. Portanto, o Assíncrono não reduz o trabalho de explicar. Ele leva esse
-trabalho para outro núcleo, que precisa estar livre.
+No Random Forest, a classificação sozinha já passou do limite de latência com 2 cópias, mas não pela
+carga média. A carga média dessas execuções, de 40,7 fluxos por segundo, com 4,7~ms por inferência,
+ocupou o processo classificador por cerca de 19\% do tempo. Os \termo{fluxo-pendente}{fluxos pendentes} se acumularam
+nos picos de \termo{emissao}{emissão}, em que o extrator chegou a emitir 508 fluxos num segundo, e o
+acúmulo se desfez entre os picos. Só o Síncrono total com 4 cópias \termo{saturacao}{saturou} o NIDS
+(Figura~\ref{fig:pendentes}).
 
 A diferença entre os dois classificadores aparece também na medição de Tolay (2026), feita fora de
-um NIDS, em lotes de 1 a 5.000 registros do CICIoT2023. Com lotes de 1 registro, o TreeSHAP levou
-0,126~s no Random Forest e 0,0033~s no XGBoost. Como os classificadores e o processador diferem dos
-deste trabalho, os valores absolutos não se comparam. Nos dois trabalhos, porém, explicar o Random
-Forest custa muito mais que explicar o XGBoost. Este trabalho acrescenta o efeito desse custo na
-entrega da classificação sob carga. Com o XGBoost, explicar todos os fluxos antes de entregar a
-classificação coube nos limites de latência até 4 cópias. Com o Random Forest, não coube nem com 1
-cópia.
+um NIDS, no CICIoT2023. Com lotes de 1 registro, o TreeSHAP levou 0,126~s no Random Forest e
+0,0033~s no XGBoost. Como os classificadores e o processador diferem dos deste trabalho, os valores
+absolutos não se comparam. Nos dois trabalhos, porém, explicar o Random Forest custa muito mais que
+explicar o XGBoost. Este trabalho acrescenta o efeito desse custo na entrega da classificação sob
+carga.
 
-Nugraha, Jnanashree e Bauschert (2025) explicam um detector XGBoost com SHAP e LIME. Fora de um
-sistema que recebe tráfego, eles medem de 0,02~s a 0,08~s por explicação do TreeSHAP e concluem que
-detecção precisa e interpretabilidade quase em tempo real podem coexistir. Os resultados do XGBoost
-neste trabalho são compatíveis com essa conclusão para o TreeSHAP, agora com a latência medida na
-entrega da classificação. Le et al. (2026) avaliam políticas que escolhem entre ações de explicação,
-como suprimir, adiar ou gerar a explicação local completa, numa simulação com sequências de escores e
-custos de explicação normalizados, sem medir latências num NIDS. A fila de explicações pendentes do
-Assíncrono do Random Forest, que cresceu nos picos de emissão e encheu com 4 cópias, é o tipo de
-acúmulo que essas políticas procuram controlar. As medições deste trabalho fornecem os custos que
-essas políticas tratam como parâmetros.
+Nugraha, Jnanashree e Bauschert (2025) medem de 0,02~s a 0,08~s por explicação do TreeSHAP num
+detector XGBoost, fora de um sistema que recebe tráfego, e concluem que detecção precisa e
+interpretabilidade quase em tempo real podem coexistir. Os resultados do XGBoost neste trabalho são
+compatíveis com essa conclusão, agora com a latência medida na entrega da classificação. Le et al.
+(2026) avaliam, numa simulação com custos de explicação normalizados e sem medir latências num NIDS,
+políticas que escolhem entre
+suprimir, adiar ou gerar a explicação local completa. A fila de explicações pendentes do Assíncrono
+do Random Forest é o tipo de acúmulo que essas políticas procuram controlar, e as medições deste
+trabalho fornecem os custos que elas tratam como parâmetros.
 
 \section{Limitações}
 \label{sec:limitacoes}
@@ -1730,13 +1615,12 @@ de produção nem garantia de tempo real estrito. Cinco condições limitam o al
 Além disso, as latências medidas começam no fim da extração dos atributos e não incluem a espera até
 a \termo{emissao}{emissão do fluxo}, que pode chegar a 120~s.
 
-O \termo{tempo-inferencia}{tempo de inferência} cresceu com a carga. Na campanha, a média do tempo
-de inferência do Random Forest no \termo{sem-xai}{Sem XAI}, que não inclui nenhuma espera, subiu de
-3,9~ms com 1 cópia para 6,4~ms com 4 cópias. A mediana da frequência do núcleo do processo
-classificador, lida a cada segundo, subiu de 400 a 523~MHz com 1 cópia para 1.851 a 2.000~MHz com 4
-cópias. Uma frequência mais alta encurtaria a inferência. Por isso, a frequência lida não explica o
-aumento do tempo de inferência. A leitura de cada segundo, porém, não mostra a frequência durante
-cada inferência. Os núcleos lógicos que dividem os núcleos físicos do processo classificador e do
+O \termo{tempo-inferencia}{tempo de inferência} cresceu com a carga. No \termo{sem-xai}{Sem XAI}
+do Random Forest, que não inclui nenhuma espera, a média subiu de 3,9~ms com 1 cópia para 6,4~ms
+com 4 cópias. A frequência do núcleo do processo classificador, lida a cada segundo, também subiu
+com a carga. Como uma frequência mais alta encurtaria a inferência, a frequência lida não explica
+esse aumento. A leitura de cada segundo, porém, não mostra a frequência durante cada inferência. Os
+núcleos lógicos que dividem os núcleos físicos do processo classificador e do
 \termo{processo-explicador}{processo explicador} não recebem processo do experimento
 (Seção~\ref{sec:ambiente}). Mesmo assim, chegaram a 51\% a 100\% de ocupação em algum segundo de
 cada \termo{execucao}{execução}. O experimento não separa as causas do aumento do tempo de
@@ -1746,25 +1630,18 @@ energia \texttt{power-saver}, usado em todas as execuções. Parte da
 só do NIDS.
 
 Cinco regras de análise foram fixadas depois da campanha, com os resultados já medidos
-(Seção~\ref{sec:matriz}). São a regra que diz quando a \termo{fila-explicacoes}{fila de explicações
-pendentes} cresce até o fim, a exigência de que as 3 execuções de uma combinação sejam viáveis, o
-cálculo da sobrecarga de latência pela diferença entre as medianas, a regra de diferença entre
-combinações e a definição de \termo{saturacao}{saturação}. Já os limites de latência e de
-\termo{descarte}{descartes} foram fixados no \termo{piloto}{piloto}, antes da campanha. Só duas
-conclusões mudariam com outras regras. O Síncrono condicional do XGBoost pelo critério de
+(Seção~\ref{sec:matriz}). Os limites de latência e de \termo{descarte}{descartes}, ao contrário,
+foram fixados no \termo{piloto}{piloto}, antes da campanha. Só duas conclusões mudariam com outras
+regras. O Síncrono condicional do XGBoost pelo critério de
 probabilidade com 4 cópias seria viável se bastassem 2 das 3 execuções. A
 \termo{repeticao}{repetição} 3 do \termo{assincrono}{Assíncrono} do XGBoost com 4 cópias seria
-inviável por uma regra que reprovasse a fila que volta, no último décimo da execução, ao maior
-tamanho que já tinha atingido.
+inviável se uma regra reprovasse a \termo{fila-explicacoes}{fila de explicações pendentes} que
+volta, no último décimo da execução, ao maior tamanho que já tinha atingido.
 
-Com 3 execuções por combinação, o trabalho não usa teste estatístico. Duas combinações são tratadas
-como diferentes quando os intervalos entre o mínimo e o máximo das suas execuções não se sobrepõem.
-Esse critério é descritivo e não dá uma probabilidade de erro.
-
-Uma execução do Síncrono condicional do XGBoost pelo critério de probabilidade com 4 cópias perdeu
-0,07\% dos pacotes na captura. Com essa perda, 1,2\% dos fluxos da execução ficaram com atributos
-diferentes dos da leitura do arquivo. Como a perda de pacotes não invalida uma execução
-(Seção~\ref{sec:matriz}), essa execução continua na análise.
+Com 3 execuções por combinação, o critério de diferença entre combinações é descritivo e não dá
+uma probabilidade de erro (Seção~\ref{sec:matriz}). A execução do XGBoost que perdeu 0,07\% dos
+pacotes na captura, e por isso teve 1,2\% dos fluxos com atributos diferentes dos da leitura do
+arquivo, continua na análise, porque a perda de pacotes não invalida uma execução.
 
 \chapter{Considerações finais}
 \label{cap:conclusao}
@@ -1808,6 +1685,9 @@ que a \termo{carga}{carga} cresce sem alterar os atributos dos \termo{fluxo}{flu
 fluxo de uma cópia do trecho tem os mesmos atributos do fluxo correspondente do trecho. O código, as
 configurações, as decisões do delineamento experimental e o guia de reprodução estão no repositório
 do trabalho (Seção~\ref{sec:disponibilidade}).
+Seguido numa cópia nova do repositório, o guia de reprodução gerou conjuntos de treino, validação e
+teste, \termo{modelo-congelado}{modelos congelados}, trechos de PCAP e classificações e explicações
+das leituras por arquivo idênticos aos do experimento.
 
 Parte das dificuldades do trabalho veio das ferramentas e dos dados. O \texttt{tcpreplay} 4.5.2,
 distribuído pelo Ubuntu 26.04, não enviava os quadros acima de 4.064 bytes quando a MTU passava de
@@ -1817,17 +1697,6 @@ de 16 bits e diferem do que o extrator calcula em operação. Por isso, esses do
 fora das entradas do classificador (Seção~\ref{sec:dados}). Na campanha, uma
 \termo{execucao}{execução} perdeu pacotes na captura. Por isso, a auditoria passou a registrar a
 reprovação da validação dessa execução como explicada pela perda (Seção~\ref{sec:limitacoes}).
-
-A campanha também exigiu muito tempo de máquina. As 90 execuções levaram de 22,5 a 23,9~min cada e
-somaram cerca de 34~h, distribuídas em cerca de 42~h corridas.
-
-Depois da campanha, o guia de reprodução foi seguido numa cópia nova do repositório, na mesma
-máquina. As etapas que não exigem acesso de administrador, da preparação dos dados às leituras por
-arquivo do trecho da campanha, levaram cerca de 1~h 30~min. A preparação do PCAP, que lê e grava
-arquivos de até 11~GB, ocupou o disco a ponto de deixar a máquina lenta para outros usos. Os
-conjuntos de treino, validação e teste, os \termo{modelo-congelado}{modelos congelados}, os trechos
-de PCAP e as classificações e explicações das leituras por arquivo saíram idênticos aos do
-experimento. Essa reprodução também corrigiu dois passos do guia.
 
 \section{Trabalhos futuros}
 
@@ -1894,12 +1763,6 @@ CICIDS2017 case study. \emph{In}: IEEE SECURITY AND PRIVACY WORKSHOPS, 2021, San
 
 FAWCETT, Tom. An introduction to ROC analysis. \textbf{Pattern Recognition Letters}, [\emph{s. l.}],
 v. 27, n. 8, p. 861--874, 2006. DOI: 10.1016/j.patrec.2005.10.010.\par
-
-GRINSZTAJN, Léo; OYALLON, Edouard; VAROQUAUX, Gaël. Why do tree-based models still outperform deep
-learning on typical tabular data? \emph{In}: CONFERENCE ON NEURAL INFORMATION PROCESSING SYSTEMS,
-36., 2022, New Orleans. \textbf{Advances in Neural Information Processing Systems 35}.
-[\emph{S. l.}]: Neural Information Processing Systems Foundation, 2022. p. 507--520. DOI:
-10.52202/068431-0037.\par
 
 HENDRICKX, Kilian \emph{et al.} Machine learning with a reject option: a survey. \textbf{Machine
 Learning}, [\emph{s. l.}], v. 113, p. 3073--3110, maio 2024. DOI: 10.1007/s10994-024-06534-x.\par
