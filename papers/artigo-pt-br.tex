@@ -320,7 +320,9 @@ Nugraha, Jnanashree e Bauschert (2025) propõem um arcabouço de detecção expl
 primeira combina um teste estatístico com os valores SHAP globais para manter os dez atributos mais
 informativos, e a segunda treina um detector XGBoost e explica cada decisão com SHAP e LIME,
 comparando as duas explicações. A avaliação usa três conjuntos de dados, entre eles o CICIoT2023, e
-mede o tempo de geração das explicações, que no LIME caiu de 36~s para 4,9~s com o arcabouço.
+mede o tempo de cada explicação sobre amostras dos conjuntos, numa estação de trabalho com AMD Ryzen 7
+3800X. O TreeSHAP levou de 0,02~s a 0,08~s por explicação. No ataque SYN Flood, o LIME levou 36,38~s
+com todos os atributos e 9,48~s com os dez atributos escolhidos.
 
 Le et al. (2026) tratam a explicação como um serviço com custo num NIDS com recursos limitados. O
 mecanismo que propõem escolhe entre sete ações de explicação, como suprimir, adiar, gerar a
@@ -337,7 +339,7 @@ explicar só parte das previsões. A política que explica os ataques previstos 
 um limiar economiza mais quando os ataques são raros. Os tempos medem a chamada do explicador, fora
 de um sistema que recebe tráfego.
 
-Entre esses trabalhos, o que mede o custo do TreeSHAP mede a chamada do explicador, e o que trata a
+Entre esses trabalhos, os que medem o custo do TreeSHAP medem a chamada do explicador, e o que trata a
 explicação como serviço sob carga usa custos simulados. Este trabalho mede, num mesmo NIDS e com o
 mesmo caminho de classificação, a latência da classificação e a da explicação de cada fluxo nas
 quatro estratégias, numa rede emulada em que a carga cresce sem alterar os atributos dos fluxos.
@@ -710,8 +712,9 @@ fila de saída do extrator, de 11,7\% a 21,2\% dos emitidos.
 
 A Figura~\ref{fig:pendentes} mostra o maior número de fluxos pendentes de classificação a cada
 10~s, na repetição 1 do Sem XAI, do Síncrono total e do Assíncrono. No XGBoost, o maior número de
-fluxos pendentes de uma execução ficou entre 63 e 865. No Random Forest, ele foi de 790 a 3.116 com
-2 cópias e de 5.580 a 10.100 com 4 cópias. No Síncrono total com 4 cópias, os fluxos pendentes não
+fluxos pendentes de uma execução ficou entre 63 e 865, exceto na execução que perdeu pacotes, que
+chegou a 1.241. No Random Forest, ele foi de 68 a 727 com 1 cópia, de 790 a 3.116 com 2 cópias e de
+5.580 a 10.100 com 4 cópias. No Síncrono total com 4 cópias, os fluxos pendentes não
 chegaram a zero em 99\% da execução.
 
 \begin{figure}[htbp]
@@ -733,8 +736,9 @@ explicação ficou menos de 2~ms acima do p95 da latência de classificação, n
 
 A Figura~\ref{fig:fila} mostra o tamanho da fila de explicações pendentes nas execuções do
 Assíncrono. No XGBoost, a fila teve no máximo 30 solicitações. No Random Forest, ela cresceu nas
-rajadas de emissão, chegou a 1.869 a 2.085 solicitações com 2 cópias e atingiu o limite de 10.000
-com 4 cópias, quando o NIDS descartou de 539 a 5.051 solicitações por execução. Em todas as
+rajadas de emissão. O maior tamanho da fila ficou entre 305 e 480 solicitações com 1 cópia e entre
+1.869 e 2.085 com 2 cópias. Com 4 cópias, a fila atingiu o limite de 10.000 solicitações, e o NIDS
+descartou de 539 a 5.051 solicitações por execução. Em todas as
 execuções do Assíncrono, o processo explicador concluiu as solicitações aceitas, nenhuma ficou
 pendente, e a última explicação ficou disponível até 10,0~s depois da última solicitação, bem abaixo
 do tempo máximo de esvaziamento de 300~s.
@@ -879,8 +883,8 @@ muito mais que explicar o XGBoost. Este trabalho acrescenta o efeito desse custo
 classificação sob carga. Com o XGBoost, explicar todos os fluxos antes de entregar a classificação
 coube nos limites de latência até 4 cópias. Com o Random Forest, não coube nem com 1 cópia.
 
-Nugraha, Jnanashree e Bauschert (2025) explicam um detector XGBoost com SHAP e LIME, relatam que o
-arcabouço deles reduziu o tempo de explicação do LIME de 36~s para 4,9~s e concluem que detecção
+Nugraha, Jnanashree e Bauschert (2025) explicam um detector XGBoost com SHAP e LIME, medem de 0,02~s
+a 0,08~s por explicação do TreeSHAP, fora de um sistema que recebe tráfego, e concluem que detecção
 precisa e interpretabilidade quase em tempo real podem coexistir. Os resultados do XGBoost são
 compatíveis com essa conclusão para o TreeSHAP, com a latência medida na entrega da classificação. Le
 et al. (2026) avaliam políticas que escolhem entre ações de explicação, como suprimir, adiar ou gerar
@@ -1007,7 +1011,7 @@ learning on typical tabular data? \emph{In}: CONFERENCE ON NEURAL INFORMATION PR
 10.52202/068431-0037.\par
 
 HENDRICKX, Kilian \emph{et al.} Machine learning with a reject option: a survey. \textbf{Machine
-Learning}, [\emph{s. l.}], v. 113, n. 5, p. 3073--3110, 2024. DOI: 10.1007/s10994-024-06534-x.\par
+Learning}, [\emph{s. l.}], v. 113, p. 3073--3110, maio 2024. DOI: 10.1007/s10994-024-06534-x.\par
 
 LANTZ, Bob; HELLER, Brandon; MCKEOWN, Nick. A network in a laptop: rapid prototyping for
 software-defined networks. \emph{In}: ACM SIGCOMM WORKSHOP ON HOT TOPICS IN NETWORKS, 9., 2010,

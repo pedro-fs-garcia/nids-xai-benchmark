@@ -153,13 +153,14 @@ def _emitted(summary: dict[str, Any], series: dict[str, dict[str, Any]], loads: 
 
 def _pending(summary: dict[str, Any], series: dict[str, dict[str, Any]], loads: list[int], path: Path) -> Path:
     """Maior número de fluxos pendentes de classificação a cada janela, na repetição 1 do Sem XAI, do Síncrono
-    total e do Assíncrono. A linha do Sem XAI fica por cima das outras."""
-    figure, axes = plt.subplots(len(MODELS), len(loads), figsize=(WIDTH, 5.4), dpi=DPI, sharex=True, sharey=True,
-                                squeeze=False)
+    total e do Assíncrono. A linha do Sem XAI fica por cima das outras. Uma linha de painéis por nível de carga e uma
+    coluna por classificador."""
+    figure, axes = plt.subplots(len(loads), len(MODELS), figsize=(WIDTH, 2.2 * len(loads) + 0.6), dpi=DPI,
+                                sharex=True, sharey=True, squeeze=False)
     figure.patch.set_facecolor(SURFACE)
     largest = 1
-    for row, model in enumerate(MODELS):
-        for column, load in enumerate(loads):
+    for row, load in enumerate(loads):
+        for column, model in enumerate(MODELS):
             axis = axes[row][column]
             _style(axis)
             for configuration in [key for key in CONFIGURATION_ORDER if key in PENDING_CONFIGURATIONS]:
@@ -173,7 +174,7 @@ def _pending(summary: dict[str, Any], series: dict[str, dict[str, Any]], loads: 
             axis.set_yscale("symlog", linthresh=1)
             axis.yaxis.set_major_formatter(FuncFormatter(_number))
             axis.set_title(f"{MODEL_TITLES[model]}, {_copies(load)}", fontsize=8, color=TEXT, loc="left")
-            if row == len(MODELS) - 1:
+            if row == len(loads) - 1:
                 axis.set_xlabel("Tempo desde o primeiro fluxo emitido (s)", fontsize=7.5, color=TEXT_SECONDARY)
             if column == 0:
                 axis.set_ylabel(f"Fluxos pendentes, maior em {WINDOW_S} s", fontsize=7.5, color=TEXT_SECONDARY)
@@ -191,11 +192,13 @@ def _windows(points: list[list[int]]) -> tuple[np.ndarray, np.ndarray]:
 
 
 def _queue(summary: dict[str, Any], series: dict[str, dict[str, Any]], loads: list[int], path: Path) -> Path:
-    """Maior tamanho da fila de explicações pendentes em cada segundo, nas 3 execuções do Assíncrono."""
-    figure, axes = plt.subplots(len(MODELS), len(loads), figsize=(WIDTH, 5.0), dpi=DPI, sharex=True, squeeze=False)
+    """Maior tamanho da fila de explicações pendentes em cada segundo, nas 3 execuções do Assíncrono. Uma linha de
+    painéis por nível de carga e uma coluna por classificador."""
+    figure, axes = plt.subplots(len(loads), len(MODELS), figsize=(WIDTH, 2.1 * len(loads) + 0.3), dpi=DPI,
+                                sharex=True, squeeze=False)
     figure.patch.set_facecolor(SURFACE)
-    for row, model in enumerate(MODELS):
-        for column, load in enumerate(loads):
+    for row, load in enumerate(loads):
+        for column, model in enumerate(MODELS):
             axis = axes[row][column]
             _style(axis)
             executions = _executions(summary, model, "assincrono", load)
@@ -212,7 +215,7 @@ def _queue(summary: dict[str, Any], series: dict[str, dict[str, Any]], loads: li
             axis.yaxis.set_major_formatter(FuncFormatter(_number))
             axis.set_ylim(bottom=0)
             axis.set_title(f"{MODEL_TITLES[model]}, {_copies(load)}", fontsize=8, color=TEXT, loc="left")
-            if row == len(MODELS) - 1:
+            if row == len(loads) - 1:
                 axis.set_xlabel("Tempo desde o primeiro fluxo emitido (s)", fontsize=7.5, color=TEXT_SECONDARY)
             if column == 0:
                 axis.set_ylabel("Solicitações na fila", fontsize=7.5, color=TEXT_SECONDARY)

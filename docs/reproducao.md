@@ -69,6 +69,8 @@ curl -L -o cicids-dataset/pcap/Tuesday-WorkingHours.pcap \
   https://huggingface.co/datasets/bencorn/CICIDS2017/resolve/811c007f08d693a8a8b4226c197c138391806ce6/pcaps/Tuesday-WorkingHours.pcap
 ```
 
+Os arquivos ficam dentro de `cicids-dataset/`, e não num link simbólico para fora do repositório. O `preparar-pcap` grava no manifesto o caminho real de cada arquivo em relação ao repositório e termina com erro quando esse caminho fica fora dele.
+
 A [página do CIC-IDS2017](https://www.unb.ca/cic/datasets/ids-2017.html) pede que os trabalhos que usam o conjunto citem Sharafaldin, Habibi Lashkari e Ghorbani (2018).
 
 ## Etapas
@@ -127,12 +129,16 @@ Os limiares dos dois critérios de seleção estão em `selection.thresholds` de
 ### 5. Tráfego
 
 ```bash
+rm ../derived-data/pcap/tuesday/manifest.json
 python main.py preparar-pcap
 python main.py conferir-extracao --trecho validacao
+rm ../derived-data/pcap/tuesday-campanha/manifest.json
 python main.py preparar-trecho --config ../configs/pcap-campanha.json
 python main.py conferir-extracao --config ../configs/pcap-campanha.json --trecho campanha
 git diff ../derived-data/pcap
 ```
+
+`preparar-pcap` e `preparar-trecho` recusam uma pasta que já tem `manifest.json`, e os manifestos do experimento estão no repositório. Por isso, cada um vem depois do `rm` do seu manifesto.
 
 `preparar-pcap` corrige e ordena o PCAP inteiro e corta os trechos `dev` e `validacao`, em `derived-data/pcap/tuesday/`. `preparar-trecho` corta, de um trecho já preparado, o trecho da campanha ([decisão 16](decisoes.md#16-tráfego-do-piloto-e-da-campanha)). `conferir-extracao` compara os fluxos extraídos de cada trecho com os de `tuesday.csv` e termina com erro se alguma conferência falhar. Os manifestos dos trechos são versionados, e o `git diff` mostra o que mudou neles.
 
@@ -170,6 +176,16 @@ python main.py campanha-resultados --matriz ../configs/campanha-reproducao.json
 ```
 
 `matriz-analisar` valida cada execução válida contra a leitura por arquivo correspondente. `campanha-auditar` confere o registro, os arquivos brutos e as validações. `campanha-resultados` exige uma auditoria aprovada, recalcula as medidas dos registros brutos e aplica as regras das decisões 23 a 27.
+
+## O que se repete
+
+Num clone limpo, na máquina da campanha, com o Python 3.12.16 e o Wireshark 4.6.4, as etapas 1 a 6 levaram cerca de 1 h 30 min e repetiram o experimento nestes pontos.
+
+- Os conjuntos de treino, validação e teste e os trechos de PCAP saíram com os mesmos hashes. Nos manifestos, mudaram só os caminhos, as versões do Python e das ferramentas, os nomes de dois campos da saída do `capinfos`, a plataforma, o tempo, a memória e o hash do manifesto de base.
+- Os dois `model.joblib` saíram com os mesmos hashes, e as métricas de validação e de teste e a tabela da calibração foram as mesmas.
+- As dez leituras por arquivo do trecho da campanha deram arquivos de classificações e de explicações idênticos aos do experimento.
+
+Mudaram os tempos medidos, como os do custo isolado do TreeSHAP, e 467 das 314.993 probabilidades de ataque do Random Forest no teste, em no máximo 2,2 × 10⁻¹⁶, sem mudar nenhuma classificação. Essa conferência não cobre as etapas 7 e 8, que exigem `sudo` e cerca de 34 h.
 
 ## Resultados do experimento original
 

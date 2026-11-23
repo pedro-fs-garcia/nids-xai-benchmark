@@ -13,3 +13,6 @@ training-runs/traffic/**/*.csv
 training-runs/nids/**/*.csv
 training-runs/nids/**/*.jsonl
 tcpreplay/build/
+
+!monografia.pdf
+!artigo-pt-br.pdf

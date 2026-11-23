@@ -217,6 +217,10 @@ As escolhas são registradas antes do treinamento completo e da abertura do test
 
 A configuração com 100 árvores e profundidade 12 obteve o maior F1. A alternativa com 50 árvores reduziu o número de nós, mas teve 279 erros na validação, contra 260 da configuração escolhida. A alternativa com profundidade 8 teve 482 erros. A diferença entre as duas primeiras configurações é pequena; a comparação não estabelece significância estatística nem mede o custo das explicações.
 
+A comparação usa a amostra de 100 mil registros para reduzir o tempo de treino. Treinar as três configurações com todo o treino tomaria mais tempo de máquina, e só a configuração escolhida precisa do treino completo.
+
+O limiar de classificação fica em 0,5 por três motivos combinados. Primeiro, 0,5 é o limiar que o `predict` do scikit-learn e o do XGBoost usam em classificação binária, e mantê-lo evita um parâmetro a mais no experimento. Segundo, o trabalho mede o custo de explicar, e não procura o melhor detector. Com o limiar de 0,5, o F1 na validação já passa de 0,998 nos dois classificadores, nas configurações escolhidas e com treino na amostra. Terceiro, um limiar ajustado na validação exigiria mais um uso desse conjunto e mudaria o critério de probabilidade do Síncrono condicional, cujo limiar coincide com o de classificação ([decisão 12](#12-critérios-de-seleção-do-síncrono-condicional)).
+
 Os parâmetros completos e as medições estão em [selection.json](../training-runs/random-forest-comparison/20261111T171132620028Z/selection.json). A configuração da comparação está em [configs/random-forest-comparison.json](../configs/random-forest-comparison.json).
 
 ## 6. Configuração do XGBoost
@@ -238,6 +242,8 @@ A configuração escolhida recebe treinamento com todos os 1.469.983 registros d
 | 100 | 4 | 0,1 | 0,998759 |
 
 A configuração com 100 árvores e profundidade 6 obteve o maior F1 e 136 erros na validação, contra 228 com 50 árvores e 188 com profundidade 4. Essa comparação curta sustenta a escolha entre as três configurações avaliadas. Ela não estabelece significância estatística nem mede o custo de gerar explicações.
+
+A comparação usa a amostra de 100 mil registros pelo mesmo motivo da [decisão 5](#5-configuração-do-random-forest), reduzir o tempo de treino. O limiar de classificação fica em 0,5 pelos mesmos três motivos da [decisão 5](#5-configuração-do-random-forest).
 
 Os demais parâmetros e a configuração efetiva da biblioteca estão nos artefatos da execução. O [relatório de avaliação](../relatorios/xgboost-comparison-20261111T175006216484Z.md) apresenta as métricas de validação e teste, a matriz de confusão e as contagens por rótulo. A comparação é definida em [configs/xgboost-comparison.json](../configs/xgboost-comparison.json).
 
