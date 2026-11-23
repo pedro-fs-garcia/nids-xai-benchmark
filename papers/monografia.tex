@@ -493,6 +493,20 @@ específicos abaixo:
   viável.
 \end{itemize}
 
+\section{Conteúdo do trabalho}
+
+O Capítulo~\ref{cap:fundamentacao} apresenta o CIC-IDS2017 e a formação dos \termo{fluxo}{fluxos}, as
+medidas de desempenho de detecção, as árvores de decisão, o Random Forest e o XGBoost, os valores de
+Shapley e o TreeSHAP, a latência num NIDS e os trabalhos relacionados. O
+Capítulo~\ref{cap:metodologia} descreve a arquitetura do sistema, os dados, os
+\termo{classificador}{classificadores}, a configuração do TreeSHAP, o NIDS, as
+\termo{estrategia}{estratégias de explicação}, o ambiente emulado, a matriz experimental e as
+medidas e a disponibilidade do código e dos arquivos de saída. O
+Capítulo~\ref{cap:resultados} apresenta e discute os resultados, e o Capítulo~\ref{cap:conclusao}
+responde à pergunta nos limites do experimento e aponta as contribuições e os trabalhos futuros.
+Em cada seção, a primeira ocorrência de cada termo definido no Glossário aparece em itálico, com
+um link para o verbete.
+
 \chapter{Fundamentação técnica}
 \label{cap:fundamentacao}
 
@@ -1072,7 +1086,8 @@ processo do experimento. Assim, o processo explicador não toma CPU do processo 
 disso, nenhum dos dois divide um núcleo físico com outro processo do experimento. O extrator roda em
 quatro núcleos de eficiência. O envio do tráfego roda nos quatro núcleos de eficiência restantes,
 fora dos núcleos do NIDS, para que o envio dos pacotes não dispute CPU com a captura e a
-classificação.
+classificação. Nas execuções da campanha, a mediana da frequência do núcleo do processo
+classificador, lida a cada segundo, ficou entre 400 e 2.500~MHz.
 
 O trecho reproduzido tem 20 minutos da captura de terça-feira do CIC-IDS2017, das 12:10 às 12:30
 UTC, com 3.706.151 pacotes e 24.413 \termo{fluxo}{fluxos}. A terça-feira tem cerca de 8~h de
@@ -1101,10 +1116,7 @@ fluxos, os atributos e as previsões (Seção~\ref{sec:validade}).
 Antes de cada \termo{execucao}{execução}, o programa que inicia as execuções confere, numa janela de
 10~s, se a máquina está na tomada, se a ocupação média dos núcleos fica em até 25\% e se há pelo
 menos 3.072~MiB de memória disponível. Enquanto essas condições não são atendidas, a execução não
-começa, para que a fonte de energia e outros programas não alterem o tempo de inferência. Todas as
-execuções usam o perfil de energia \texttt{power-saver} do Linux. Como o perfil de energia muda a
-frequência dos núcleos e, com ela, o tempo de inferência, o perfil é o mesmo em todas as
-execuções.
+começa, para que a fonte de energia e outros programas não alterem o tempo de inferência.
 
 \section{Matriz experimental e medidas}
 \label{sec:matriz}
@@ -1624,8 +1636,7 @@ núcleos lógicos que dividem os núcleos físicos do processo classificador e d
 \termo{processo-explicador}{processo explicador} não recebem processo do experimento
 (Seção~\ref{sec:ambiente}). Mesmo assim, chegaram a 51\% a 100\% de ocupação em algum segundo de
 cada \termo{execucao}{execução}. O experimento não separa as causas do aumento do tempo de
-inferência, como a disputa dos núcleos físicos e da memória com outros processos e o perfil de
-energia \texttt{power-saver}, usado em todas as execuções. Parte da
+inferência, como a disputa dos núcleos físicos e da memória com outros processos. Parte da
 \termo{sobrecarga}{sobrecarga de latência} medida nas cargas maiores vem, assim, da máquina, e não
 só do NIDS.
 
@@ -1673,7 +1684,7 @@ descartou \termo{solicitacao}{solicitações de explicação} porque a fila ench
 Os resultados valem para uma única máquina, um trecho de 20 minutos de um único dia e cópias com
 picos de emissão coincidentes (Seção~\ref{sec:limitacoes}).
 
-\section{Contribuições e dificuldades}
+\section{Contribuições}
 
 O trabalho mede as quatro \termo{estrategia}{estratégias de explicação} num mesmo NIDS, com o mesmo
 \termo{caminho}{caminho da classificação}, com dois \termo{classificador}{classificadores} e três
