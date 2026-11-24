@@ -383,17 +383,22 @@ deram-me uma vida em que trabalhos como este fossem possíveis. Esse início é 
   \item[CWR] \emph{Congestion Window Reduced}
   \item[ECE] \emph{Explicit Congestion Notification Echo}
   \item[FIN] \emph{Finish}
+  \item[FN] Falso negativo
+  \item[FP] Falso positivo
   \item[FTP] \emph{File Transfer Protocol}
+  \item[GRO] \emph{Generic Receive Offload}
   \item[ICMP] \emph{Internet Control Message Protocol}
   \item[ID3] \emph{Iterative Dichotomiser 3}
   \item[IP] \emph{Internet Protocol}
   \item[IPv4] \emph{Internet Protocol version 4}
   \item[LIME] \emph{Local Interpretable Model-agnostic Explanations}
+  \item[MTU] \emph{Maximum Transmission Unit}
   \item[NIDS] \emph{Network Intrusion Detection System}
   \item[p95] Percentil 95
   \item[p99] Percentil 99
   \item[PCAP] \emph{Packet Capture}
   \item[PSH] \emph{Push}
+  \item[ROC] \emph{Receiver Operating Characteristic}
   \item[ROC-AUC] \emph{Area Under the Receiver Operating Characteristic Curve}
   \item[RST] \emph{Reset}
   \item[SHAP] \emph{SHapley Additive exPlanations}
@@ -402,6 +407,8 @@ deram-me uma vida em que trabalhos como este fossem possíveis. Esse início é 
   \item[UDP] \emph{User Datagram Protocol}
   \item[URG] \emph{Urgent}
   \item[UTC] \emph{Coordinated Universal Time}
+  \item[VN] Verdadeiro negativo
+  \item[VP] Verdadeiro positivo
   \item[XAI] \emph{Explainable Artificial Intelligence}
 \end{siglas}
 
@@ -1647,8 +1654,8 @@ teste, \termo{modelo-congelado}{modelos congelados}, trechos de PCAP e classific
 das leituras por arquivo idênticos aos do experimento.
 
 Parte das dificuldades do trabalho veio das ferramentas e dos dados. O \texttt{tcpreplay} 4.5.2,
-distribuído pelo Ubuntu 26.04, não enviava os quadros acima de 4.064 bytes quando a MTU passava de
-uma página de memória. Por isso, a reprodução usou a versão 4.6.2, compilada a partir do
+distribuído pelo Ubuntu 26.04, não enviava os quadros acima de 4.064 bytes quando a MTU (\emph{Maximum Transmission
+Unit}) passava de uma página de memória. Por isso, a reprodução usou a versão 4.6.2, compilada a partir do
 código-fonte. Os dois comprimentos de cabeçalho do Improved CIC-IDS2017 foram gravados em inteiros
 de 16 bits e diferem do que o extrator calcula em operação. Por isso, esses dois atributos ficaram
 fora das entradas do classificador (Seção~\ref{sec:dados}). Na campanha, uma
